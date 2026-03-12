@@ -394,6 +394,60 @@
       }
     }
 
+    /* ── PALMY ── */
+    .palms {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: clamp(160px, 35vw, 280px);
+      z-index: 3; pointer-events: none;
+    }
+    .palm-left  { position: absolute; bottom: clamp(50px,10vw,90px); left: clamp(-10px,0vw,10px); width: clamp(100px,22vw,180px); }
+    .palm-right { position: absolute; bottom: clamp(50px,10vw,90px); right: clamp(-10px,0vw,10px); width: clamp(90px,20vw,160px); transform: scaleX(-1); }
+
+    /* ── MEWY ── */
+    .seagulls { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+    .gull { position: absolute; animation: gull-fly linear infinite; opacity: .7; }
+    .g1 { top: 18%; left: -60px; animation-duration: 18s; animation-delay: 2s;  width: 36px; }
+    .g2 { top: 28%; left: -40px; animation-duration: 24s; animation-delay: 7s;  width: 24px; opacity:.5; }
+    .g3 { top: 13%; left: -50px; animation-duration: 20s; animation-delay: 14s; width: 30px; opacity:.6; }
+    .g4 { top: 35%; left: -40px; animation-duration: 22s; animation-delay: 0s;  width: 20px; opacity:.4; }
+    @keyframes gull-fly {
+      0%   { transform: translateX(0) translateY(0); }
+      25%  { transform: translateX(25vw) translateY(-10px); }
+      50%  { transform: translateX(50vw) translateY(4px); }
+      75%  { transform: translateX(75vw) translateY(-8px); }
+      100% { transform: translateX(calc(100vw + 80px)) translateY(0); }
+    }
+
+    /* ── SAMOLOT ── */
+    .plane-wrap {
+      position: fixed; z-index: 4; pointer-events: none;
+      top: 42%; left: -120px;
+      animation: plane-cross 28s linear 5s infinite;
+    }
+    .plane-svg { width: clamp(40px, 8vw, 60px); filter: drop-shadow(2px 2px 4px rgba(0,0,0,.1)); }
+    .plane-trail {
+      position: absolute; right: 100%; top: 50%;
+      transform: translateY(-50%);
+      height: 2px; width: 0;
+      background: linear-gradient(to left, rgba(255,255,255,.9), transparent);
+      border-radius: 2px;
+    }
+    @keyframes plane-cross {
+      0%   { left: -120px; top: 42%; }
+      100% { left: calc(100vw + 120px); top: 36%; }
+    }
+
+    /* ── FLAMINGI (vacation mode) ── */
+    .vac-flamingo {
+      position: fixed; bottom: clamp(60px,14vw,120px);
+      font-size: clamp(3rem, 10vw, 5rem);
+      z-index: 3; pointer-events: none;
+    }
+    .vac-flamingo.left  { left: clamp(0rem, 2vw, 2rem); animation: flamingo-l 4s ease-in-out infinite; }
+    .vac-flamingo.right { right: clamp(0rem, 2vw, 2rem); animation: flamingo-r 4s ease-in-out 1.5s infinite; }
+    @keyframes flamingo-l { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+    @keyframes flamingo-r { 0%,100% { transform: scaleX(-1) rotate(-5deg); } 50% { transform: scaleX(-1) rotate(5deg); } }
+
     /* Hover only on non-touch */
     @media (hover: hover) {
       .count-block:hover {
@@ -422,6 +476,55 @@
     <div class="cloud c3"></div>
   </div>
 
+
+  <!-- Mewy -->
+  <div class="seagulls" aria-hidden="true">
+    <div class="gull g1">
+      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="gull g2">
+      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="gull g3">
+      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path d="M30 15 Q18 4 0 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/>
+        <path d="M30 15 Q42 4 60 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="gull g4">
+      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/>
+        <path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Samolot -->
+  <div class="plane-wrap" aria-hidden="true">
+    <div class="plane-trail"></div>
+    <svg class="plane-svg" viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+      <!-- fuselage -->
+      <ellipse cx="42" cy="20" rx="28" ry="6" fill="white" stroke="#cde8f7" stroke-width="1"/>
+      <!-- nose -->
+      <path d="M70 20 Q80 20 76 17 Q73 15 70 20Z" fill="white"/>
+      <!-- tail fin -->
+      <path d="M14 20 Q10 10 18 14 L22 20Z" fill="#bce3f5"/>
+      <!-- wings -->
+      <path d="M38 20 Q50 8 62 10 L60 18 Q50 16 38 20Z" fill="white" stroke="#cde8f7" stroke-width=".8"/>
+      <path d="M38 20 Q50 32 62 30 L60 22 Q50 24 38 20Z" fill="white" stroke="#cde8f7" stroke-width=".8"/>
+      <!-- window row -->
+      <circle cx="52" cy="18" r="2" fill="#dff0fa"/>
+      <circle cx="46" cy="17" r="2" fill="#dff0fa"/>
+      <circle cx="58" cy="18.5" r="1.5" fill="#dff0fa"/>
+    </svg>
+  </div>
+
   <div class="ocean-wrap" aria-hidden="true">
     <div class="wave wave-1">
       <svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -439,6 +542,38 @@
       </svg>
     </div>
   </div>
+
+  <!-- Palmy -->
+  <div class="palms" aria-hidden="true">
+    <!-- lewa palma -->
+    <svg class="palm-left" viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- pień -->
+      <path d="M55 220 Q52 180 58 140 Q54 100 60 60" stroke="#8B6914" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <!-- liście -->
+      <path d="M60 65 Q20 30 -10 45" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q30 15 50 -5" stroke="#34a85a" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q80 20 110 25" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q100 40 115 60" stroke="#34a85a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q45 50 15 65" stroke="#3db865" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q85 55 105 75" stroke="#2d8a4e" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <!-- kokos -->
+      <circle cx="60" cy="70" r="6" fill="#c8843a"/>
+      <circle cx="52" cy="74" r="5" fill="#b8732a"/>
+    </svg>
+    <!-- prawa palma -->
+    <svg class="palm-right" viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
+      <path d="M55 220 Q52 180 58 140 Q54 100 60 60" stroke="#8B6914" stroke-width="10" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q20 30 -10 45" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q30 15 50 -5" stroke="#34a85a" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q80 20 110 25" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q100 40 115 60" stroke="#34a85a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q45 50 15 65" stroke="#3db865" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M60 65 Q85 55 105 75" stroke="#2d8a4e" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle cx="60" cy="70" r="6" fill="#c8843a"/>
+      <circle cx="68" cy="74" r="5" fill="#b8732a"/>
+    </svg>
+  </div>
+
 
   <!-- MAIN -->
   <div class="container" id="mainContent">
@@ -506,6 +641,8 @@
   </div>
 
   <!-- VACATION MODE -->
+  <span class="vac-flamingo left" aria-hidden="true">🦩</span>
+  <span class="vac-flamingo right" aria-hidden="true">🦩</span>
   <div class="container vacation-mode" id="vacationMode">
     <div class="vac-bg"></div>
     <div class="vac-emoji">🌴</div>
