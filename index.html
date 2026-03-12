@@ -1,1665 +1,1415 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#dff0fa"/>
   <title>Urlop Izy 🌴</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Cormorant+Garamond:ital,wght@0,400;1,300;1,400;1,600&family=Josefin+Sans:wght@300;400;600&family=Special+Elite&display=swap" rel="stylesheet" />
-  <style>
-    /* ══════════════════════════════════════════════════
-       CSS VARIABLES — updated by JS per skin
-    ══════════════════════════════════════════════════ */
-    :root {
-      --bg-top:    #ffffff;
-      --bg-mid:    #dff0fa;
-      --bg-bot:    #93d0ef;
-      --card-bg:   rgba(255,255,255,0.85);
-      --card-border: rgba(75,163,199,0.2);
-      --card-shadow: rgba(75,163,199,0.1);
-      --accent:    #4ba3c7;
-      --accent2:   #e8735a;
-      --text:      #1a3a4a;
-      --muted:     #6a9ab0;
-      --stamp-col: #4ba3c7;
-      --num-col:   #4ba3c7;
-      --wave1:     rgba(75,163,199,0.22);
-      --wave2:     rgba(75,163,199,0.32);
-      --wave3:     rgba(41,128,185,0.28);
-      --progress-fill: linear-gradient(90deg,#4ba3c7,#e8735a);
-      --safe-top:    env(safe-area-inset-top,0px);
-      --safe-bottom: env(safe-area-inset-bottom,0px);
-      --safe-left:   env(safe-area-inset-left,0px);
-      --safe-right:  env(safe-area-inset-right,0px);
-    }
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Cormorant+Garamond:ital,wght@0,400;1,300;1,400;1,600&family=Josefin+Sans:wght@300;400;600&family=Special+Elite&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg-top:#ffffff; --bg-mid:#dff0fa; --bg-bot:#93d0ef;
+  --card-bg:rgba(255,255,255,0.85); --card-border:rgba(75,163,199,0.2); --card-shadow:rgba(75,163,199,0.1);
+  --accent:#4ba3c7; --accent2:#e8735a; --text:#1a3a4a; --muted:#6a9ab0;
+  --stamp-col:#4ba3c7; --num-col:#4ba3c7;
+  --wave1:rgba(75,163,199,0.22); --wave2:rgba(75,163,199,0.32); --wave3:rgba(41,128,185,0.28);
+  --progress-bg:rgba(188,227,245,0.5);
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px); --safe-right:env(safe-area-inset-right,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:'Josefin Sans',sans-serif;
+  min-height:100svh; display:flex; flex-direction:column; align-items:center;
+  color:var(--text); position:relative; overflow-x:hidden;
+  padding-top:max(2.5rem,calc(1.2rem + var(--safe-top)));
+  padding-left:max(1.25rem,calc(.75rem + var(--safe-left)));
+  padding-right:max(1.25rem,calc(.75rem + var(--safe-right)));
+  padding-bottom:max(200px,calc(170px + var(--safe-bottom)));
+  transition:color 1.2s;
+}
 
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{-webkit-text-size-adjust:100%;}
+/* ═══ BACKGROUND ═══ */
+#bgMain{position:fixed;inset:0;z-index:0;transition:background 2s;}
+#bgGrain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  transition:opacity 2s;
+}
 
-    body {
-      font-family:'Josefin Sans',sans-serif;
-      min-height:100svh;
-      display:flex; flex-direction:column; align-items:center;
-      color:var(--text);
-      position:relative; overflow-x:hidden;
-      padding-top:max(2rem,calc(1rem + var(--safe-top)));
-      padding-left:max(1.25rem,calc(.75rem + var(--safe-left)));
-      padding-right:max(1.25rem,calc(.75rem + var(--safe-right)));
-      padding-bottom:max(180px,calc(150px + var(--safe-bottom)));
-      transition:color .8s;
-    }
+/* ═══ RAIN ═══ */
+#rainCanvas{
+  position:fixed;inset:0;z-index:2;pointer-events:none;
+  opacity:0;transition:opacity 2s;
+}
 
-    /* ── BACKGROUND LAYERS ── */
-    .bg-layer {
-      position:fixed; inset:0; z-index:0;
-      transition:opacity 2s ease;
-    }
-    #bgMain  { background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-mid) 50%,var(--bg-bot) 100%); }
-    #bgOverlay { opacity:0; background:transparent; }
+/* ═══ STARS ═══ */
+#starsLayer{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 2s;}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle linear infinite;}
+@keyframes twinkle{0%,100%{opacity:.9;transform:scale(1);}50%{opacity:.2;transform:scale(.6);}}
 
-    /* stars overlay for night */
-    .stars-layer {
-      position:fixed; inset:0; z-index:1; pointer-events:none;
-      opacity:0; transition:opacity 2s;
-    }
+/* ═══ CELESTIAL ═══ */
+.celestial{position:fixed;z-index:3;pointer-events:none;transition:opacity 1.8s,top 2s,right 2s;}
+#sunEl{top:max(-55px,calc(-55px + var(--safe-top)));right:6%;width:clamp(140px,38vw,200px);height:clamp(140px,38vw,200px);}
+.sun-core{position:absolute;inset:20%;background:radial-gradient(circle at 38% 38%,#fff0a0,#f5c200);border-radius:50%;animation:sun-pulse 6s ease-in-out infinite;}
+@keyframes sun-pulse{0%,100%{box-shadow:0 0 40px 15px rgba(245,194,0,.22),0 0 90px 40px rgba(245,194,0,.09);}50%{box-shadow:0 0 80px 35px rgba(245,170,0,.4),0 0 140px 70px rgba(245,194,0,.18);}}
+#moonEl{top:max(20px,calc(20px + var(--safe-top)));right:6%;width:clamp(80px,20vw,120px);height:clamp(80px,20vw,120px);opacity:0;}
+.moon-core{position:absolute;inset:0;background:radial-gradient(circle at 35% 35%,#fffde0,#e8d57a);border-radius:50%;animation:moon-glow 4s ease-in-out infinite;}
+@keyframes moon-glow{0%,100%{box-shadow:0 0 30px 10px rgba(232,213,122,.3);}50%{box-shadow:0 0 55px 22px rgba(232,213,122,.5);}}
+#cloudSun{position:fixed;z-index:3;pointer-events:none;opacity:0;transition:opacity 1.8s;top:max(-30px,calc(-30px + var(--safe-top)));right:4%;width:clamp(160px,42vw,240px);height:clamp(160px,42vw,240px);}
 
-    /* ── SUN / MOON ── */
-    .celestial {
-      position:fixed; z-index:2; pointer-events:none;
-      transition:opacity 1.5s, top 2s, right 2s, left 2s;
-    }
-    #sunEl {
-      top:max(-55px,calc(-55px + var(--safe-top))); right:6%;
-      width:clamp(140px,38vw,200px); height:clamp(140px,38vw,200px);
-    }
-    .sun-core {
-      position:absolute; inset:20%;
-      background:radial-gradient(circle at 38% 38%,#fff0a0,#f5c200);
-      border-radius:50%;
-      animation:sun-pulse 6s ease-in-out infinite;
-    }
-    @keyframes sun-pulse {
-      0%,100%{box-shadow:0 0 40px 15px rgba(245,194,0,.22),0 0 90px 40px rgba(245,194,0,.09);}
-      50%    {box-shadow:0 0 80px 35px rgba(245,170,0,.4), 0 0 140px 70px rgba(245,194,0,.18);}
-    }
+/* ═══ CLOUDS ═══ */
+.clouds{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;transition:opacity 1.5s;}
+.cloud{position:absolute;border-radius:50px;transition:background 1.5s;}
+.cloud::before,.cloud::after{content:'';position:absolute;border-radius:50%;transition:background 1.5s;}
+.c1{width:100px;height:30px;top:14%;left:-120px;opacity:.85;animation:cloud-move 34s linear infinite;}
+.c1::before{width:46px;height:46px;top:-23px;left:12px;}
+.c1::after{width:32px;height:32px;top:-16px;left:46px;}
+.c2{width:70px;height:22px;top:26%;left:-90px;opacity:.5;animation:cloud-move 50s linear 9s infinite;}
+.c2::before{width:32px;height:32px;top:-16px;left:9px;}
+.c2::after{width:22px;height:22px;top:-11px;left:35px;}
+.c3{width:130px;height:36px;top:8%;left:-150px;opacity:.6;animation:cloud-move 43s linear 20s infinite;}
+.c3::before{width:58px;height:58px;top:-29px;left:15px;}
+.c3::after{width:42px;height:42px;top:-20px;left:62px;}
+.c4{width:160px;height:45px;top:18%;left:-190px;opacity:0;animation:cloud-move 28s linear 4s infinite;transition:opacity 2s;}
+.c4::before{width:70px;height:70px;top:-35px;left:18px;}
+.c4::after{width:55px;height:55px;top:-25px;left:75px;}
+@keyframes cloud-move{from{transform:translateX(0);}to{transform:translateX(calc(100vw + 200px));}}
 
-    #moonEl {
-      top:max(20px,calc(20px + var(--safe-top))); right:6%;
-      width:clamp(80px,20vw,120px); height:clamp(80px,20vw,120px);
-      opacity:0;
-    }
-    .moon-core {
-      position:absolute; inset:0;
-      background:radial-gradient(circle at 35% 35%,#fffde0,#e8d57a);
-      border-radius:50%;
-      box-shadow:0 0 30px 10px rgba(232,213,122,.3),0 0 70px 30px rgba(232,213,122,.1);
-      animation:moon-glow 4s ease-in-out infinite;
-    }
-    /* crescent mask */
-    .moon-core::after {
-      content:''; position:absolute;
-      width:70%; height:70%; top:5%; right:-10%;
-      background:inherit; border-radius:50%;
-      filter:brightness(0) opacity(0); /* masked away via parent clip */
-    }
-    @keyframes moon-glow {
-      0%,100%{box-shadow:0 0 30px 10px rgba(232,213,122,.3),0 0 70px 30px rgba(232,213,122,.1);}
-      50%    {box-shadow:0 0 50px 20px rgba(232,213,122,.5),0 0 100px 50px rgba(232,213,122,.18);}
-    }
+/* ═══ WAVES ═══ */
+.ocean-wrap{position:fixed;bottom:0;left:0;right:0;height:clamp(120px,22vw,180px);z-index:4;overflow:hidden;transition:opacity 1.5s;}
+.wave{position:absolute;bottom:0;left:-100%;width:300%;height:100%;}
+.wave svg{width:100%;height:100%;}
+.wave-1{animation:wave-move 9s linear infinite;}
+.wave-2{animation:wave-move 14s linear infinite reverse;}
+.wave-3{animation:wave-move 7s linear infinite;}
+@keyframes wave-move{0%{transform:translateX(0);}100%{transform:translateX(33.33%);}}
 
-    /* ── CLOUDS ── */
-    .clouds{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;transition:opacity 1.5s;}
-    .cloud{position:absolute;background:white;border-radius:50px;}
-    .cloud::before,.cloud::after{content:'';position:absolute;background:white;border-radius:50%;}
-    .c1{width:100px;height:30px;top:14%;left:-120px;opacity:.85;animation:cloud-move 34s linear infinite;}
-    .c1::before{width:46px;height:46px;top:-23px;left:12px;}
-    .c1::after {width:32px;height:32px;top:-16px;left:46px;}
-    .c2{width:70px;height:22px;top:26%;left:-90px;opacity:.5;animation:cloud-move 50s linear 9s infinite;}
-    .c2::before{width:32px;height:32px;top:-16px;left:9px;}
-    .c2::after {width:22px;height:22px;top:-11px;left:35px;}
-    .c3{width:130px;height:36px;top:8%;left:-150px;opacity:.6;animation:cloud-move 43s linear 20s infinite;}
-    .c3::before{width:58px;height:58px;top:-29px;left:15px;}
-    .c3::after {width:42px;height:42px;top:-20px;left:62px;}
-    @keyframes cloud-move{from{transform:translateX(0);}to{transform:translateX(calc(100vw + 180px));}}
+/* ═══ PALMS ═══ */
+.palms{position:fixed;bottom:0;left:0;right:0;height:clamp(160px,35vw,280px);z-index:5;pointer-events:none;transition:opacity 1.5s,filter 2s;}
+.palm-left{position:absolute;bottom:clamp(50px,10vw,90px);left:clamp(-10px,0vw,10px);width:clamp(100px,22vw,180px);}
+.palm-right{position:absolute;bottom:clamp(50px,10vw,90px);right:clamp(-10px,0vw,10px);width:clamp(90px,20vw,160px);transform:scaleX(-1);}
 
-    /* ── WAVES ── */
-    .ocean-wrap{
-      position:fixed;bottom:0;left:0;right:0;
-      height:clamp(120px,22vw,180px);
-      z-index:3;overflow:hidden;
-      transition:opacity 1.5s;
-    }
-    .wave{position:absolute;bottom:0;left:-100%;width:300%;height:100%;}
-    .wave svg{width:100%;height:100%;}
-    .wave-1{animation:wave-move 9s linear infinite;}
-    .wave-2{animation:wave-move 14s linear infinite reverse;}
-    .wave-3{animation:wave-move 7s linear infinite;}
-    @keyframes wave-move{0%{transform:translateX(0);}100%{transform:translateX(33.33%);}}
+/* ═══ SEAGULLS ═══ */
+.seagulls{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;transition:opacity 1.5s;}
+.gull{position:absolute;animation:gull-fly linear infinite;opacity:.7;}
+.g1{top:18%;left:-60px;animation-duration:18s;animation-delay:2s;width:36px;}
+.g2{top:28%;left:-40px;animation-duration:24s;animation-delay:7s;width:24px;opacity:.5;}
+.g3{top:13%;left:-50px;animation-duration:20s;animation-delay:14s;width:30px;opacity:.6;}
+.g4{top:35%;left:-40px;animation-duration:22s;animation-delay:0s;width:20px;opacity:.4;}
+@keyframes gull-fly{0%{transform:translateX(0) translateY(0);}25%{transform:translateX(25vw) translateY(-10px);}50%{transform:translateX(50vw) translateY(4px);}75%{transform:translateX(75vw) translateY(-8px);}100%{transform:translateX(calc(100vw + 80px)) translateY(0);}}
 
-    /* ── PALMS ── */
-    .palms{
-      position:fixed;bottom:0;left:0;right:0;
-      height:clamp(160px,35vw,280px);
-      z-index:4;pointer-events:none;transition:opacity 1.5s;
-    }
-    .palm-left {position:absolute;bottom:clamp(50px,10vw,90px);left:clamp(-10px,0vw,10px);width:clamp(100px,22vw,180px);}
-    .palm-right{position:absolute;bottom:clamp(50px,10vw,90px);right:clamp(-10px,0vw,10px);width:clamp(90px,20vw,160px);transform:scaleX(-1);}
+/* ═══ PLANE ═══ */
+.plane-wrap{position:fixed;z-index:6;pointer-events:none;top:42%;left:-120px;animation:plane-cross 28s linear 5s infinite;transition:opacity 1.5s;}
+.plane-svg{width:clamp(40px,8vw,60px);filter:drop-shadow(2px 2px 4px rgba(0,0,0,.1));}
+@keyframes plane-cross{0%{left:-120px;top:42%;}100%{left:calc(100vw + 120px);top:36%;}}
 
-    /* ── SEAGULLS ── */
-    .seagulls{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;transition:opacity 1.5s;}
-    .gull{position:absolute;animation:gull-fly linear infinite;opacity:.7;}
-    .g1{top:18%;left:-60px;animation-duration:18s;animation-delay:2s; width:36px;}
-    .g2{top:28%;left:-40px;animation-duration:24s;animation-delay:7s; width:24px;opacity:.5;}
-    .g3{top:13%;left:-50px;animation-duration:20s;animation-delay:14s;width:30px;opacity:.6;}
-    .g4{top:35%;left:-40px;animation-duration:22s;animation-delay:0s; width:20px;opacity:.4;}
-    @keyframes gull-fly{
-      0%  {transform:translateX(0) translateY(0);}
-      25% {transform:translateX(25vw) translateY(-10px);}
-      50% {transform:translateX(50vw) translateY(4px);}
-      75% {transform:translateX(75vw) translateY(-8px);}
-      100%{transform:translateX(calc(100vw + 80px)) translateY(0);}
-    }
+/* ═══ TROPICAL FLOATERS ═══ */
+.tropical-float{position:fixed;z-index:4;pointer-events:none;font-size:clamp(2rem,7vw,3.5rem);transition:opacity 1.5s;}
+.tf-1{bottom:clamp(90px,18vw,160px);left:clamp(4px,2vw,24px);animation:sway 4s ease-in-out infinite;}
+.tf-2{bottom:clamp(90px,18vw,160px);right:clamp(4px,2vw,24px);animation:sway 5s ease-in-out 1s infinite;}
+.tf-3{bottom:clamp(160px,30vw,240px);left:clamp(24px,6vw,70px);animation:sway 3.5s ease-in-out 2s infinite;opacity:.6;font-size:clamp(1.2rem,4vw,2rem);}
+@keyframes sway{0%,100%{transform:rotate(-6deg) translateY(0);}50%{transform:rotate(6deg) translateY(-10px);}}
 
-    /* ── PLANE ── */
-    .plane-wrap{
-      position:fixed;z-index:5;pointer-events:none;
-      top:42%;left:-120px;
-      animation:plane-cross 28s linear 5s infinite;
-      transition:opacity 1.5s;
-    }
-    .plane-svg{width:clamp(40px,8vw,60px);filter:drop-shadow(2px 2px 4px rgba(0,0,0,.1));}
-    @keyframes plane-cross{0%{left:-120px;top:42%;}100%{left:calc(100vw + 120px);top:36%;}}
+/* butterflies / p3 */
+.butterfly{position:fixed;z-index:4;pointer-events:none;font-size:clamp(1.2rem,4vw,2rem);animation:butterfly-float linear infinite;opacity:.7;}
+.bf1{top:20%;left:-60px;animation-duration:22s;}
+.bf2{top:35%;left:-40px;animation-duration:30s;animation-delay:8s;opacity:.5;}
+.bf3{top:15%;left:-50px;animation-duration:18s;animation-delay:15s;opacity:.6;}
+@keyframes butterfly-float{0%{transform:translateX(0) translateY(0);}20%{transform:translateX(20vw) translateY(-15px);}45%{transform:translateX(45vw) translateY(8px);}70%{transform:translateX(70vw) translateY(-12px);}100%{transform:translateX(calc(100vw + 80px)) translateY(0);}}
 
-    /* ── CONTAINER ── */
-    .container{
-      position:relative;z-index:6;
-      width:100%;max-width:860px;
-      text-align:center;
-    }
+/* ═══ LAYOUT ═══ */
+.page{position:relative;z-index:7;width:100%;max-width:860px;text-align:center;}
+.page.hidden{display:none;}
 
-    /* ── STAMP ── */
-    .stamp{
-      display:inline-block;
-      border:1.5px solid var(--stamp-col);
-      padding:.28rem 1rem;
-      font-size:clamp(.5rem,2.2vw,.62rem);
-      letter-spacing:.2em;text-transform:uppercase;
-      color:var(--stamp-col);
-      margin-bottom:1.4rem;
-      background:rgba(255,255,255,.75);
-      backdrop-filter:blur(6px);
-      opacity:0;animation:fade-in .6s .2s forwards;
-    }
+/* ═══ CARDS ═══ */
+.stamp{
+  display:inline-block;border:1.5px solid var(--stamp-col);
+  padding:.28rem 1rem;font-size:clamp(.5rem,2.2vw,.62rem);
+  letter-spacing:.2em;text-transform:uppercase;color:var(--stamp-col);
+  margin-bottom:1.4rem;background:var(--card-bg);
+  backdrop-filter:blur(6px);cursor:pointer;
+  opacity:0;animation:fade-in .6s .2s forwards;transition:border-color .8s,color .8s,background .8s;
+}
+.main-title{
+  font-family:'Playfair Display',serif;font-weight:900;font-style:italic;
+  font-size:clamp(2.6rem,12vw,6.5rem);line-height:.92;color:var(--text);
+  opacity:0;animation:slide-up .8s .4s cubic-bezier(.16,1,.3,1) forwards;
+  margin-bottom:.4rem;transition:color 1.2s;
+}
+.main-title .accent{color:var(--accent2);display:block;transition:color 1.2s;}
+.subtitle{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(1rem,4vw,1.35rem);color:var(--muted);
+  opacity:0;animation:fade-in .6s .8s forwards;
+  margin-bottom:clamp(1.5rem,5vw,3rem);transition:color 1.2s;
+}
 
-    /* ── TITLES ── */
-    .main-title{
-      font-family:'Playfair Display',serif;
-      font-weight:900;font-style:italic;
-      font-size:clamp(2.6rem,12vw,6.5rem);
-      line-height:.92;color:var(--text);
-      opacity:0;animation:slide-up .8s .4s cubic-bezier(.16,1,.3,1) forwards;
-      margin-bottom:.4rem;transition:color .8s;
-    }
-    .main-title .accent{color:var(--accent2);display:block;}
+/* countdown */
+.countdown-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:clamp(.4rem,2vw,1rem);margin-bottom:clamp(1.2rem,4vw,2.5rem);
+  opacity:0;animation:slide-up .8s 1s cubic-bezier(.16,1,.3,1) forwards;
+}
+.count-block{
+  background:var(--card-bg);border:1.5px solid var(--card-border);
+  padding:clamp(.9rem,3vw,1.6rem) clamp(.5rem,2vw,1rem);
+  box-shadow:0 3px 20px var(--card-shadow);
+  transition:box-shadow .3s,transform .2s,background 1.2s,border-color 1.2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.count-number{
+  font-family:'Playfair Display',serif;font-weight:700;
+  font-size:clamp(2rem,9vw,4.5rem);color:var(--num-col);
+  line-height:1;display:block;transition:color 1.2s;
+}
+.count-number.tick{animation:tick-pulse .22s ease;}
+@keyframes tick-pulse{0%{transform:scale(1);}50%{transform:scale(1.12);color:var(--accent2);}100%{transform:scale(1);}}
+.count-label{font-size:clamp(.48rem,2vw,.58rem);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.35rem;display:block;transition:color 1.2s;}
 
-    .subtitle{
-      font-family:'Cormorant Garamond',serif;font-style:italic;
-      font-size:clamp(1rem,4vw,1.35rem);
-      color:var(--muted);
-      opacity:0;animation:fade-in .6s .8s forwards;
-      margin-bottom:clamp(1.5rem,5vw,3rem);
-      transition:color .8s;
-    }
+/* divider */
+.divider{display:flex;align-items:center;gap:.8rem;margin:clamp(1rem,3vw,2rem) 0;opacity:0;animation:fade-in .6s 1.4s forwards;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(75,163,199,.35),transparent);}
+.divider-icon{font-size:1.1rem;}
 
-    /* ── COUNTDOWN GRID ── */
-    .countdown-grid{
-      display:grid;grid-template-columns:repeat(4,1fr);
-      gap:clamp(.4rem,2vw,1rem);
-      margin-bottom:clamp(1.2rem,4vw,2.5rem);
-      opacity:0;animation:slide-up .8s 1s cubic-bezier(.16,1,.3,1) forwards;
-    }
-    .count-block{
-      background:var(--card-bg);
-      border:1.5px solid var(--card-border);
-      padding:clamp(.9rem,3vw,1.6rem) clamp(.5rem,2vw,1rem);
-      box-shadow:0 3px 20px var(--card-shadow),0 1px 4px rgba(0,0,0,.04);
-      transition:box-shadow .3s,transform .2s,background .8s,border-color .8s;
-      -webkit-tap-highlight-color:transparent;
-    }
-    .count-number{
-      font-family:'Playfair Display',serif;font-weight:700;
-      font-size:clamp(2rem,9vw,4.5rem);
-      color:var(--num-col);line-height:1;display:block;
-      transition:color .8s;
-    }
-    .count-number.tick{animation:tick-pulse .22s ease;}
-    @keyframes tick-pulse{0%{transform:scale(1);}50%{transform:scale(1.12);color:var(--accent2);}100%{transform:scale(1);}}
-    .count-label{
-      font-size:clamp(.48rem,2vw,.58rem);
-      letter-spacing:.18em;text-transform:uppercase;
-      color:var(--muted);margin-top:.35rem;display:block;
-      transition:color .8s;
-    }
+/* stats */
+.stats-label{font-size:clamp(.5rem,2vw,.58rem);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem;opacity:0;animation:fade-in .6s 1.5s forwards;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(.4rem,2vw,1rem);opacity:0;animation:slide-up .8s 1.6s cubic-bezier(.16,1,.3,1) forwards;}
+.stat-card{
+  background:var(--card-bg);border:1.5px solid var(--card-border);
+  padding:clamp(.9rem,3vw,1.4rem) clamp(.6rem,2vw,1rem);
+  box-shadow:0 2px 14px var(--card-shadow);position:relative;overflow:hidden;
+  transition:background 1.2s,border-color 1.2s,transform .2s;
+}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:background 1.2s;}
+.stat-emoji{font-size:clamp(1.1rem,4vw,1.4rem);display:block;margin-bottom:.3rem;}
+.stat-value{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,5.5vw,2rem);font-weight:700;color:var(--accent2);display:block;line-height:1.1;transition:color 1.2s;}
+.stat-desc{font-size:clamp(.48rem,1.8vw,.58rem);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:.35rem;display:block;line-height:1.5;transition:color 1.2s;}
 
-    /* ── DIVIDER ── */
-    .divider{
-      display:flex;align-items:center;gap:.8rem;
-      margin:clamp(1rem,3vw,2rem) 0;
-      opacity:0;animation:fade-in .6s 1.4s forwards;
-    }
-    .divider::before,.divider::after{
-      content:'';flex:1;height:1px;
-      background:linear-gradient(to right,transparent,rgba(75,163,199,.35),transparent);
-    }
-    .divider-icon{font-size:1.1rem;}
+/* progress */
+.progress-wrap{
+  margin-top:clamp(1.2rem,4vw,2.5rem);background:var(--card-bg);
+  border:1.5px solid var(--card-border);
+  padding:clamp(1rem,3.5vw,1.4rem) clamp(1rem,4vw,1.8rem);
+  box-shadow:0 2px 14px var(--card-shadow);
+  opacity:0;animation:fade-in .6s 2s forwards;transition:background 1.2s,border-color 1.2s;
+}
+.progress-header{display:flex;justify-content:space-between;font-size:clamp(.48rem,1.8vw,.58rem);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.65rem;transition:color 1.2s;}
+.progress-track{height:6px;background:var(--progress-bg);border-radius:10px;position:relative;overflow:visible;}
+.progress-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1.2s cubic-bezier(.16,1,.3,1),background 1.2s;position:relative;}
+.progress-fill::after{content:'✈';position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:.85rem;}
 
-    /* ── STATS ── */
-    .stats-title{
-      font-size:clamp(.5rem,2vw,.58rem);
-      letter-spacing:.2em;text-transform:uppercase;
-      color:var(--muted);margin-bottom:.9rem;
-      opacity:0;animation:fade-in .6s 1.5s forwards;
-    }
-    .stats-grid{
-      display:grid;grid-template-columns:repeat(3,1fr);
-      gap:clamp(.4rem,2vw,1rem);
-      opacity:0;animation:slide-up .8s 1.6s cubic-bezier(.16,1,.3,1) forwards;
-    }
-    .stat-card{
-      background:var(--card-bg);
-      border:1.5px solid var(--card-border);
-      padding:clamp(.9rem,3vw,1.4rem) clamp(.6rem,2vw,1rem);
-      box-shadow:0 2px 14px var(--card-shadow);
-      position:relative;overflow:hidden;
-      -webkit-tap-highlight-color:transparent;
-      transition:background .8s,border-color .8s,transform .2s;
-    }
-    .stat-card::after{
-      content:'';position:absolute;
-      bottom:0;left:0;right:0;height:3px;
-      background:var(--progress-fill);
-    }
-    .stat-emoji{font-size:clamp(1.1rem,4vw,1.4rem);display:block;margin-bottom:.3rem;}
-    .stat-value{
-      font-family:'Playfair Display',serif;
-      font-size:clamp(1.2rem,5.5vw,2rem);font-weight:700;
-      color:var(--accent2);display:block;line-height:1.1;
-    }
-    .stat-desc{
-      font-size:clamp(.48rem,1.8vw,.58rem);
-      letter-spacing:.08em;text-transform:uppercase;
-      color:var(--muted);margin-top:.35rem;display:block;line-height:1.5;
-    }
+/* message card */
+.msg-card{
+  margin-top:clamp(.8rem,3vw,1.5rem);background:var(--card-bg);
+  border:1.5px solid var(--card-border);
+  padding:clamp(.8rem,3vw,1.2rem) clamp(1rem,4vw,1.5rem);
+  box-shadow:0 2px 14px var(--card-shadow);
+  opacity:0;animation:fade-in .6s 2.1s forwards;transition:background 1.2s,border-color 1.2s;
+}
+.msg-icon{font-size:1.2rem;margin-bottom:.3rem;display:block;}
+.msg-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(.9rem,3.5vw,1.1rem);color:var(--muted);line-height:1.6;transition:color 1.2s;}
 
-    /* ── PROGRESS ── */
-    .progress-wrap{
-      margin-top:clamp(1.2rem,4vw,2.5rem);
-      background:var(--card-bg);
-      border:1.5px solid var(--card-border);
-      padding:clamp(1rem,3.5vw,1.4rem) clamp(1rem,4vw,1.8rem);
-      box-shadow:0 2px 14px var(--card-shadow);
-      opacity:0;animation:fade-in .6s 2s forwards;
-      transition:background .8s,border-color .8s;
-    }
-    .progress-header{
-      display:flex;justify-content:space-between;
-      font-size:clamp(.48rem,1.8vw,.58rem);
-      letter-spacing:.12em;text-transform:uppercase;
-      color:var(--muted);margin-bottom:.65rem;
-    }
-    .progress-track{
-      height:6px;background:rgba(255,255,255,.3);
-      border-radius:10px;position:relative;overflow:visible;
-    }
-    .progress-fill{
-      height:100%;border-radius:10px;
-      background:var(--progress-fill);
-      transition:width 1.2s cubic-bezier(.16,1,.3,1);
-      position:relative;
-    }
-    .progress-fill::after{
-      content:'✈';position:absolute;
-      right:-10px;top:50%;transform:translateY(-50%);
-      font-size:.85rem;
-    }
+/* footer row */
+.footer-row{margin-top:1.4rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;opacity:0;animation:fade-in .6s 2.3s forwards;}
+.footer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(.85rem,3vw,.95rem);color:var(--muted);transition:color 1.2s;}
+.bmc-btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.4rem 1.1rem;background:var(--card-bg);
+  border:1.5px solid var(--stamp-col);color:var(--stamp-col);
+  font-family:'Josefin Sans',sans-serif;font-size:clamp(.5rem,2vw,.6rem);
+  letter-spacing:.15em;text-transform:uppercase;text-decoration:none;cursor:pointer;
+  transition:background .2s,transform .15s,border-color 1.2s,color 1.2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.bmc-btn:hover{background:var(--accent);color:white;transform:translateY(-2px);}
 
-    /* ── DAILY MESSAGE CARD ── */
-    .message-card{
-      margin-top:clamp(.8rem,3vw,1.5rem);
-      background:var(--card-bg);
-      border:1.5px solid var(--card-border);
-      padding:clamp(.8rem,3vw,1.2rem) clamp(1rem,4vw,1.5rem);
-      box-shadow:0 2px 14px var(--card-shadow);
-      opacity:0;animation:fade-in .6s 2.1s forwards;
-      transition:background .8s,border-color .8s;
-    }
-    .message-text{
-      font-family:'Cormorant Garamond',serif;font-style:italic;
-      font-size:clamp(.9rem,3.5vw,1.1rem);
-      color:var(--muted);line-height:1.6;
-    }
-    .message-icon{font-size:1.2rem;margin-bottom:.3rem;display:block;}
+/* phase pill */
+.phase-pill{
+  position:fixed;top:max(.8rem,calc(.5rem + var(--safe-top)));left:50%;transform:translateX(-50%);
+  z-index:10;font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:.2rem .8rem;border-radius:20px;
+  border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.25);
+  backdrop-filter:blur(10px);color:var(--text);white-space:nowrap;pointer-events:none;
+  transition:color 1.2s,background 1.2s;
+}
 
-    /* ── FOOTER / BMC BUTTON ── */
-    .footer-row{
-      margin-top:1.4rem;
-      display:flex;align-items:center;justify-content:center;
-      gap:1rem;flex-wrap:wrap;
-      opacity:0;animation:fade-in .6s 2.3s forwards;
-    }
-    .footer-text{
-      font-family:'Cormorant Garamond',serif;font-style:italic;
-      font-size:clamp(.85rem,3vw,.95rem);
-      color:var(--muted);
-    }
-    .bmc-btn{
-      display:inline-flex;align-items:center;gap:.5rem;
-      padding:.4rem 1rem;
-      background:var(--card-bg);
-      border:1.5px solid var(--stamp-col);
-      color:var(--stamp-col);
-      font-family:'Josefin Sans',sans-serif;
-      font-size:clamp(.5rem,2vw,.6rem);
-      letter-spacing:.15em;text-transform:uppercase;
-      text-decoration:none;
-      cursor:pointer;
-      transition:background .2s,transform .15s,border-color .8s,color .8s;
-      -webkit-tap-highlight-color:transparent;
-    }
-    .bmc-btn:hover{background:var(--accent);color:white;transform:translateY(-2px);}
-    .bmc-btn .bmc-icon{font-size:1rem;}
+/* sound btn */
+.sound-btn{
+  position:fixed;bottom:max(1.5rem,calc(1rem + var(--safe-bottom)));
+  right:max(1rem,calc(.7rem + var(--safe-right)));
+  z-index:10;width:2.4rem;height:2.4rem;
+  background:var(--card-bg);backdrop-filter:blur(8px);
+  border:1.5px solid var(--card-border);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;cursor:pointer;transition:transform .2s,background 1.2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.sound-btn:hover{transform:scale(1.1);}
 
-    /* ══════════════════════════════════════════
-       PHASE 2 — VACATION ON HOLIDAY
-    ══════════════════════════════════════════ */
-    .vacation-mode{
-      display:none;flex-direction:column;align-items:center;
-      padding-top:max(2rem,calc(1rem + var(--safe-top)));
-      padding-bottom:max(180px,calc(150px + var(--safe-bottom)));
-      width:100%;max-width:860px;text-align:center;
-      position:relative;z-index:6;gap:0;
-    }
-    .vacation-mode.active{display:flex;}
+/* ═══ PHASE 3 CRISIS ═══ */
+.alert-stripe{
+  width:100%;padding:.35rem 1rem;
+  background:repeating-linear-gradient(-45deg,#cc0000 0,#cc0000 10px,#ff0000 10px,#ff0000 20px);
+  font-family:'Special Elite',monospace;font-size:clamp(.5rem,2vw,.65rem);
+  letter-spacing:.18em;color:white;text-shadow:0 1px 2px rgba(0,0,0,.5);
+  margin-bottom:1.2rem;animation:stripe-blink 1s infinite;
+  opacity:0;animation:fade-in .3s .1s forwards,stripe-blink 1s .4s infinite;
+}
+@keyframes stripe-blink{0%,100%{opacity:1;}50%{opacity:.7;}}
+.crisis-stamp{
+  display:inline-block;border:2px solid #cc0000;padding:.3rem 1.2rem;
+  font-family:'Special Elite',monospace;font-size:clamp(.5rem,2.2vw,.65rem);
+  letter-spacing:.2em;text-transform:uppercase;color:#cc0000;
+  background:rgba(255,255,255,.9);margin-bottom:1rem;
+  opacity:0;animation:fade-in .4s .3s forwards;transform:rotate(-1.5deg);cursor:pointer;
+}
+.crisis-title{
+  font-family:'Special Elite',monospace;font-size:clamp(1.8rem,9vw,4.5rem);
+  color:#cc0000;line-height:1;margin-bottom:.5rem;
+  opacity:0;animation:slide-up .6s .5s cubic-bezier(.16,1,.3,1) forwards;
+  text-shadow:2px 2px 0 rgba(0,0,0,.1);
+}
+.crisis-sub{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:clamp(1rem,4vw,1.3rem);color:#7a1a1a;
+  margin-bottom:clamp(1.2rem,4vw,2rem);opacity:0;animation:fade-in .5s .8s forwards;
+}
+.crisis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(.4rem,2vw,1rem);width:100%;opacity:0;animation:slide-up .7s 1s cubic-bezier(.16,1,.3,1) forwards;}
+.crisis-card{background:rgba(255,255,255,.9);border:2px solid rgba(204,0,0,.3);padding:clamp(.9rem,3vw,1.4rem) clamp(.6rem,2vw,1rem);box-shadow:0 2px 14px rgba(204,0,0,.1);position:relative;overflow:hidden;}
+.crisis-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#cc0000,#ff4444);}
+.crisis-card .stat-value{color:#cc0000;}
+.classified-doc{
+  margin-top:clamp(1rem,3.5vw,2rem);width:100%;background:#fffef0;
+  border:2px solid #c8b060;padding:clamp(1rem,3.5vw,1.6rem) clamp(1rem,4vw,1.8rem);
+  box-shadow:0 4px 20px rgba(0,0,0,.15);opacity:0;animation:fade-in .6s 1.5s forwards;
+  position:relative;
+}
+.classified-doc::before{content:'ŚCIŚLE TAJNE';position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-family:'Special Elite',monospace;font-size:.55rem;letter-spacing:.25em;color:#cc0000;background:#fffef0;border:1px solid #cc0000;padding:.1rem .6rem;}
+.classified-doc::after{content:'';position:absolute;inset:8px;border:1px solid rgba(200,176,96,.3);pointer-events:none;}
+.classified-text{font-family:'Special Elite',monospace;font-size:clamp(.75rem,2.8vw,.9rem);color:#3a2a00;line-height:1.8;text-align:left;}
+.classified-text p+p{margin-top:.6rem;}
+.redacted{background:#1a1a1a;color:transparent;border-radius:2px;padding:0 .15rem;user-select:none;cursor:default;display:inline-block;transition:background .2s;}
+.redacted:hover{background:#cc0000;}
 
-    .vac-greeting{
-      font-size:clamp(.5rem,2.2vw,.62rem);
-      letter-spacing:.22em;text-transform:uppercase;
-      color:var(--stamp-col);
-      background:var(--card-bg);
-      border:1.5px solid var(--card-border);
-      padding:.28rem 1.1rem;
-      backdrop-filter:blur(6px);
-      margin-bottom:1.2rem;
-      opacity:0;animation:fade-in .6s .2s forwards;
-    }
-    .vac-title{
-      font-family:'Playfair Display',serif;font-weight:900;font-style:italic;
-      font-size:clamp(2.4rem,11vw,5.5rem);
-      color:var(--text);line-height:.9;
-      margin-bottom:.5rem;
-      opacity:0;animation:slide-up .8s .4s cubic-bezier(.16,1,.3,1) forwards;
-      transition:color .8s;
-    }
-    .vac-title .accent{color:var(--accent2);display:block;}
-    .vac-subtitle{
-      font-family:'Cormorant Garamond',serif;font-style:italic;
-      font-size:clamp(1rem,4vw,1.3rem);color:var(--muted);
-      margin-bottom:clamp(1.5rem,5vw,2.5rem);
-      opacity:0;animation:fade-in .6s .8s forwards;transition:color .8s;
-    }
+/* ═══ DEGRADATION OVERLAY ═══ */
+#degradeOverlay{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity 3s;background:linear-gradient(180deg,rgba(80,80,90,.0) 0%,rgba(80,80,90,.0) 100%);}
 
-    .return-grid{
-      display:grid;grid-template-columns:repeat(4,1fr);
-      gap:clamp(.4rem,2vw,1rem);
-      margin-bottom:clamp(1rem,3vw,2rem);width:100%;
-      opacity:0;animation:slide-up .8s 1s cubic-bezier(.16,1,.3,1) forwards;
-    }
-    .return-block{
-      background:var(--card-bg);
-      border:1.5px solid var(--card-border);
-      padding:clamp(.9rem,3vw,1.6rem) clamp(.5rem,2vw,1rem);
-      box-shadow:0 3px 20px var(--card-shadow);
-      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-      transition:background .8s,border-color .8s;
-    }
-    .return-number{
-      font-family:'Playfair Display',serif;font-weight:700;
-      font-size:clamp(2rem,9vw,4.5rem);
-      color:var(--num-col);line-height:1;display:block;
-      transition:color .8s;
-    }
-    .return-number.tick{animation:tick-pulse .22s ease;}
-    .return-label{font-size:clamp(.48rem,2vw,.58rem);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.35rem;display:block;transition:color .8s;}
+/* ═══ CONFETTI ═══ */
+.confetti-piece{position:fixed;animation:confetti-fall linear forwards;z-index:20;}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
 
-    .vac-divider{display:flex;align-items:center;gap:.8rem;margin:clamp(.8rem,2.5vw,1.5rem) 0;width:100%;opacity:0;animation:fade-in .6s 1.3s forwards;}
-    .vac-divider::before,.vac-divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(200,120,0,.35),transparent);}
+/* ═══ EASTER EGG ═══ */
+.egg-overlay{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;}
+.egg-overlay.visible{opacity:1;pointer-events:all;}
+.egg-box{background:var(--card-bg);border:2px solid var(--accent);padding:2rem 2.5rem;max-width:400px;width:90%;text-align:center;position:relative;}
+.egg-box h2{font-family:'Playfair Display',serif;font-weight:900;font-style:italic;font-size:clamp(1.4rem,6vw,2.2rem);color:var(--accent2);margin-bottom:.6rem;}
+.egg-box p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--muted);line-height:1.6;}
+.egg-close{position:absolute;top:.5rem;right:.8rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);}
+.egg-emoji{font-size:2.5rem;display:block;margin-bottom:.5rem;animation:float-egg 2s ease-in-out infinite;}
+@keyframes float-egg{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
 
-    .vac-stats-grid{
-      display:grid;grid-template-columns:repeat(3,1fr);
-      gap:clamp(.4rem,2vw,1rem);width:100%;
-      opacity:0;animation:slide-up .8s 1.5s cubic-bezier(.16,1,.3,1) forwards;
-    }
+/* ═══ DAY FLASH ═══ */
+.day-flash{position:fixed;inset:0;z-index:15;background:white;opacity:0;pointer-events:none;}
+.day-flash.flash{animation:flash-anim .8s ease forwards;}
+@keyframes flash-anim{0%{opacity:.7;}100%{opacity:0;}}
 
-    .vac-progress-wrap{
-      margin-top:clamp(1rem,3.5vw,2rem);width:100%;
-      background:var(--card-bg);border:1.5px solid var(--card-border);
-      padding:clamp(1rem,3.5vw,1.4rem) clamp(1rem,4vw,1.8rem);
-      box-shadow:0 2px 14px var(--card-shadow);
-      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-      opacity:0;animation:fade-in .6s 2s forwards;transition:background .8s;
-    }
-    .vac-progress-fill{
-      height:100%;border-radius:10px;
-      background:var(--progress-fill);
-      transition:width 1.2s cubic-bezier(.16,1,.3,1);position:relative;
-    }
-    .vac-progress-fill::after{content:'🌴';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:.9rem;}
+/* ═══ ANIMS ═══ */
+@keyframes fade-in{from{opacity:0;}to{opacity:1;}}
+@keyframes slide-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 
-    /* ══════════════════════════════════════════
-       PHASE 3 — CRISIS / RETURN MODE
-    ══════════════════════════════════════════ */
-    .return-mode{
-      display:none;flex-direction:column;align-items:center;
-      padding-top:max(2rem,calc(1rem + var(--safe-top)));
-      padding-bottom:max(180px,calc(150px + var(--safe-bottom)));
-      width:100%;max-width:860px;text-align:center;
-      position:relative;z-index:6;gap:0;
-    }
-    .return-mode.active{display:flex;}
-
-    /* red alert stripe at top */
-    .alert-stripe{
-      width:100%;padding:.35rem 1rem;
-      background:repeating-linear-gradient(
-        -45deg,
-        #cc0000 0px, #cc0000 10px,
-        #ff0000 10px, #ff0000 20px
-      );
-      font-family:'Special Elite',monospace;
-      font-size:clamp(.5rem,2vw,.65rem);
-      letter-spacing:.18em;color:white;
-      text-shadow:0 1px 2px rgba(0,0,0,.5);
-      margin-bottom:1.2rem;
-      opacity:0;animation:fade-in .3s .1s forwards;
-      animation-name:stripe-blink;
-      animation-duration:1s;
-      animation-iteration-count:infinite;
-    }
-    @keyframes stripe-blink{0%,100%{opacity:1;}50%{opacity:.7;}}
-
-    .crisis-stamp{
-      display:inline-block;
-      border:2px solid #cc0000;
-      padding:.3rem 1.2rem;
-      font-family:'Special Elite',monospace;
-      font-size:clamp(.5rem,2.2vw,.65rem);
-      letter-spacing:.2em;text-transform:uppercase;
-      color:#cc0000;background:rgba(255,255,255,.9);
-      margin-bottom:1rem;
-      opacity:0;animation:fade-in .4s .3s forwards;
-      transform:rotate(-1.5deg);display:inline-block;
-    }
-
-    .crisis-title{
-      font-family:'Special Elite',monospace;
-      font-size:clamp(1.8rem,9vw,4.5rem);
-      color:#cc0000;line-height:1;
-      margin-bottom:.5rem;
-      opacity:0;animation:slide-up .6s .5s cubic-bezier(.16,1,.3,1) forwards;
-      text-shadow:2px 2px 0 rgba(0,0,0,.1);
-    }
-    .crisis-subtitle{
-      font-family:'Cormorant Garamond',serif;font-style:italic;
-      font-size:clamp(1rem,4vw,1.3rem);color:#7a1a1a;
-      margin-bottom:clamp(1.2rem,4vw,2rem);
-      opacity:0;animation:fade-in .5s .8s forwards;
-    }
-
-    .crisis-grid{
-      display:grid;grid-template-columns:repeat(3,1fr);
-      gap:clamp(.4rem,2vw,1rem);width:100%;
-      opacity:0;animation:slide-up .7s 1s cubic-bezier(.16,1,.3,1) forwards;
-    }
-    .crisis-card{
-      background:rgba(255,255,255,.9);
-      border:2px solid rgba(204,0,0,.3);
-      padding:clamp(.9rem,3vw,1.4rem) clamp(.6rem,2vw,1rem);
-      box-shadow:0 2px 14px rgba(204,0,0,.1);
-      position:relative;overflow:hidden;
-    }
-    .crisis-card::after{
-      content:'';position:absolute;
-      bottom:0;left:0;right:0;height:3px;
-      background:linear-gradient(90deg,#cc0000,#ff4444);
-    }
-    .crisis-card .stat-value{color:#cc0000;}
-
-    /* classified document */
-    .classified-doc{
-      margin-top:clamp(1rem,3.5vw,2rem);width:100%;
-      background:#fffef0;
-      border:2px solid #c8b060;
-      padding:clamp(1rem,3.5vw,1.6rem) clamp(1rem,4vw,1.8rem);
-      box-shadow:0 4px 20px rgba(0,0,0,.15),inset 0 0 40px rgba(200,176,96,.08);
-      opacity:0;animation:fade-in .6s 1.5s forwards;
-      position:relative;
-    }
-    .classified-doc::before{
-      content:'ŚCIŚLE TAJNE';
-      position:absolute;top:-1px;left:50%;transform:translateX(-50%);
-      font-family:'Special Elite',monospace;
-      font-size:.55rem;letter-spacing:.25em;
-      color:#cc0000;background:#fffef0;
-      border:1px solid #cc0000;
-      padding:.1rem .6rem;
-    }
-    .classified-doc::after{
-      content:'';position:absolute;inset:8px;
-      border:1px solid rgba(200,176,96,.3);pointer-events:none;
-    }
-    .classified-text{
-      font-family:'Special Elite',monospace;
-      font-size:clamp(.75rem,2.8vw,.9rem);
-      color:#3a2a00;line-height:1.8;
-      text-align:left;
-    }
-    .classified-text p+p{margin-top:.6rem;}
-    .redacted{
-      background:#1a1a1a;color:transparent;
-      border-radius:2px;padding:0 .15rem;
-      user-select:none;cursor:default;
-      display:inline-block;
-    }
-    .redacted:hover{background:#cc0000;}
-
-    .crisis-footer{
-      margin-top:1.2rem;
-      font-family:'Special Elite',monospace;
-      font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;
-      color:#7a1a1a;
-      opacity:0;animation:fade-in .5s 2.2s forwards;
-    }
-
-    /* ══════════════════════════════════════════
-       NIGHT — STARS
-    ══════════════════════════════════════════ */
-    .star{position:absolute;border-radius:50%;background:white;animation:twinkle linear infinite;}
-    @keyframes twinkle{0%,100%{opacity:.9;transform:scale(1);}50%{opacity:.2;transform:scale(.6);}}
-
-    /* ── TROPICAL FLOATERS ── */
-    .tropical-float{position:fixed;z-index:3;pointer-events:none;font-size:clamp(2rem,7vw,3.5rem);}
-    .tf-1{bottom:clamp(90px,18vw,160px);left:clamp(4px,2vw,24px);animation:sway 4s ease-in-out infinite;}
-    .tf-2{bottom:clamp(90px,18vw,160px);right:clamp(4px,2vw,24px);animation:sway 5s ease-in-out 1s infinite;}
-    .tf-3{bottom:clamp(160px,30vw,240px);left:clamp(24px,6vw,70px);animation:sway 3.5s ease-in-out 2s infinite;opacity:.6;font-size:clamp(1.2rem,4vw,2rem);}
-    @keyframes sway{0%,100%{transform:rotate(-6deg) translateY(0);}50%{transform:rotate(6deg) translateY(-10px);}}
-
-    /* butterflies */
-    .butterfly{position:fixed;z-index:3;pointer-events:none;font-size:clamp(1.2rem,4vw,2rem);animation:butterfly-float linear infinite;opacity:.7;}
-    .bf1{top:20%;left:-60px;animation-duration:22s;}
-    .bf2{top:35%;left:-40px;animation-duration:30s;animation-delay:8s;opacity:.5;}
-    .bf3{top:15%;left:-50px;animation-duration:18s;animation-delay:15s;opacity:.6;}
-    @keyframes butterfly-float{
-      0%  {transform:translateX(0) translateY(0);}
-      20% {transform:translateX(20vw) translateY(-15px);}
-      45% {transform:translateX(45vw) translateY(8px);}
-      70% {transform:translateX(70vw) translateY(-12px);}
-      100%{transform:translateX(calc(100vw + 80px)) translateY(0);}
-    }
-
-    /* ── PHASE PILL ── */
-    .phase-pill{
-      position:fixed;top:max(1rem,calc(.6rem + var(--safe-top)));left:50%;transform:translateX(-50%);
-      z-index:10;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;
-      padding:.22rem .8rem;border-radius:20px;
-      border:1px solid rgba(255,255,255,.5);
-      background:rgba(255,255,255,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-      color:var(--text);white-space:nowrap;pointer-events:none;transition:color .8s;
-    }
-
-    /* ── SOUND TOGGLE ── */
-    .sound-btn{
-      position:fixed;bottom:max(1.5rem,calc(1rem + var(--safe-bottom)));right:max(1rem,calc(.7rem + var(--safe-right)));
-      z-index:10;
-      width:2.4rem;height:2.4rem;
-      background:var(--card-bg);backdrop-filter:blur(8px);
-      border:1.5px solid var(--card-border);border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      font-size:1rem;cursor:pointer;
-      transition:transform .2s,background .8s;
-      -webkit-tap-highlight-color:transparent;
-    }
-    .sound-btn:hover{transform:scale(1.1);}
-
-    /* ── EASTER EGG OVERLAY ── */
-    .egg-overlay{
-      position:fixed;inset:0;z-index:20;
-      background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
-      display:flex;align-items:center;justify-content:center;
-      opacity:0;pointer-events:none;transition:opacity .4s;
-    }
-    .egg-overlay.visible{opacity:1;pointer-events:all;}
-    .egg-box{
-      background:var(--card-bg);
-      border:2px solid var(--accent);
-      padding:2rem 2.5rem;max-width:400px;width:90%;
-      text-align:center;position:relative;
-    }
-    .egg-box h2{
-      font-family:'Playfair Display',serif;font-weight:900;font-style:italic;
-      font-size:clamp(1.4rem,6vw,2.2rem);color:var(--accent2);margin-bottom:.6rem;
-    }
-    .egg-box p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--muted);line-height:1.6;}
-    .egg-close{
-      position:absolute;top:.5rem;right:.8rem;
-      background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);
-    }
-    .egg-emoji{font-size:2.5rem;display:block;margin-bottom:.5rem;animation:float-egg 2s ease-in-out infinite;}
-    @keyframes float-egg{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
-
-    /* ── DAY TRANSITION FLASH ── */
-    .day-flash{
-      position:fixed;inset:0;z-index:15;
-      background:white;opacity:0;pointer-events:none;
-      transition:opacity .5s;
-    }
-    .day-flash.flash{animation:flash-anim .8s ease forwards;}
-    @keyframes flash-anim{0%{opacity:.8;}100%{opacity:0;}}
-
-    /* ── ANIMS ── */
-    @keyframes fade-in {from{opacity:0;}to{opacity:1;}}
-    @keyframes slide-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
-
-    /* ── MOBILE ── */
-    @media(max-width:480px){
-      .stats-grid,.vac-stats-grid,.crisis-grid{grid-template-columns:1fr;gap:.6rem;}
-      .stat-card,.crisis-card{
-        display:grid;grid-template-columns:2.5rem 1fr;align-items:center;
-        padding:.9rem 1rem;text-align:left;gap:.1rem .8rem;
-      }
-      .stat-emoji,.crisis-card .stat-emoji{font-size:1.5rem;margin-bottom:0;grid-row:1/3;}
-      .stat-value,.crisis-card .stat-value{font-size:clamp(1.4rem,7vw,1.8rem);grid-column:2;}
-      .stat-desc,.crisis-card .stat-desc{grid-column:2;font-size:.52rem;margin-top:0;}
-    }
-
-    @media(hover:hover){
-      .count-block:hover{box-shadow:0 8px 32px var(--card-shadow);transform:translateY(-3px);}
-      .stat-card:hover{transform:translateY(-2px);}
-    }
-  </style>
+/* ═══ MOBILE ═══ */
+@media(max-width:480px){
+  .stats-grid,.crisis-grid{grid-template-columns:1fr;gap:.6rem;}
+  .stat-card,.crisis-card{display:grid;grid-template-columns:2.5rem 1fr;align-items:center;padding:.9rem 1rem;text-align:left;gap:.1rem .8rem;}
+  .stat-emoji,.crisis-card .stat-emoji{font-size:1.5rem;margin-bottom:0;grid-row:1/3;}
+  .stat-value,.crisis-card .stat-value{font-size:clamp(1.4rem,7vw,1.8rem);grid-column:2;}
+  .stat-desc,.crisis-card .stat-desc{grid-column:2;font-size:.52rem;margin-top:0;}
+}
+@media(hover:hover){
+  .count-block:hover{box-shadow:0 8px 32px var(--card-shadow);transform:translateY(-3px);}
+  .stat-card:hover{transform:translateY(-2px);}
+}
+</style>
 </head>
 <body>
 
-  <!-- BG layers -->
-  <div class="bg-layer" id="bgMain"></div>
-  <div class="bg-layer" id="bgOverlay"></div>
-  <div class="stars-layer" id="starsLayer"></div>
+<!-- BG -->
+<div id="bgMain"></div>
+<div id="bgGrain"></div>
+<div id="degradeOverlay"></div>
+<canvas id="rainCanvas"></canvas>
+<div id="starsLayer"></div>
 
-  <!-- Celestial -->
-  <div class="celestial" id="sunEl" aria-hidden="true"><div class="sun-core"></div></div>
-  <div class="celestial" id="moonEl" aria-hidden="true"><div class="moon-core"></div></div>
+<!-- Celestial -->
+<div class="celestial" id="sunEl"><div class="sun-core"></div></div>
+<div class="celestial" id="moonEl"><div class="moon-core"></div></div>
+<!-- cloudy sun for degraded phases -->
+<svg id="cloudSun" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="80" r="45" fill="#d4c060" opacity=".6"/>
+  <ellipse cx="70" cy="130" rx="55" ry="28" fill="#9a9aaa" opacity=".9"/>
+  <ellipse cx="120" cy="125" rx="50" ry="25" fill="#aaaabc" opacity=".85"/>
+  <ellipse cx="95" cy="140" rx="65" ry="30" fill="#c0c0cc" opacity=".8"/>
+</svg>
 
-  <!-- Clouds -->
-  <div class="clouds" id="clouds" aria-hidden="true">
-    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+<!-- Clouds -->
+<div class="clouds" id="clouds">
+  <div class="cloud c1"></div><div class="cloud c2"></div>
+  <div class="cloud c3"></div><div class="cloud c4"></div>
+</div>
+
+<!-- Seagulls -->
+<div class="seagulls" id="seagulls">
+  <div class="gull g1"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+  <div class="gull g2"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+  <div class="gull g3"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/></svg></div>
+  <div class="gull g4"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/></svg></div>
+</div>
+
+<!-- Plane -->
+<div class="plane-wrap" id="planeWrap">
+  <svg class="plane-svg" viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="42" cy="20" rx="28" ry="6" fill="white" stroke="#cde8f7" stroke-width="1"/>
+    <path d="M70 20 Q80 20 76 17 Q73 15 70 20Z" fill="white"/>
+    <path d="M14 20 Q10 10 18 14 L22 20Z" fill="#bce3f5"/>
+    <path d="M38 20 Q50 8 62 10 L60 18 Q50 16 38 20Z" fill="white" stroke="#cde8f7" stroke-width=".8"/>
+    <path d="M38 20 Q50 32 62 30 L60 22 Q50 24 38 20Z" fill="white" stroke="#cde8f7" stroke-width=".8"/>
+    <circle cx="52" cy="18" r="2" fill="#dff0fa"/><circle cx="46" cy="17" r="2" fill="#dff0fa"/><circle cx="58" cy="18.5" r="1.5" fill="#dff0fa"/>
+  </svg>
+</div>
+
+<!-- Waves -->
+<div class="ocean-wrap" id="oceanWrap">
+  <div class="wave wave-1"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z" fill="var(--wave1)"/></svg></div>
+  <div class="wave wave-2"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,80 C200,20 400,100 600,70 C800,40 1000,90 1200,70 L1200,120 L0,120 Z" fill="var(--wave2)"/></svg></div>
+  <div class="wave wave-3"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,90 C300,50 600,110 900,80 C1050,65 1150,95 1200,90 L1200,120 L0,120 Z" fill="var(--wave3)"/></svg></div>
+</div>
+
+<!-- Palms -->
+<div class="palms" id="palms">
+  <svg class="palm-left" viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
+    <path d="M55 220 Q52 180 58 140 Q54 100 60 60" stroke="#8B6914" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q20 30 -10 45" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q30 15 50 -5" stroke="#34a85a" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q80 20 110 25" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q100 40 115 60" stroke="#34a85a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q45 50 15 65" stroke="#3db865" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="60" cy="70" r="6" fill="#c8843a"/><circle cx="52" cy="74" r="5" fill="#b8732a"/>
+  </svg>
+  <svg class="palm-right" viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
+    <path d="M55 220 Q52 180 58 140 Q54 100 60 60" stroke="#8B6914" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q20 30 -10 45" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q30 15 50 -5" stroke="#34a85a" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q80 20 110 25" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q100 40 115 60" stroke="#34a85a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+    <path d="M60 65 Q45 50 15 65" stroke="#3db865" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <circle cx="60" cy="70" r="6" fill="#c8843a"/><circle cx="68" cy="74" r="5" fill="#b8732a"/>
+  </svg>
+</div>
+
+<!-- Tropical floaters -->
+<div class="tropical-float tf-1" id="tf1" style="opacity:0;pointer-events:none">🌺</div>
+<div class="tropical-float tf-2" id="tf2" style="opacity:0;pointer-events:none">🍹</div>
+<div class="tropical-float tf-3" id="tf3" style="opacity:0;pointer-events:none">🐚</div>
+<div class="butterfly bf1" id="bf1" style="opacity:0;pointer-events:none">🦋</div>
+<div class="butterfly bf2" id="bf2" style="opacity:0;pointer-events:none">🦋</div>
+<div class="butterfly bf3" id="bf3" style="opacity:0;pointer-events:none">🌸</div>
+
+<!-- Phase pill -->
+<div class="phase-pill" id="phasePill"></div>
+<!-- Sound btn -->
+<button class="sound-btn" id="soundBtn" title="Dźwięki">🔇</button>
+<!-- Day flash -->
+<div class="day-flash" id="dayFlash"></div>
+<!-- Easter egg -->
+<div class="egg-overlay" id="eggOverlay">
+  <div class="egg-box">
+    <button class="egg-close" id="eggClose">✕</button>
+    <span class="egg-emoji" id="eggEmoji">🌴</span>
+    <h2 id="eggTitle">Sekret odkryty!</h2>
+    <p id="eggText">Kliknąłeś gdzie nie trzeba.</p>
   </div>
+</div>
 
-  <!-- Seagulls -->
-  <div class="seagulls" id="seagulls" aria-hidden="true">
-    <div class="gull g1"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-    <div class="gull g2"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/></svg></div>
-    <div class="gull g3"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/></svg></div>
-    <div class="gull g4"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/></svg></div>
+<!-- ══════════════════════════════════════════════════
+     PHASE 1 — COUNTDOWN
+══════════════════════════════════════════════════ -->
+<div class="page" id="p1">
+  <p class="stamp" id="p1Stamp">🌴 Urlop · od 13.03.2026 · Nareszcie 🌴</p>
+  <h1 class="main-title"><span id="p1TitleTop">Izunia,</span><br/><span class="accent" id="p1TitleBot">na urlop!</span></h1>
+  <p class="subtitle" id="p1Sub">…bo my już nie możemy 🙏😅</p>
+  <div class="countdown-grid">
+    <div class="count-block"><span class="count-number" id="d1">--</span><span class="count-label">dni</span></div>
+    <div class="count-block"><span class="count-number" id="h1">--</span><span class="count-label">godzin</span></div>
+    <div class="count-block"><span class="count-number" id="m1">--</span><span class="count-label">minut</span></div>
+    <div class="count-block"><span class="count-number" id="s1">--</span><span class="count-label">sekund</span></div>
   </div>
-
-  <!-- Plane -->
-  <div class="plane-wrap" id="planeWrap" aria-hidden="true">
-    <svg class="plane-svg" viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="42" cy="20" rx="28" ry="6" fill="white" stroke="#cde8f7" stroke-width="1"/>
-      <path d="M70 20 Q80 20 76 17 Q73 15 70 20Z" fill="white"/>
-      <path d="M14 20 Q10 10 18 14 L22 20Z" fill="#bce3f5"/>
-      <path d="M38 20 Q50 8 62 10 L60 18 Q50 16 38 20Z" fill="white" stroke="#cde8f7" stroke-width=".8"/>
-      <path d="M38 20 Q50 32 62 30 L60 22 Q50 24 38 20Z" fill="white" stroke="#cde8f7" stroke-width=".8"/>
-      <circle cx="52" cy="18" r="2" fill="#dff0fa"/><circle cx="46" cy="17" r="2" fill="#dff0fa"/><circle cx="58" cy="18.5" r="1.5" fill="#dff0fa"/>
-    </svg>
+  <div class="divider"><span class="divider-icon">🌊</span></div>
+  <p class="stats-label">a to oznacza, że…</p>
+  <div class="stats-grid">
+    <div class="stat-card"><span class="stat-emoji">☕</span><span class="stat-value" id="coffees">--</span><span class="stat-desc">filiżanek kawy<br/>do wypicia w pracy</span></div>
+    <div class="stat-card"><span class="stat-emoji">😴</span><span class="stat-value" id="sleeps">--</span><span class="stat-desc">nocy do przespania<br/>zanim wolność!</span></div>
+    <div class="stat-card"><span class="stat-emoji">📅</span><span class="stat-value" id="workdays">--</span><span class="stat-desc">dni roboczych<br/>do urlopu</span></div>
   </div>
-
-  <!-- Waves -->
-  <div class="ocean-wrap" id="oceanWrap" aria-hidden="true">
-    <div class="wave wave-1"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z" fill="var(--wave1)"/></svg></div>
-    <div class="wave wave-2"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,80 C200,20 400,100 600,70 C800,40 1000,90 1200,70 L1200,120 L0,120 Z" fill="var(--wave2)"/></svg></div>
-    <div class="wave wave-3"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,90 C300,50 600,110 900,80 C1050,65 1150,95 1200,90 L1200,120 L0,120 Z" fill="var(--wave3)"/></svg></div>
+  <div class="progress-wrap">
+    <div class="progress-header"><span>Dzień dzisiejszy</span><span id="p1pct">--% drogi za nami</span></div>
+    <div class="progress-track"><div class="progress-fill" id="p1fill" style="width:0%"></div></div>
+    <div class="progress-header" style="justify-content:flex-end;margin-top:.5rem;margin-bottom:0"><span>URLOP! 🏖️</span></div>
   </div>
-
-  <!-- Palms -->
-  <div class="palms" id="palms" aria-hidden="true">
-    <svg class="palm-left" viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
-      <path d="M55 220 Q52 180 58 140 Q54 100 60 60" stroke="#8B6914" stroke-width="10" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q20 30 -10 45" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q30 15 50 -5" stroke="#34a85a" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q80 20 110 25" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q100 40 115 60" stroke="#34a85a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q45 50 15 65" stroke="#3db865" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q85 55 105 75" stroke="#2d8a4e" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <circle cx="60" cy="70" r="6" fill="#c8843a"/><circle cx="52" cy="74" r="5" fill="#b8732a"/>
-    </svg>
-    <svg class="palm-right" viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
-      <path d="M55 220 Q52 180 58 140 Q54 100 60 60" stroke="#8B6914" stroke-width="10" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q20 30 -10 45" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q30 15 50 -5" stroke="#34a85a" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q80 20 110 25" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q100 40 115 60" stroke="#34a85a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q45 50 15 65" stroke="#3db865" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path d="M60 65 Q85 55 105 75" stroke="#2d8a4e" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <circle cx="60" cy="70" r="6" fill="#c8843a"/><circle cx="68" cy="74" r="5" fill="#b8732a"/>
-    </svg>
+  <div class="msg-card"><span class="msg-icon" id="p1mi">☀️</span><p class="msg-text" id="p1msg">ładowanie…</p></div>
+  <div class="footer-row">
+    <p class="footer-text" id="p1footer">Cel: ładowanie…</p>
+    <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn">☕ wspieraj projekt</a>
   </div>
+</div>
 
-  <!-- Tropical floaters (p2) -->
-  <div class="tropical-float tf-1" id="tf1" style="display:none">🌺</div>
-  <div class="tropical-float tf-2" id="tf2" style="display:none">🍹</div>
-  <div class="tropical-float tf-3" id="tf3" style="display:none">🐚</div>
-
-  <!-- Butterflies (p3) -->
-  <div class="butterfly bf1" id="bf1" style="display:none">🦋</div>
-  <div class="butterfly bf2" id="bf2" style="display:none">🦋</div>
-  <div class="butterfly bf3" id="bf3" style="display:none">🌸</div>
-
-  <!-- Phase pill -->
-  <div class="phase-pill" id="phasePill"></div>
-
-  <!-- Sound btn -->
-  <button class="sound-btn" id="soundBtn" title="Dźwięki">🔇</button>
-
-  <!-- Day-change flash -->
-  <div class="day-flash" id="dayFlash"></div>
-
-  <!-- Easter egg -->
-  <div class="egg-overlay" id="eggOverlay">
-    <div class="egg-box">
-      <button class="egg-close" id="eggClose">✕</button>
-      <span class="egg-emoji" id="eggEmoji">🌴</span>
-      <h2 id="eggTitle">Sekret odkryty!</h2>
-      <p id="eggText">Kliknąłeś gdzie nie trzeba. Gratuluję ciekawości.</p>
-    </div>
+<!-- ══════════════════════════════════════════════════
+     PHASE 2 — ON HOLIDAY
+══════════════════════════════════════════════════ -->
+<div class="page hidden" id="p2">
+  <p class="stamp" id="p2Stamp">🌴 Iza jest na urlopie · 13–30.03.2026 🌴</p>
+  <h1 class="main-title"><span id="p2TitleTop">Raj</span><br/><span class="accent" id="p2TitleBot">odnaleziony!</span></h1>
+  <p class="subtitle" id="p2Sub">Biuro tęskni… ale nie za bardzo 😎🍹</p>
+  <div class="countdown-grid">
+    <div class="count-block"><span class="count-number" id="d2">--</span><span class="count-label">dni</span></div>
+    <div class="count-block"><span class="count-number" id="h2">--</span><span class="count-label">godzin</span></div>
+    <div class="count-block"><span class="count-number" id="m2">--</span><span class="count-label">minut</span></div>
+    <div class="count-block"><span class="count-number" id="s2">--</span><span class="count-label">sekund</span></div>
   </div>
-
-  <!-- ═══ PHASE 1: COUNTDOWN ═══ -->
-  <div class="container" id="mainContent">
-    <p class="stamp" id="p1Stamp">🌴 Urlop · od 13.03.2026 · Nareszcie 🌴</p>
-    <h1 class="main-title" id="p1Title">Izunia,<br/><span class="accent">na urlop!</span></h1>
-    <p class="subtitle" id="p1Sub">…bo my już nie możemy 🙏😅</p>
-
-    <div class="countdown-grid">
-      <div class="count-block"><span class="count-number" id="days">--</span><span class="count-label">dni</span></div>
-      <div class="count-block"><span class="count-number" id="hours">--</span><span class="count-label">godzin</span></div>
-      <div class="count-block"><span class="count-number" id="minutes">--</span><span class="count-label">minut</span></div>
-      <div class="count-block"><span class="count-number" id="seconds">--</span><span class="count-label">sekund</span></div>
-    </div>
-
-    <div class="divider"><span class="divider-icon">🌊</span></div>
-    <p class="stats-title">a to oznacza, że…</p>
-    <div class="stats-grid">
-      <div class="stat-card"><span class="stat-emoji">☕</span><span class="stat-value" id="coffees">--</span><span class="stat-desc">filiżanek kawy<br/>do wypicia w pracy</span></div>
-      <div class="stat-card"><span class="stat-emoji">😴</span><span class="stat-value" id="sleeps">--</span><span class="stat-desc">nocy do przespania<br/>zanim wolność!</span></div>
-      <div class="stat-card"><span class="stat-emoji">📅</span><span class="stat-value" id="workdays">--</span><span class="stat-desc">dni roboczych<br/>do urlopu</span></div>
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress-header"><span>Dzień dzisiejszy</span><span id="progressPct">--% drogi za nami</span></div>
-      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-      <div class="progress-header" style="justify-content:flex-end;margin-top:.5rem;margin-bottom:0;"><span>URLOP! 🏖️</span></div>
-    </div>
-
-    <div class="message-card" id="dailyMsgCard">
-      <span class="message-icon" id="dailyMsgIcon">💬</span>
-      <p class="message-text" id="dailyMsg">ładowanie…</p>
-    </div>
-
-    <div class="footer-row">
-      <p class="footer-text" id="targetDateDisplay">Cel: ładowanie…</p>
-      <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn">
-        <span class="bmc-icon">☕</span> wspieraj projekt
-      </a>
-    </div>
+  <div class="divider"><span class="divider-icon" id="p2divIcon">🌺</span></div>
+  <p class="stats-label" id="p2statsLabel">tymczasem na plaży…</p>
+  <div class="stats-grid">
+    <div class="stat-card"><span class="stat-emoji">🍹</span><span class="stat-value" id="drinks">--</span><span class="stat-desc">drinki wypite<br/>na plaży (szacunkowo)</span></div>
+    <div class="stat-card"><span class="stat-emoji">☀️</span><span class="stat-value" id="sunrises">--</span><span class="stat-desc">wschody słońca<br/>bez alarmu</span></div>
+    <div class="stat-card"><span class="stat-emoji" id="mailEmoji">📧</span><span class="stat-value" id="emails">--</span><span class="stat-desc" id="mailDesc">maile czekają<br/>w skrzynce (ostrożnie!)</span></div>
   </div>
-
-  <!-- ═══ PHASE 2: ON HOLIDAY ═══ -->
-  <div class="container vacation-mode" id="vacationMode">
-    <p class="vac-greeting" id="p2Stamp">🌴 Iza jest oficjalnie na urlopie · 13–30.03.2026 🌴</p>
-    <h1 class="vac-title" id="p2Title">Raj<br/><span class="accent">odnaleziony!</span></h1>
-    <p class="vac-subtitle" id="p2Sub">Biuro tęskni… ale nie za bardzo 😎🍹</p>
-
-    <div class="return-grid">
-      <div class="return-block"><span class="return-number" id="rDays">--</span><span class="return-label">dni</span></div>
-      <div class="return-block"><span class="return-number" id="rHours">--</span><span class="return-label">godzin</span></div>
-      <div class="return-block"><span class="return-number" id="rMinutes">--</span><span class="return-label">minut</span></div>
-      <div class="return-block"><span class="return-number" id="rSeconds">--</span><span class="return-label">sekund</span></div>
-    </div>
-
-    <div class="vac-divider"><span style="font-size:1.1rem">🌺</span></div>
-    <p class="stats-title" id="p2StatsTitle">tymczasem na plaży…</p>
-    <div class="vac-stats-grid">
-      <div class="stat-card"><span class="stat-emoji">🍹</span><span class="stat-value" id="drinksOnBeach">--</span><span class="stat-desc">drinki wypite<br/>na plaży (szacunkowo)</span></div>
-      <div class="stat-card"><span class="stat-emoji">☀️</span><span class="stat-value" id="sunrises">--</span><span class="stat-desc">wschody słońca<br/>bez alarmu</span></div>
-      <div class="stat-card"><span class="stat-emoji">📧</span><span class="stat-value" id="emailsWaiting">--</span><span class="stat-desc">maile czekają<br/>w skrzynce (ostrożnie!)</span></div>
-    </div>
-
-    <div class="vac-progress-wrap">
-      <div class="progress-header" id="vacPH"><span>Start urlopu</span><span id="vacProgressPct">--% urlopu za nami</span></div>
-      <div class="progress-track" style="background:rgba(255,255,255,.25)"><div class="vac-progress-fill" id="vacProgressFill" style="width:0%"></div></div>
-      <div class="progress-header" style="justify-content:flex-end;margin-top:.5rem;margin-bottom:0;" id="vacPH2"><span>Powrót 😢</span></div>
-    </div>
-
-    <div class="message-card" id="vacMsgCard">
-      <span class="message-icon" id="vacMsgIcon">🌴</span>
-      <p class="message-text" id="vacMsg">ładowanie…</p>
-    </div>
-
-    <div class="footer-row">
-      <p class="footer-text" id="returnDateDisplay">Powrót: ładowanie…</p>
-      <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn">
-        <span class="bmc-icon">☕</span> wspieraj projekt
-      </a>
-    </div>
+  <div class="progress-wrap">
+    <div class="progress-header" id="p2ph1"><span>Start urlopu</span><span id="p2pct">--% urlopu za nami</span></div>
+    <div class="progress-track"><div class="progress-fill" id="p2fill" style="width:0%"></div></div>
+    <div class="progress-header" style="justify-content:flex-end;margin-top:.5rem;margin-bottom:0" id="p2ph2"><span id="p2endLabel">Powrót 😢</span></div>
   </div>
+  <div class="msg-card"><span class="msg-icon" id="p2mi">🌴</span><p class="msg-text" id="p2msg">ładowanie…</p></div>
+  <div class="footer-row">
+    <p class="footer-text" id="p2footer">Powrót: ładowanie…</p>
+    <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn">☕ wspieraj projekt</a>
+  </div>
+</div>
 
-  <!-- ═══ PHASE 3: CRISIS ═══ -->
-  <div class="container return-mode" id="returnMode">
-    <div class="alert-stripe">⚠ ALERT KRYZYSOWY — URLOP ZAKOŃCZONY — IZABELA WRÓCIŁA DO BIURA — ⚠ ALERT KRYZYSOWY — URLOP ZAKOŃCZONY</div>
-    <p class="crisis-stamp">📋 RAPORT KRYZYSOWY NR 001/2026</p>
-    <h1 class="crisis-title">URLOP<br/>SKOŃCZONY</h1>
-    <p class="crisis-subtitle">Powtarzam: <em>urlop skończony.</em> Wszystkie jednostki — powrót do stanowisk.</p>
-
-    <div class="crisis-grid">
-      <div class="crisis-card"><span class="stat-emoji">😭</span><span class="stat-value" id="retDaysBack">--</span><span class="stat-desc">dni od zakończenia<br/>operacji "Raj"</span></div>
-      <div class="crisis-card"><span class="stat-emoji">☕</span><span class="stat-value" id="retCoffees">--</span><span class="stat-desc">kawy wypite<br/>od powrotu (przeżycie)</span></div>
-      <div class="crisis-card"><span class="stat-emoji">📧</span><span class="stat-value" id="retEmails">--</span><span class="stat-desc">maile przetrawione<br/>w ramach obowiązku</span></div>
-    </div>
-
-    <div class="classified-doc" id="classifiedDoc">
-      <p class="classified-text">
-        <p>DO: Wszyscy pracownicy Działu <span class="redacted">█████████████</span></p>
-        <p>OD: Komitet Kryzysowy ds. Urlopów</p>
-        <p>DATA: <span id="retDate">--</span> | STATUS: <span style="color:#cc0000;font-weight:bold">PILNE</span></p>
-        <p>─────────────────────────────────</p>
-        <p>Niniejszym informujemy, że operacja „<span class="redacted">████</span> na Urlopie" została oficjalnie zakończona. Izabela powróciła na swoje stanowisko.</p>
-        <p>Okres wytchnienia trwał <strong>14 dni</strong>. Był to czas <span class="redacted">██████████</span> i <span class="redacted">███████</span>. Biuro <span class="redacted">██████████████████████</span> Izy bardzo.</p>
-        <p>Zalecamy wszystkim pracownikom niezwłocznie udać się do Izabeli z kawą i pytaniem „jak było?", a następnie słuchać przez <span class="redacted">██</span> godzin.</p>
-        <p>─────────────────────────────────</p>
-        <p>Następny urlop: <span class="redacted">███████████████████</span></p>
-        <p><em>Dokument niejawny. Zniszcz po przeczytaniu.</em></p>
-      </p>
-    </div>
-
-    <div class="message-card" id="retMsgCard" style="margin-top:1rem;">
-      <span class="message-icon" id="retMsgIcon">📢</span>
-      <p class="message-text" id="retMsg">ładowanie…</p>
-    </div>
-
-    <div class="footer-row">
-      <p class="footer-text crisis-footer">Komisja ds. Odliczania Urlopów © 2026</p>
-      <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn" style="border-color:#cc0000;color:#cc0000;">
-        <span class="bmc-icon">☕</span> wspieraj projekt
-      </a>
+<!-- ══════════════════════════════════════════════════
+     PHASE 3 — CRISIS
+══════════════════════════════════════════════════ -->
+<div class="page hidden" id="p3">
+  <div class="alert-stripe">⚠ ALERT KRYZYSOWY — URLOP ZAKOŃCZONY — IZABELA WRÓCIŁA DO BIURA — ⚠ ALERT KRYZYSOWY</div>
+  <p class="crisis-stamp" id="p3Stamp">📋 RAPORT KRYZYSOWY NR 001/2026</p>
+  <h1 class="crisis-title" id="p3Title">URLOP<br/>SKOŃCZONY</h1>
+  <p class="crisis-sub" id="p3Sub">Powtarzam: <em>urlop skończony.</em> Wszystkie jednostki — do stanowisk.</p>
+  <div class="crisis-grid">
+    <div class="crisis-card"><span class="stat-emoji">😭</span><span class="stat-value" id="retDays">--</span><span class="stat-desc">dni od zakończenia<br/>operacji "Raj"</span></div>
+    <div class="crisis-card"><span class="stat-emoji">☕</span><span class="stat-value" id="retCoffees">--</span><span class="stat-desc">kawy wypite<br/>od powrotu</span></div>
+    <div class="crisis-card"><span class="stat-emoji">📧</span><span class="stat-value" id="retEmails">--</span><span class="stat-desc">maile przetrawione<br/>w ramach obowiązku</span></div>
+  </div>
+  <div class="classified-doc">
+    <div class="classified-text">
+      <p>DO: Wszyscy pracownicy Działu <span class="redacted">█████████████</span></p>
+      <p>OD: Komitet Kryzysowy ds. Urlopów</p>
+      <p>DATA: 30.03.2026 | STATUS: <span style="color:#cc0000;font-weight:bold">PILNE</span></p>
+      <p>─────────────────────────────────</p>
+      <p>Niniejszym informujemy że operacja „<span class="redacted">████</span> na Urlopie" została zakończona. Izabela powróciła na stanowisko.</p>
+      <p>Urlop trwał <strong>17 dni</strong>. Biuro <span class="redacted">██████████████████████</span> tęskniło bardzo.</p>
+      <p>Zalecamy wszystkim udać się do Izabeli z kawą i pytaniem „jak było?" i słuchać przez <span class="redacted">██</span> godzin.</p>
+      <p>─────────────────────────────────</p>
+      <p>Następny urlop: <span class="redacted">███████████████████</span></p>
+      <p><em>Dokument niejawny. Zniszcz po przeczytaniu.</em></p>
     </div>
   </div>
+  <div class="msg-card" style="margin-top:1rem"><span class="msg-icon" id="p3mi">📢</span><p class="msg-text" id="p3msg">ładowanie…</p></div>
+  <div class="footer-row">
+    <p class="footer-text" style="font-family:'Special Elite',monospace;font-size:.55rem;letter-spacing:.1em;color:#7a1a1a">Komisja ds. Odliczania Urlopów © 2026</p>
+    <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn" style="border-color:#cc0000;color:#cc0000">☕ wspieraj projekt</a>
+  </div>
+</div>
 
-  <script>
-  // ═══════════════════════════════════════════════════════
-  //  DATES
-  // ═══════════════════════════════════════════════════════
-  const VAC_START  = new Date("2026-03-13T16:00:00");
-  const VAC_END    = new Date("2026-03-30T00:00:00");
-  const CNT_START  = new Date("2026-03-12T00:00:00");
+<script>
+// ══════════════════════════════════════════════════════════
+//  DATES
+// ══════════════════════════════════════════════════════════
+const VAC_START = new Date("2026-03-13T16:00:00"); // piątek 16:00
+const VAC_END   = new Date("2026-03-30T08:00:00"); // poniedziałek rano
+const CNT_START = new Date("2026-03-12T00:00:00");
 
-  // ── helpers ──
-  const pad = n => String(n).padStart(2,"0");
-  function countWorkdays(from, to) {
-    let n=0; const d=new Date(from); d.setHours(0,0,0,0);
-    const e=new Date(to); e.setHours(0,0,0,0);
-    while(d<e){const w=d.getDay();if(w&&w<6)n++;d.setDate(d.getDate()+1);}
-    return n;
-  }
+// Degradation: last 3 days of vacation get progressively worse
+const DEG_START = new Date(VAC_END - 3 * 86400000);
 
-  // ═══════════════════════════════════════════════════════
-  //  SKINS — 3 phases × 4 times of day
-  //  timeOfDay: 0=night(0-5), 1=morning(6-11), 2=afternoon(12-17), 3=evening(18-23)
-  // ═══════════════════════════════════════════════════════
-  function getTimeOfDay(h) {
-    if(h>=6  && h<12) return 1; // morning
-    if(h>=12 && h<18) return 2; // afternoon
-    if(h>=18 && h<24) return 3; // evening
-    return 0;                   // night
-  }
+const pad = n => String(n).padStart(2,'0');
+function workdays(from, to) {
+  let n=0; const d=new Date(from); d.setHours(0,0,0,0);
+  const e=new Date(to); e.setHours(0,0,0,0);
+  while(d<e){const w=d.getDay();if(w&&w<6)n++;d.setDate(d.getDate()+1);}
+  return n;
+}
+function calDays(from, to) {
+  const a=new Date(from); a.setHours(0,0,0,0);
+  const b=new Date(to);   b.setHours(0,0,0,0);
+  return Math.round((b-a)/86400000);
+}
+function tod(h) { // time of day 0=night 1=morning 2=afternoon 3=evening
+  if(h>=6&&h<12) return 1;
+  if(h>=12&&h<18) return 2;
+  if(h>=18&&h<24) return 3;
+  return 0;
+}
 
-  const SKINS = {
-    // Phase 1 — Countdown to vacation
-    "1-0": { // night
-      bgTop:"#0a0e1a", bgMid:"#0d1530", bgBot:"#0a1228",
-      cardBg:"rgba(10,20,50,0.7)", cardBorder:"rgba(100,140,200,0.2)", cardShadow:"rgba(0,0,80,0.3)",
-      accent:"#5b8cff", accent2:"#ff8c5b", text:"#c8d8ff", muted:"#6a80b0",
-      stampCol:"#5b8cff", numCol:"#7aadff",
-      wave1:"rgba(20,60,120,0.4)", wave2:"rgba(20,60,120,0.55)", wave3:"rgba(10,40,90,0.45)",
-      progressFill:"linear-gradient(90deg,#5b8cff,#ff8c5b)",
-      showStars:true, showMoon:true, showSun:false,
-      cloudsOpacity:.15, seagullsOpacity:.1, palmsOpacity:.6,
-      p1Stamp:"🌙 Urlop · od 13.03.2026 · Śpij spokojnie 🌙",
-      p1Title:"Izunia,<br/><span class='accent'>śnij o urlopie!</span>",
-      p1Sub:"…bo rano znowu praca. Niestety. 😴",
-      msgIcon:"🌙", msg:"W nocy cisza w biurze. Ale myśl o urlopie świeci jak gwiazdy. Śpij spokojnie, Izunia — zbliżasz się do wolności o kolejną noc.",
-    },
-    "1-1": { // morning
-      bgTop:"#fff8e8", bgMid:"#ffe8b0", bgBot:"#ffcc70",
-      cardBg:"rgba(255,255,240,0.88)", cardBorder:"rgba(200,150,50,0.2)", cardShadow:"rgba(200,150,50,0.1)",
-      accent:"#d4870a", accent2:"#e8735a", text:"#3a2a00", muted:"#8a6a30",
-      stampCol:"#d4870a", numCol:"#d4870a",
-      wave1:"rgba(200,150,50,0.2)", wave2:"rgba(180,120,30,0.3)", wave3:"rgba(160,100,20,0.25)",
-      progressFill:"linear-gradient(90deg,#d4870a,#e8735a)",
-      showStars:false, showMoon:false, showSun:true,
-      cloudsOpacity:.9, seagullsOpacity:.7, palmsOpacity:1,
-      p1Stamp:"🌅 Urlop · od 13.03.2026 · Dzień dobry! 🌅",
-      p1Title:"Izunia,<br/><span class='accent'>rano bliżej!</span>",
-      p1Sub:"…poranek to znak, że urlop jeszcze bliżej ☀️",
-      msgIcon:"🌅", msg:"Dzień dobry! Kolejny poranek, kolejny dzień mniej do urlopu. Kawa w dłoń i do dzieła — meta coraz bliżej!",
-    },
-    "1-2": { // afternoon — original theme
-      bgTop:"#ffffff", bgMid:"#dff0fa", bgBot:"#93d0ef",
-      cardBg:"rgba(255,255,255,0.85)", cardBorder:"rgba(75,163,199,0.2)", cardShadow:"rgba(75,163,199,0.1)",
-      accent:"#4ba3c7", accent2:"#e8735a", text:"#1a3a4a", muted:"#6a9ab0",
-      stampCol:"#4ba3c7", numCol:"#4ba3c7",
-      wave1:"rgba(75,163,199,0.22)", wave2:"rgba(75,163,199,0.32)", wave3:"rgba(41,128,185,0.28)",
-      progressFill:"linear-gradient(90deg,#4ba3c7,#e8735a)",
-      showStars:false, showMoon:false, showSun:true,
-      cloudsOpacity:.85, seagullsOpacity:.7, palmsOpacity:1,
-      p1Stamp:"🌴 Urlop · od 13.03.2026 · Nareszcie 🌴",
-      p1Title:"Izunia,<br/><span class='accent'>na urlop!</span>",
-      p1Sub:"…bo my już nie możemy 🙏😅",
-      msgIcon:"☀️", msg:"Południe w biurze. Słońce świeci na zewnątrz i kusi. Jeszcze chwila, Izunia — urlop tuż za rogiem!",
-    },
-    "1-3": { // evening
-      bgTop:"#1a0a2e", bgMid:"#3d1a6e", bgBot:"#7a3a9a",
-      cardBg:"rgba(40,15,70,0.7)", cardBorder:"rgba(180,120,220,0.2)", cardShadow:"rgba(100,0,150,0.2)",
-      accent:"#c084e8", accent2:"#ff7060", text:"#e8d8ff", muted:"#9a78b8",
-      stampCol:"#c084e8", numCol:"#c084e8",
-      wave1:"rgba(120,60,160,0.35)", wave2:"rgba(100,40,140,0.45)", wave3:"rgba(80,20,120,0.4)",
-      progressFill:"linear-gradient(90deg,#c084e8,#ff7060)",
-      showStars:true, showMoon:false, showSun:false,
-      cloudsOpacity:.2, seagullsOpacity:.15, palmsOpacity:.7,
-      p1Stamp:"🌆 Urlop · od 13.03.2026 · Wieczór zbliża się 🌆",
-      p1TitleFn: function(d){ return d===0 ? "Izunia,<br/><span class='accent'>dziś o 16:00!</span>" : d===1 ? "Izunia,<br/><span class='accent'>jutro wolność!</span>" : "Izunia,<br/><span class='accent'>za "+d+" dni!</span>"; },
-      p1Sub:"…zachód słońca to znak: urlop coraz bliżej 🌇",
-      msgIcon:"🌆", msg:"Wieczór zapada nad biurem. Kolejny dzień pracy za Tobą, Izunia. Urlop czeka jak gwiazda na niebie — coraz jaśniej widoczny.",
-    },
+// ══════════════════════════════════════════════════════════
+//  DEGRADATION LEVEL: 0 = full holiday joy, 1..3 = doom
+// ══════════════════════════════════════════════════════════
+function getDegLevel(now, phase) {
+  if(phase !== 2) return 0;
+  const msToDoom = VAC_END - now;
+  const msRange  = VAC_END - DEG_START;
+  if(msToDoom > msRange) return 0;
+  // 0..3
+  return Math.min(3, Math.ceil((1 - msToDoom/msRange) * 3));
+}
 
-    // Phase 2 — On vacation
-    "2-0": { // tropical night — moon over ocean
-      bgTop:"#020d18", bgMid:"#041e35", bgBot:"#062840",
-      cardBg:"rgba(5,20,40,0.75)", cardBorder:"rgba(80,160,200,0.2)", cardShadow:"rgba(0,50,100,0.3)",
-      accent:"#4abcdf", accent2:"#ffc864", text:"#b8e0f0", muted:"#4a8aaa",
-      stampCol:"#4abcdf", numCol:"#ffc864",
-      wave1:"rgba(20,80,120,0.5)", wave2:"rgba(15,60,100,0.65)", wave3:"rgba(10,50,90,0.55)",
-      progressFill:"linear-gradient(90deg,#4abcdf,#ffc864)",
-      showStars:true, showMoon:true, showSun:false,
-      cloudsOpacity:.08, seagullsOpacity:.05, palmsOpacity:.5,
-      p2Stamp:"🌊 Iza jest na urlopie · noc na tropikach 🌊",
-      p2Title:"Cisza<br/><span class='accent'>oceanu</span>",
-      p2Sub:"Księżyc nad wodą, koktajl w dłoni… 🌙🍹",
-      msgIcon:"🌙", msg:"Gdzieś nad oceanem księżyc oświetla Izuniną plażę. Fale szumią. Cykady grają. A my tu liczymy godziny do jej powrotu. Tragedia.",
+// ══════════════════════════════════════════════════════════
+//  SKINS — indexed by [phase][tod]
+//  Each skin: bg gradient, card styles, texts, atmosphere
+// ══════════════════════════════════════════════════════════
+const SKINS = {
+  // ── PHASE 1: COUNTDOWN ──
+  1: [
+    // 0 night
+    { bgTop:'#050818',bgMid:'#0c1530',bgBot:'#0a1228',
+      card:'rgba(10,20,50,0.72)',border:'rgba(100,140,200,0.2)',shadow:'rgba(0,0,80,0.3)',
+      accent:'#5b8cff',accent2:'#ff8c5b',text:'#c8d8ff',muted:'#6a80b0',
+      stamp:'#5b8cff',num:'#7aadff',
+      w1:'rgba(20,60,120,0.4)',w2:'rgba(20,60,120,0.55)',w3:'rgba(10,40,90,0.45)',
+      progBg:'rgba(20,60,120,0.3)',
+      stars:true,moon:true,sun:false,cloudSun:false,
+      clouds:.15,gulls:.08,palms:.55,
+      stampTxt:'🌙 Urlop · 13.03.2026 · Śpij spokojnie',
+      titleTop:'Izunia,',titleBot:'śnij o plaży!',
+      sub:'…rano znowu praca. Na razie.',
+      mi:'🌙',msg:'Noc w biurze. Cisza, ciemność i tykający licznik ku wolności. Każda sekunda przybliża Cię do plaży.',
     },
-    "2-1": { // tropical morning
-      bgTop:"#fff3c4", bgMid:"#ffe08a", bgBot:"#ffb347",
-      cardBg:"rgba(255,255,230,0.8)", cardBorder:"rgba(255,180,80,0.3)", cardShadow:"rgba(200,120,0,0.12)",
-      accent:"#d47a00", accent2:"#e8735a", text:"#3a2000", muted:"#9a6020",
-      stampCol:"#d47a00", numCol:"#d47a00",
-      wave1:"rgba(255,160,40,0.25)", wave2:"rgba(230,140,20,0.35)", wave3:"rgba(200,120,0,0.3)",
-      progressFill:"linear-gradient(90deg,#ffb347,#e8735a)",
-      showStars:false, showMoon:false, showSun:true,
-      cloudsOpacity:.6, seagullsOpacity:.5, palmsOpacity:1,
-      p2Stamp:"🌅 Iza jest na urlopie · tropikalny świt 🌅",
-      p2Title:"Świt<br/><span class='accent'>na plaży!</span>",
-      p2Sub:"Iza wstaje kiedy chce. My nie. 😭",
-      msgIcon:"🌅", msg:"Tropikalny świt. Iza budzi się bez alarmu, patrzy na ocean i zamawia śniadanie do łóżka. Tymczasem w biurze… coffee machine się właśnie zacięła.",
+    // 1 morning
+    { bgTop:'#fff8e0',bgMid:'#ffe8a0',bgBot:'#ffcc60',
+      card:'rgba(255,255,240,0.88)',border:'rgba(200,150,50,0.2)',shadow:'rgba(200,150,50,0.1)',
+      accent:'#c87800',accent2:'#e8735a',text:'#3a2200',muted:'#8a6030',
+      stamp:'#c87800',num:'#c87800',
+      w1:'rgba(200,150,50,0.2)',w2:'rgba(180,120,30,0.3)',w3:'rgba(160,100,20,0.25)',
+      progBg:'rgba(200,150,50,0.2)',
+      stars:false,moon:false,sun:true,cloudSun:false,
+      clouds:.9,gulls:.7,palms:1,
+      stampTxt:'🌅 Urlop · 13.03.2026 · Dzień dobry!',
+      titleTop:'Izunia,',titleBot:'rano bliżej!',
+      sub:'…poranek to znak że urlop coraz bliżej ☀️',
+      mi:'🌅',msg:'Dzień dobry! Kolejny poranek to kolejny dzień skreślony. Kawa w dłoń — meta widoczna.',
     },
-    "2-2": { // tropical afternoon — peak heat
-      bgTop:"#fff0a0", bgMid:"#ffcc44", bgBot:"#ff9922",
-      cardBg:"rgba(255,250,220,0.8)", cardBorder:"rgba(255,180,40,0.3)", cardShadow:"rgba(220,140,0,0.15)",
-      accent:"#cc7700", accent2:"#e84a2a", text:"#3a1a00", muted:"#aa6610",
-      stampCol:"#cc7700", numCol:"#cc7700",
-      wave1:"rgba(255,140,20,0.3)", wave2:"rgba(230,110,10,0.4)", wave3:"rgba(200,80,0,0.35)",
-      progressFill:"linear-gradient(90deg,#ffcc44,#e84a2a)",
-      showStars:false, showMoon:false, showSun:true,
-      cloudsOpacity:.3, seagullsOpacity:.4, palmsOpacity:1,
-      p2Stamp:"☀️ Iza jest na urlopie · godzina szczytu 🏖️",
-      p2Title:"Słońce<br/><span class='accent'>w zenicie!</span>",
-      p2Sub:"Temp. na plaży: gorąco. W biurze: jeszcze goręcej 🥵",
-      msgIcon:"☀️", msg:"Południe na tropikach. 35 stopni, palma, hamak i prawdopodobnie kolejny drink z palemką. Izunia, myślimy o Tobie. Głównie z zazdrości.",
+    // 2 afternoon
+    { bgTop:'#ffffff',bgMid:'#dff0fa',bgBot:'#93d0ef',
+      card:'rgba(255,255,255,0.85)',border:'rgba(75,163,199,0.2)',shadow:'rgba(75,163,199,0.1)',
+      accent:'#4ba3c7',accent2:'#e8735a',text:'#1a3a4a',muted:'#6a9ab0',
+      stamp:'#4ba3c7',num:'#4ba3c7',
+      w1:'rgba(75,163,199,0.22)',w2:'rgba(75,163,199,0.32)',w3:'rgba(41,128,185,0.28)',
+      progBg:'rgba(188,227,245,0.5)',
+      stars:false,moon:false,sun:true,cloudSun:false,
+      clouds:.85,gulls:.7,palms:1,
+      stampTxt:'🌴 Urlop · 13.03.2026 · Nareszcie!',
+      titleTop:'Izunia,',titleBot:'na urlop!',
+      sub:'…bo my już nie możemy 🙏😅',
+      mi:'☀️',msg:'Słońce świeci, biuro kusi, a urlop jest już za rogiem. Trzymaj się!',
     },
-    "2-3": { // tropical sunset
-      bgTop:"#1a0a30", bgMid:"#8b2252", bgBot:"#e85c28",
-      cardBg:"rgba(40,10,30,0.75)", cardBorder:"rgba(200,100,60,0.25)", cardShadow:"rgba(150,50,20,0.2)",
-      accent:"#ff8c5b", accent2:"#ffc864", text:"#f0d0c0", muted:"#c08070",
-      stampCol:"#ff8c5b", numCol:"#ffc864",
-      wave1:"rgba(200,80,40,0.4)", wave2:"rgba(180,60,30,0.5)", wave3:"rgba(150,40,20,0.45)",
-      progressFill:"linear-gradient(90deg,#ff8c5b,#ffc864)",
-      showStars:true, showMoon:false, showSun:true,
-      cloudsOpacity:.5, seagullsOpacity:.3, palmsOpacity:.8,
-      p2Stamp:"🌅 Iza jest na urlopie · złoty zachód 🌅",
-      p2Title:"Złoty<br/><span class='accent'>wieczór</span>",
-      p2Sub:"Zachód słońca nad oceanem. Bezpłatny dla urlopowiczów. 🍊",
-      msgIcon:"🌅", msg:"Zachód słońca barwi ocean na złoto i czerwień. Izunia prawdopodobnie robi zdjęcia i wysyła stories. My patrzymy przez okno biura na parking.",
+    // 3 evening
+    { bgTop:'#120828',bgMid:'#2e1455',bgBot:'#602888',
+      card:'rgba(30,10,60,0.72)',border:'rgba(180,120,220,0.2)',shadow:'rgba(80,0,130,0.2)',
+      accent:'#c084e8',accent2:'#ff7060',text:'#e8d8ff',muted:'#9a78b8',
+      stamp:'#c084e8',num:'#c084e8',
+      w1:'rgba(110,50,150,0.35)',w2:'rgba(90,30,130,0.45)',w3:'rgba(70,15,110,0.4)',
+      progBg:'rgba(110,50,150,0.2)',
+      stars:true,moon:false,sun:false,cloudSun:false,
+      clouds:.2,gulls:.12,palms:.7,
+      stampTxt:'🌆 Urlop · 13.03.2026 · Wieczór zapada',
+      titleTop:'Izunia,',titleBotFn: d => d<=1?'jutro wolność!':d===0?'dziś o 16:00!':'za '+d+' dni!',
+      sub:'…zachód słońca — urlop coraz bliżej 🌇',
+      mi:'🌊',msg:'Wieczór, fale szumią gdzieś w wyobraźni. Urlop czeka.',
     },
+  ],
 
-    // Phase 3 — Return / Crisis
-    "3-0": { // crisis night
-      bgTop:"#0d0000", bgMid:"#1a0505", bgBot:"#250808",
-      cardBg:"rgba(30,5,5,0.85)", cardBorder:"rgba(200,0,0,0.2)", cardShadow:"rgba(150,0,0,0.2)",
-      accent:"#ff3333", accent2:"#ff8800", text:"#f0c0c0", muted:"#a06060",
-      stampCol:"#ff3333", numCol:"#ff3333",
-      wave1:"rgba(150,0,0,0.35)", wave2:"rgba(120,0,0,0.45)", wave3:"rgba(90,0,0,0.4)",
-      progressFill:"linear-gradient(90deg,#cc0000,#ff4400)",
-      showStars:false, showMoon:false, showSun:false,
-      cloudsOpacity:.05, seagullsOpacity:.0, palmsOpacity:.2,
-      msgIcon:"🚨", msg:"Noc kryzysowa. Gdzie indziej ludzie śpią. W dziale trwają narady. Izabela wróciła. Protokół awaryjny wciąż aktywny.",
+  // ── PHASE 2: ON VACATION ──
+  2: [
+    // 0 night — moon over ocean
+    { bgTop:'#010b14',bgMid:'#031a2e',bgBot:'#052438',
+      card:'rgba(4,18,38,0.78)',border:'rgba(70,150,190,0.2)',shadow:'rgba(0,40,90,0.35)',
+      accent:'#3ab0d8',accent2:'#ffca70',text:'#a8d8ee',muted:'#3a7890',
+      stamp:'#3ab0d8',num:'#ffca70',
+      w1:'rgba(15,70,110,0.55)',w2:'rgba(10,55,90,0.68)',w3:'rgba(8,45,80,0.6)',
+      progBg:'rgba(15,70,110,0.3)',
+      stars:true,moon:true,sun:false,cloudSun:false,
+      clouds:.06,gulls:.04,palms:.45,
+      stampTxt:'🌊 Iza na urlopie · noc tropikalna 🌊',
+      titleTop:'Cisza',titleBot:'oceanu',
+      sub:'Księżyc nad wodą, zero alarmów 🌙🍹',
+      mi:'🌙',msg:'Gdzieś nad oceanem księżyc oświetla Izunię na plaży. My liczymy godziny do jej powrotu. Tragedia.',
     },
-    "3-1": { // crisis morning
-      bgTop:"#e8e0d0", bgMid:"#c8b890", bgBot:"#a89060",
-      cardBg:"rgba(255,252,240,0.9)", cardBorder:"rgba(180,140,80,0.25)", cardShadow:"rgba(100,80,0,0.1)",
-      accent:"#7a5a20", accent2:"#cc0000", text:"#2a1a00", muted:"#7a6040",
-      stampCol:"#cc0000", numCol:"#cc0000",
-      wave1:"rgba(180,140,80,0.25)", wave2:"rgba(160,120,60,0.35)", wave3:"rgba(140,100,40,0.3)",
-      progressFill:"linear-gradient(90deg,#cc0000,#ff4400)",
-      showStars:false, showMoon:false, showSun:true,
-      cloudsOpacity:.7, seagullsOpacity:.0, palmsOpacity:.3,
-      msgIcon:"📋", msg:"Poranek. Izabela wróciła. Ekspres do kawy pracuje na pełnych obrotach. Wszyscy udają, że nie czytali maili podczas jej nieobecności.",
+    // 1 morning
+    { bgTop:'#fff3c0',bgMid:'#ffdf80',bgBot:'#ffb040',
+      card:'rgba(255,255,225,0.82)',border:'rgba(255,175,70,0.3)',shadow:'rgba(200,115,0,0.12)',
+      accent:'#c87000',accent2:'#e8735a',text:'#3a1e00',muted:'#9a5a18',
+      stamp:'#c87000',num:'#c87000',
+      w1:'rgba(255,155,35,0.28)',w2:'rgba(230,135,15,0.38)',w3:'rgba(200,115,0,0.32)',
+      progBg:'rgba(255,155,35,0.2)',
+      stars:false,moon:false,sun:true,cloudSun:false,
+      clouds:.55,gulls:.45,palms:1,
+      stampTxt:'🌅 Iza na urlopie · tropikalny świt',
+      titleTop:'Świt',titleBot:'na plaży!',
+      sub:'Iza wstaje kiedy chce. My nie. 😭',
+      mi:'🌅',msg:'Tropikalny świt. Iza zamawia śniadanie do łóżka. W biurze zacięła się coffee machine.',
     },
-    "3-2": { // crisis afternoon
-      bgTop:"#d0c8b8", bgMid:"#b0a888", bgBot:"#908060",
-      cardBg:"rgba(255,252,235,0.9)", cardBorder:"rgba(160,0,0,0.2)", cardShadow:"rgba(100,0,0,0.08)",
-      accent:"#880000", accent2:"#cc4400", text:"#1a0800", muted:"#6a4030",
-      stampCol:"#880000", numCol:"#880000",
-      wave1:"rgba(160,120,60,0.25)", wave2:"rgba(140,100,40,0.35)", wave3:"rgba(120,80,20,0.3)",
-      progressFill:"linear-gradient(90deg,#880000,#cc4400)",
-      showStars:false, showMoon:false, showSun:true,
-      cloudsOpacity:.5, seagullsOpacity:.0, palmsOpacity:.25,
-      msgIcon:"😤", msg:"Godzina pracy. Izabela pyta: 'Co się działo pod moją nieobecność?' Odpowiedź: 'Spokój i harmonia.' Ale tego głośno nie mówimy.",
+    // 2 afternoon — peak heat
+    { bgTop:'#ffee90',bgMid:'#ffc830',bgBot:'#ff9010',
+      card:'rgba(255,248,210,0.82)',border:'rgba(255,175,30,0.3)',shadow:'rgba(215,130,0,0.15)',
+      accent:'#c06800',accent2:'#e83a18',text:'#3a1500',muted:'#a85e08',
+      stamp:'#c06800',num:'#c06800',
+      w1:'rgba(255,135,15,0.32)',w2:'rgba(225,105,5,0.42)',w3:'rgba(195,75,0,0.38)',
+      progBg:'rgba(255,135,15,0.2)',
+      stars:false,moon:false,sun:true,cloudSun:false,
+      clouds:.25,gulls:.38,palms:1,
+      stampTxt:'☀️ Iza na urlopie · godzina szczytu 🏖️',
+      titleTop:'Słońce',titleBot:'w zenicie!',
+      sub:'35°C, hamak, drinka. Żadnych prezentacji. 🥵',
+      mi:'☀️',msg:'Południe na tropikach. SPF50, kapelusz, koktajl. Iza nie sprawdza maili. I dobrze.',
     },
-    "3-3": { // crisis evening
-      bgTop:"#150010", bgMid:"#350020", bgBot:"#550030",
-      cardBg:"rgba(30,0,15,0.8)", cardBorder:"rgba(180,0,60,0.2)", cardShadow:"rgba(120,0,40,0.2)",
-      accent:"#e8305a", accent2:"#ff8800", text:"#f0b0c0", muted:"#a06070",
-      stampCol:"#e8305a", numCol:"#e8305a",
-      wave1:"rgba(150,0,50,0.4)", wave2:"rgba(120,0,40,0.5)", wave3:"rgba(90,0,30,0.45)",
-      progressFill:"linear-gradient(90deg,#e8305a,#ff8800)",
-      showStars:true, showMoon:false, showSun:false,
-      cloudsOpacity:.1, seagullsOpacity:.0, palmsOpacity:.15,
-      msgIcon:"🌃", msg:"Wieczór. Izabela prawdopodobnie już wyszła. Biuro odetchnęło. Ale jutro znowu wróci. I to jest tragedia z gatunku tych trwałych.",
+    // 3 evening — sunset
+    { bgTop:'#120820',bgMid:'#7a1e48',bgBot:'#e04e20',
+      card:'rgba(30,8,25,0.78)',border:'rgba(195,85,50,0.25)',shadow:'rgba(140,40,15,0.22)',
+      accent:'#ff8050',accent2:'#ffcc60',text:'#f0c8b8',muted:'#b87060',
+      stamp:'#ff8050',num:'#ffcc60',
+      w1:'rgba(190,70,35,0.42)',w2:'rgba(165,50,25,0.52)',w3:'rgba(140,35,15,0.48)',
+      progBg:'rgba(190,70,35,0.25)',
+      stars:true,moon:false,sun:true,cloudSun:false,
+      clouds:.45,gulls:.28,palms:.78,
+      stampTxt:'🌅 Iza na urlopie · złoty zachód 🌅',
+      titleTop:'Złoty',titleBot:'wieczór',
+      sub:'Zachód słońca nad oceanem. Bezpłatny dla urlopowiczów. 🍊',
+      mi:'🌊',msg:'Zachód słońca barwi ocean. Iza robi zdjęcia. My patrzymy na parking.',
     },
+  ],
+
+  // ── PHASE 3: CRISIS ──
+  3: [
+    // 0 night
+    { bgTop:'#080002',bgMid:'#160304',bgBot:'#220506',
+      card:'rgba(25,3,4,0.88)',border:'rgba(190,0,0,0.22)',shadow:'rgba(140,0,0,0.22)',
+      accent:'#ff2222',accent2:'#ff8800',text:'#f0b8b8',muted:'#9a5050',
+      stamp:'#ff2222',num:'#ff2222',
+      w1:'rgba(140,0,0,0.38)',w2:'rgba(115,0,0,0.48)',w3:'rgba(88,0,0,0.42)',progBg:'rgba(140,0,0,0.2)',
+      stars:false,moon:false,sun:false,cloudSun:true,
+      clouds:.06,gulls:0,palms:.15,
+      mi:'🚨',msg:'Noc kryzysowa. Gdzie indziej ludzie śpią. W dziale trwają narady. Izabela wróciła.',
+    },
+    // 1 morning
+    { bgTop:'#e0d8c8',bgMid:'#c0b898',bgBot:'#a09870',
+      card:'rgba(255,252,235,0.92)',border:'rgba(175,135,75,0.25)',shadow:'rgba(95,75,0,0.1)',
+      accent:'#6a4a18',accent2:'#cc0000',text:'#281600',muted:'#726038',
+      stamp:'#cc0000',num:'#cc0000',
+      w1:'rgba(175,135,75,0.25)',w2:'rgba(155,115,55,0.35)',w3:'rgba(135,95,35,0.3)',progBg:'rgba(175,135,75,0.2)',
+      stars:false,moon:false,sun:false,cloudSun:true,
+      clouds:.8,gulls:0,palms:.28,
+      mi:'📋',msg:'Poranek. Izabela wróciła. Ekspres pracuje na pełnych obrotach. Wszyscy udają że nie czytali maili.',
+    },
+    // 2 afternoon
+    { bgTop:'#c8c0b0',bgMid:'#a8a088',bgBot:'#888060',
+      card:'rgba(255,252,232,0.92)',border:'rgba(155,0,0,0.2)',shadow:'rgba(95,0,0,0.08)',
+      accent:'#7a0000',accent2:'#cc3800',text:'#180600',muted:'#624028',
+      stamp:'#7a0000',num:'#7a0000',
+      w1:'rgba(155,115,55,0.25)',w2:'rgba(135,95,35,0.35)',w3:'rgba(115,75,15,0.3)',progBg:'rgba(155,115,55,0.2)',
+      stars:false,moon:false,sun:false,cloudSun:true,
+      clouds:.55,gulls:0,palms:.22,
+      mi:'😤',msg:'Godzina pracy. Iza pyta: "co się działo?" Odpowiedź: "spokój i harmonia." Cicho.',
+    },
+    // 3 evening
+    { bgTop:'#0e0008',bgMid:'#2a0018',bgBot:'#480028',
+      card:'rgba(22,0,12,0.82)',border:'rgba(175,0,55,0.22)',shadow:'rgba(115,0,35,0.22)',
+      accent:'#e02050',accent2:'#ff8800',text:'#f0a8b8',muted:'#985868',
+      stamp:'#e02050',num:'#e02050',
+      w1:'rgba(145,0,48,0.42)',w2:'rgba(115,0,38,0.52)',w3:'rgba(88,0,28,0.46)',progBg:'rgba(145,0,48,0.22)',
+      stars:true,moon:false,sun:false,cloudSun:true,
+      clouds:.12,gulls:0,palms:.12,
+      mi:'🌃',msg:'Wieczór. Izabela prawdopodobnie wyszła. Biuro odetchnęło. Ale jutro wróci. Tragedia.',
+    },
+  ],
+};
+
+// ══════════════════════════════════════════════════════════
+//  DEGRADATION SKINS — override phase 2 when near end
+// ══════════════════════════════════════════════════════════
+// degLevel 1–3: mix toward grey/cloudy
+function getDegSkin(baseSkin, degLevel, tod) {
+  if(degLevel === 0) return baseSkin;
+  const t = degLevel / 3; // 0..1
+  const grey = (r,g,b,a) => `rgba(${Math.round(r*(1-t)+120*t)},${Math.round(g*(1-t)+118*t)},${Math.round(b*(1-t)+125*t)},${a})`;
+
+  // blend bg toward stormy grey
+  const stormBots = ['#4a5060','#606878','#505868','#2a3040'];
+  const stormMids = ['#606878','#787e88','#686e78','#3a4050'];
+  const stormTops = ['#788090','#888e98','#808890','#4a5060'];
+
+  return {
+    ...baseSkin,
+    bgTop: blend(baseSkin.bgTop, stormTops[tod] || '#788090', t),
+    bgMid: blend(baseSkin.bgMid, stormMids[tod] || '#606878', t),
+    bgBot: blend(baseSkin.bgBot, stormBots[tod] || '#4a5060', t),
+    sun:   baseSkin.sun && degLevel < 2,
+    cloudSun: degLevel >= 2,
+    clouds: Math.min(1, baseSkin.clouds + t * 0.7),
+    gulls: baseSkin.gulls * (1 - t),
+    // messages that get progressively worse
+    stampTxt: degLevel === 1 ? '🌥️ Iza na urlopie · chmury na horyzoncie…'
+            : degLevel === 2 ? '⛅ Iza na urlopie · coraz bliżej końca…'
+            : '🌧️ Iza na urlopie · ostatni dzień wolności',
+    titleTop: degLevel >= 2 ? 'Koniec' : 'Prawie',
+    titleBot: degLevel === 1 ? 'koniec marzeń…'
+            : degLevel === 2 ? 'to już jutro 😰'
+            : 'urlop skończony 😭',
+    sub: degLevel === 1 ? '…jeszcze chwila, ale chmury zbierają się na niebie ⛅'
+       : degLevel === 2 ? '…biuro już wystawia powitalne maile… 😟'
+       : '…jutro rano alarm. Koniec raju. 💀',
+    mi: ['🌥️','⛅','🌧️','⛈️'][degLevel] || '🌧️',
+    msg: degLevel === 1 ? 'Na horyzoncie pojawiły się chmury. Urlop jeszcze trwa, ale gdzieś w tle słychać dźwięk Outlook Reminder.'
+       : degLevel === 2 ? 'Zostały niecałe dwa dni. Biuro już zaciera ręce. Iza pewnie nie patrzy na telefon. I słusznie.'
+       : 'Ostatni dzień wolności. Jutro rano alarm, metro, kawa z automatu i 127 maili. Żegnaj raju.',
+    mailEmoji: degLevel >= 2 ? '☠️' : '😰',
+    mailDesc: degLevel >= 2 ? 'maile CZEKAJĄ\nze złością i rozczarowaniem' : 'maile narastają\nw skrzynce (dramat)',
+    p2endLabel: degLevel >= 2 ? '💀 Armagedon' : '😢 Koniec raju',
+    degrade: true,
+    degLevel,
   };
+}
 
-  // ═══════════════════════════════════════════════════════
-  //  MESSAGES — per phase+timeOfDay, rotated daily
-  // ═══════════════════════════════════════════════════════
-  const EXTRA_MSGS = {
-    "1-0":["Cisza nocna w biurze. Komputery śpią. Kawa stygnie. Tylko licznik tyka nieubłaganie ku wolności Izuni.","Noc. W biurze ciemno. Izunia śni pewnie o palmach i drinkach. My życzymy jej lekkich snów i rychłego urlopu.","Północ na zegarze, urlop coraz bliżej. Matematyka jest nieubłagana — każda sekunda to krok ku plaży."],
-    "1-1":["Ranek pachnie kawą i nadzieją. Im więcej poranków, tym bliżej urlopu. Izunia, liczymy razem!","Świt wstaje, a wraz z nim nowe godziny do urlopu. Postęp jest. Mały, ale jest.","Poranne słońce obiecuje: urlop się zbliża. Dziś kolejny dzień skreślony z kalendarza. Poczuj tę ulgę."],
-    "1-2":["Południe. Słońce w zenicie, urlop w perspektywie. Izunia, kawka i patrzymy razem na licznik!","Środek dnia roboczego, a myśli już na urlopie. To zupełnie normalne. Medycznie uzasadnione.","Godzina lunchowa. Zamiast kanapki — rzut okiem na licznik. Apetyt na urlop rośnie z każdą minutą."],
-    "1-3":["Wieczór w biurze. Za oknami świat żyje, a my planujemy kolejny dzień odliczania. Prawie tam jesteśmy.","Zachód słońca to codzienny reminder: jeszcze jeden dzień mniej. Izunia, jutro bliżej niż dziś!","Wieczorna zmiana — licznik nie śpi. Ani my. Urlop zbliża się nieubłaganie i to jest piękne."],
-    "2-0":["Letnia noc na tropikach. Gwiazdy, szmer oceanu, brak alarmu na jutro. Biuro istnieje tylko jako odległe wspomnienie.","O tej porze Izunia pewnie leży w hamaku i słucha oceanu. My słyszymy klimatyzację. Różnica jest.","Księżyc nad tropikalnym oceanem. Gdzie jest Izunia? Dokładnie tam gdzie powinna być. Nie w biurze."],
-    "2-1":["Tropikalny świt! Iza budzi się kiedy chce, śniadanie przynoszą, widok jest bezcenny. My mamy widok na parking.","Poranek na plaży. Herbata z miętą, szum fal i absolutna cisza od służbowych maili. Brzmi znajomo? Nie? No właśnie.","Wschód słońca nad oceanem. Iza pewnie go ogląda. My oglądamy ekran laptopa. Jeden z nas wybrał lepiej."],
-    "2-2":["Gorące południe na tropikach. SPF 50, kapelusz na głowie, koktajl w dłoni. Żadnych prezentacji PowerPoint.","Sjesta. Czy w biurze jest sjesta? Nie ma. A na tropikach? Oczywiście. Wnioski wyciągamy sami.","Upał w tropikach oznacza: basen, leniuchowanie, kolejna lektura. W biurze upał oznacza: zepsuta klimatyzacja."],
-    "2-3":["Zachód słońca na Instagramie. Ten z widokiem na ocean to Iza. Ten z widokiem na monitor — nie.","Wieczór urlopowy. Kolacja przy świecach, szum morza, brak jutrzejszego standup meeting. Brzmi jak marzenie.","Złoty wieczór na tropikach. Iza zamawia kolejny drink. My zamykamy kolejnego ticketa. Ktoś tu wygrał."],
-    "3-0":["Noc po powrocie. Izabela odpoczywa. Biuro czeka. Jutro znowu zacznie się normalność. Horror.","Noc kryzysowa, dzień drugi. Wszyscy powoli akceptują nową rzeczywistość. Urlop to tylko wspomnienie.","Ciemność sprzyja refleksji. Nad czym refleksja? Nad tym, kiedy następny urlop. Oczywiście."],
-    "3-1":["Poranek po powrocie. Izabela dostała 87 maili powitalnych. Większość to 'witamy z powrotem!' Z serdecznością.","Pierwszy poranek po urlopie to szczególne doświadczenie. Jak zderzenie z rzeczywistością, ale z kawą w dłoni.","Rano po powrocie. Kawa, maile, spotkanie o 9. Normalność uderzyła z pełną siłą."],
-    "3-2":["Robocze południe. Izabela znowu w rytmie. My też. Choć tęsknimy za tamtymi 14 dniami spokoju.","Godzina pracy. Iza wróciła do formy błyskawicznie. Trochę za błyskawicznie, szczerze mówiąc.","Środek dnia. Urlop już tylko we wspomnieniach i zdjęciach na telefonie. I na tym ekranie."],
-    "3-3":["Wieczór po pracy. Urlop skończony, ale zdjęcia zostały. I opalenizna. I te wspomnienia.","Koniec dnia roboczego. Izabela przeżyła powrót. My też przeżyliśmy jej powrót. Wszyscy jesteśmy bohaterami.","Wieczór. Dzień bez urlopu dobiegł końca. Jutro nowy dzień. Ale bez plaży. Normalność jest okrutna."],
-  };
+function blend(hex1, hex2, t) {
+  try {
+    const p = s => parseInt(s,16);
+    const h1 = hex1.replace('#',''); const h2 = hex2.replace('#','');
+    const r1=p(h1.slice(0,2)),g1=p(h1.slice(2,4)),b1=p(h1.slice(4,6));
+    const r2=p(h2.slice(0,2)),g2=p(h2.slice(2,4)),b2=p(h2.slice(4,6));
+    const r=Math.round(r1*(1-t)+r2*t).toString(16).padStart(2,'0');
+    const g=Math.round(g1*(1-t)+g2*t).toString(16).padStart(2,'0');
+    const b=Math.round(b1*(1-t)+b2*t).toString(16).padStart(2,'0');
+    return '#'+r+g+b;
+  } catch(e){ return hex1; }
+}
 
-  // ═══════════════════════════════════════════════════════
-  //  AUDIO (Web Audio API — generated tones)
-  // ═══════════════════════════════════════════════════════
-  let audioCtx = null;
-  let soundOn  = false;
-  let soundIntervals = [];
+// ══════════════════════════════════════════════════════════
+//  RAIN CANVAS
+// ══════════════════════════════════════════════════════════
+const rainCanvas = document.getElementById('rainCanvas');
+const rctx = rainCanvas.getContext('2d');
+let drops = [];
+let rainActive = false;
+let rainIntensity = 0; // 0..1
 
-  function getAudioCtx() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    return audioCtx;
-  }
-
-  function tone(ctx, freq, type, start, duration, vol, fadeIn=0.02, freqEnd=null) {
-    const osc  = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, start);
-    if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, start + duration);
-    gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.linearRampToValueAtTime(vol, start + fadeIn);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-    osc.start(start);
-    osc.stop(start + duration + 0.05);
-  }
-
-  // ── WAVE CRASH ── realistic breaking wave using filtered noise
-  function playWaveSound() {
-    const ctx = getAudioCtx();
-    const t = ctx.currentTime;
-
-    // White noise source
-    const bufSize = ctx.sampleRate * 3;
-    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
-
-    const noise = ctx.createBufferSource();
-    noise.buffer = buf;
-
-    // Bandpass for "whoosh" character
-    const bp = ctx.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.frequency.setValueAtTime(800, t);
-    bp.frequency.exponentialRampToValueAtTime(200, t + 1.5);
-    bp.Q.value = 0.8;
-
-    // Low shelf boost for rumble
-    const ls = ctx.createBiquadFilter();
-    ls.type = 'lowshelf';
-    ls.frequency.value = 200;
-    ls.gain.value = 12;
-
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.linearRampToValueAtTime(0.35, t + 0.3);   // crash
-    gain.gain.exponentialRampToValueAtTime(0.12, t + 1.2); // sustain
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.8); // fade
-
-    noise.connect(bp); bp.connect(ls); ls.connect(gain); gain.connect(ctx.destination);
-    noise.start(t); noise.stop(t + 3);
-  }
-
-  // ── BIRD CHIRP ── frequency-swept sine
-  function playBirdSound() {
-    const ctx = getAudioCtx();
-    const t = ctx.currentTime;
-    // 2-3 quick chirps with slight random pitch variation
-    const base = 1800 + Math.random() * 600;
-    tone(ctx, base,       'sine', t,        0.08, 0.25, 0.01, base * 1.15);
-    tone(ctx, base * 1.1, 'sine', t + 0.12, 0.07, 0.2,  0.01, base * 1.25);
-    if (Math.random() > 0.4)
-      tone(ctx, base * 0.9, 'sine', t + 0.28, 0.06, 0.18, 0.01, base * 1.05);
-  }
-
-  // ── EVENING / NIGHT: WARM JAZZ BAR AMBIENT ──
-  // Soft piano chord stabs + upright bass pulse + gentle brush snare texture
-
-  // Play a jazz chord: stack of sine harmonics simulating piano
-  function playJazzChord(rootFreq, vol=0.13, duration=2.2) {
-    const ctx = getAudioCtx();
-    const t = ctx.currentTime;
-    // minor 7th voicing intervals (root, m3, 5, m7, 9)
-    const intervals = [1, 1.189, 1.498, 1.782, 2.245];
-    intervals.forEach((ratio, i) => {
-      const osc = ctx.createOscillator();
-      const g   = ctx.createGain();
-      // add slight detuning for warmth
-      const detune = (Math.random() - 0.5) * 8;
-      osc.type = 'sine';
-      osc.frequency.value = rootFreq * ratio;
-      osc.detune.value = detune;
-      osc.connect(g); g.connect(ctx.destination);
-      const vel = vol * (0.7 + Math.random() * 0.3) * (i === 0 ? 1.2 : 0.8);
-      g.gain.setValueAtTime(0.0001, t + i * 0.012);
-      g.gain.linearRampToValueAtTime(vel, t + i * 0.012 + 0.025);
-      g.gain.exponentialRampToValueAtTime(vel * 0.4, t + 0.4);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + duration);
-      osc.start(t + i * 0.012);
-      osc.stop(t + duration + 0.1);
-    });
-    // add a soft 2nd harmonic for piano body
-    const body = ctx.createOscillator();
-    const bg   = ctx.createGain();
-    body.type = 'triangle'; body.frequency.value = rootFreq * 2;
-    body.connect(bg); bg.connect(ctx.destination);
-    bg.gain.setValueAtTime(0.0001, t);
-    bg.gain.linearRampToValueAtTime(vol * 0.3, t + 0.03);
-    bg.gain.exponentialRampToValueAtTime(0.0001, t + duration * 0.6);
-    body.start(t); body.stop(t + duration);
-  }
-
-  // Upright bass note — low sine with pluck envelope
-  function playBassPulse(freq=110) {
-    const ctx = getAudioCtx();
-    const t = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const g   = ctx.createGain();
-    osc.type = 'sine'; osc.frequency.value = freq;
-    // slight pitch drop on pluck
-    osc.frequency.setValueAtTime(freq * 1.04, t);
-    osc.frequency.exponentialRampToValueAtTime(freq, t + 0.06);
-    osc.connect(g); g.connect(ctx.destination);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(0.28, t + 0.015);
-    g.gain.exponentialRampToValueAtTime(0.08, t + 0.25);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
-    osc.start(t); osc.stop(t + 1.0);
-  }
-
-  // Brush snare — short filtered noise burst
-  function playBrushSnare() {
-    const ctx = getAudioCtx();
-    const t = ctx.currentTime;
-    const bufSize = Math.floor(ctx.sampleRate * 0.12);
-    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
-    const src = ctx.createBufferSource(); src.buffer = buf;
-    const hp  = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2500;
-    const g   = ctx.createGain();
-    src.connect(hp); hp.connect(g); g.connect(ctx.destination);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(0.07, t + 0.005);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
-    src.start(t); src.stop(t + 0.13);
-  }
-
-  // Jazz sequence — ii-V-I feel, slow bossa tempo ~90bpm = 0.67s/beat
-  const JAZZ_ROOTS = [196, 220, 246.94, 261.63, 293.66, 329.63]; // G3 A3 B3 C4 D4 E4
-  const BASS_MAP   = [98, 110, 123.47, 130.81, 146.83, 164.81];
-  let jazzStep = 0;
-  function playJazzStep() {
-    const beat = 0.67;
-    const root = JAZZ_ROOTS[jazzStep % JAZZ_ROOTS.length];
-    const bass = BASS_MAP[jazzStep % BASS_MAP.length];
-    playJazzChord(root);
-    playBassPulse(bass);
-    // brush on 2 and 4
-    if (jazzStep % 4 === 1 || jazzStep % 4 === 3) playBrushSnare();
-    jazzStep++;
-  }
-
-  // ── CONTINUOUS NIGHT AMBIENCE ──
-  let nightAmbienceNode = null;
-  function startNightAmbience() {
-    if (nightAmbienceNode) return;
-    // gentle room reverb via convolution simulation — just a quiet filtered noise pad
-    const ctx = getAudioCtx();
-    const bufSize = ctx.sampleRate * 3;
-    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.8));
-    }
-    // just a very soft low noise bed
-    const src = ctx.createBufferSource();
-    const nb  = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
-    const nd  = nb.getChannelData(0);
-    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
-    src.buffer = nb; src.loop = true;
-    const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=120;
-    const g  = ctx.createGain(); g.gain.value = 0.04;
-    src.connect(lp); lp.connect(g); g.connect(ctx.destination);
-    src.start();
-    nightAmbienceNode = { src };
-  }
-  function stopNightAmbience() {
-    if (nightAmbienceNode) {
-      try { nightAmbienceNode.src.stop(); } catch(e) {}
-      nightAmbienceNode = null;
-    }
-  }
-
-  // ── CRISIS ALARM ──
-  function playCrisisSound() {
-    const ctx = getAudioCtx();
-    const t = ctx.currentTime;
-    // two-tone siren
-    tone(ctx, 880, 'square', t,        0.18, 0.15, 0.01);
-    tone(ctx, 660, 'square', t + 0.2,  0.18, 0.18, 0.01);
-    tone(ctx, 880, 'square', t + 0.42, 0.18, 0.18, 0.01);
-    tone(ctx, 660, 'square', t + 0.64, 0.18, 0.15, 0.01);
-  }
-
-  // ── MORNING BIRDS: fuller dawn chorus ──
-  function playDawnChorus() {
-    const ctx = getAudioCtx();
-    const t = ctx.currentTime;
-    const offsets = [0, 0.4, 0.9, 1.5];
-    offsets.forEach(off => {
-      if (Math.random() > 0.3) playBirdSound();
-    });
-  }
-
-  function startSounds(phase, tod) {
-    stopSounds();
-    stopNightAmbience();
-    if (!soundOn) return;
-    const ctx = getAudioCtx();
-
-    if (phase === 2) {
-      if (tod === 0) {
-        // tropical night: waves + jazz bar in the distance
-        startNightAmbience();
-        playWaveSound();
-        soundIntervals.push(setInterval(playWaveSound, 5500));
-        playJazzStep();
-        soundIntervals.push(setInterval(playJazzStep, 1340));
-      } else if (tod === 1) {
-        // tropical morning: waves + birds
-        playWaveSound();
-        setTimeout(playBirdSound, 400);
-        soundIntervals.push(setInterval(playWaveSound, 4800));
-        soundIntervals.push(setInterval(() => { if(Math.random()>.3) playBirdSound(); }, 2200));
-      } else if (tod === 2) {
-        // tropical afternoon: waves + birds
-        playWaveSound();
-        soundIntervals.push(setInterval(playWaveSound, 4200));
-        soundIntervals.push(setInterval(() => { if(Math.random()>.45) playBirdSound(); }, 3500));
-      } else {
-        // tropical evening: waves + beach bar jazz
-        playWaveSound();
-        soundIntervals.push(setInterval(playWaveSound, 5500));
-        startNightAmbience();
-        playJazzStep();
-        soundIntervals.push(setInterval(playJazzStep, 1340));
-      }
-    } else if (phase === 3) {
-      // crisis: alarm bursts
-      setTimeout(playCrisisSound, 500);
-      soundIntervals.push(setInterval(() => { if(Math.random()>.5) playCrisisSound(); }, 4500));
-    } else {
-      // phase 1 — countdown
-      if (tod === 0) {
-        // night: soft jazz ambience
-        startNightAmbience();
-        playJazzStep();
-        soundIntervals.push(setInterval(playJazzStep, 1340));
-      } else if (tod === 1) {
-        // morning: birds
-        setTimeout(playBirdSound, 200);
-        soundIntervals.push(setInterval(() => { if(Math.random()>.35) playBirdSound(); }, 2800));
-      } else if (tod === 2) {
-        // afternoon: birds
-        setTimeout(playBirdSound, 500);
-        soundIntervals.push(setInterval(() => { if(Math.random()>.45) playBirdSound(); }, 4000));
-      } else {
-        // evening: jazz bar ambient
-        startNightAmbience();
-        playJazzStep();
-        soundIntervals.push(setInterval(playJazzStep, 1340)); // ~90bpm per 2 beats
-      }
-    }
-  }
-
-  function stopSounds() {
-    soundIntervals.forEach(clearInterval);
-    soundIntervals = [];
-    stopNightAmbience();
-  }
-
-  document.getElementById('soundBtn').addEventListener('click', async () => {
-    soundOn = !soundOn;
-    document.getElementById('soundBtn').textContent = soundOn ? '🔊' : '🔇';
-    if (soundOn) {
-      const ctx = getAudioCtx();
-      await ctx.resume();
-      startSounds(currentPhase, currentTOD);
-    } else {
-      stopSounds();
-    }
+function initRain() {
+  rainCanvas.width  = window.innerWidth;
+  rainCanvas.height = window.innerHeight;
+  drops = [];
+  const n = Math.floor(rainIntensity * 180 + 20);
+  for(let i=0;i<n;i++) drops.push({
+    x: Math.random()*rainCanvas.width,
+    y: Math.random()*rainCanvas.height,
+    len: 10 + Math.random()*20,
+    speed: 4 + Math.random()*6,
+    opacity: 0.2 + Math.random()*0.4,
   });
+}
+window.addEventListener('resize', () => { if(rainActive) initRain(); });
 
-  // Auto-enable on first interaction anywhere on page
-  async function autoEnableSound() {
-    if (soundOn) return;
-    soundOn = true;
-    document.getElementById('soundBtn').textContent = '🔊';
-    const ctx = getAudioCtx();
-    await ctx.resume();
-    startSounds(currentPhase, currentTOD);
-    document.removeEventListener('click', autoEnableSound);
-    document.removeEventListener('touchstart', autoEnableSound);
+function animRain() {
+  if(!rainActive){ rctx.clearRect(0,0,rainCanvas.width,rainCanvas.height); return; }
+  rctx.clearRect(0,0,rainCanvas.width,rainCanvas.height);
+  drops.forEach(d=>{
+    rctx.beginPath();
+    rctx.moveTo(d.x, d.y);
+    rctx.lineTo(d.x - d.len*0.2, d.y + d.len);
+    rctx.strokeStyle = `rgba(160,180,210,${d.opacity})`;
+    rctx.lineWidth = 1;
+    rctx.stroke();
+    d.y += d.speed;
+    d.x -= d.speed * 0.2;
+    if(d.y > rainCanvas.height){ d.y = -d.len; d.x = Math.random()*rainCanvas.width; }
+  });
+  requestAnimationFrame(animRain);
+}
+
+function setRain(intensity) {
+  rainIntensity = intensity;
+  if(intensity > 0 && !rainActive) {
+    rainActive = true;
+    initRain();
+    animRain();
+    document.getElementById('rainCanvas').style.opacity = String(Math.min(1, intensity * 1.2));
+  } else if(intensity <= 0 && rainActive) {
+    rainActive = false;
+    document.getElementById('rainCanvas').style.opacity = '0';
+  } else if(rainActive) {
+    initRain();
+    document.getElementById('rainCanvas').style.opacity = String(Math.min(1, intensity * 1.2));
   }
-  document.addEventListener('click', autoEnableSound);
-  document.addEventListener('touchstart', autoEnableSound);
+}
 
-  // ═══════════════════════════════════════════════════════
-  //  STARS
-  // ═══════════════════════════════════════════════════════
-  function buildStars() {
-    const layer = document.getElementById('starsLayer');
-    if(layer.children.length > 0) return;
-    for(let i=0;i<140;i++){
-      const s = document.createElement('div');
-      s.className='star';
-      const sz = .5 + Math.random()*2;
-      s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*70}%;left:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s;`;
-      layer.appendChild(s);
-    }
+// ══════════════════════════════════════════════════════════
+//  STARS
+// ══════════════════════════════════════════════════════════
+function buildStars() {
+  const layer = document.getElementById('starsLayer');
+  if(layer.children.length) return;
+  for(let i=0;i<140;i++){
+    const s = document.createElement('div'); s.className='star';
+    const sz = .5+Math.random()*2;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*72}%;left:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s;`;
+    layer.appendChild(s);
   }
+}
 
-  // ═══════════════════════════════════════════════════════
-  //  CONFETTI
-  // ═══════════════════════════════════════════════════════
-  function spawnConfetti(colors) {
-    const c=colors||['#e8735a','#4ba3c7','#f5c200','#a8d8ea','#f5a68d'];
-    for(let i=0;i<90;i++) setTimeout(()=>{
-      const el=document.createElement('div'); el.className='confetti-piece';
-      const sz=6+Math.random()*9;
-      el.style.cssText=`position:fixed;left:${Math.random()*100}vw;top:0;background:${c[Math.floor(Math.random()*c.length)]};animation:confetti-fall ${2.5+Math.random()*3}s linear ${Math.random()*2}s forwards;width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'3px'};z-index:20;`;
-      document.head.insertAdjacentHTML('beforeend',`<style>@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}</style>`);
-      document.body.appendChild(el);
-      setTimeout(()=>el.remove(),7000);
-    },i*38);
+// ══════════════════════════════════════════════════════════
+//  APPLY SKIN
+// ══════════════════════════════════════════════════════════
+let curPhase=-1, curTod=-1, curDeg=-1;
+let phase2Entered=false, phase3Entered=false;
+let ls1=-1,lm1=-1,ls2=-1,lm2=-1;
+
+function applyVariables(skin) {
+  const r = document.documentElement.style;
+  r.setProperty('--bg-top',    skin.bgTop  || '#fff');
+  r.setProperty('--bg-mid',    skin.bgMid  || '#dff0fa');
+  r.setProperty('--bg-bot',    skin.bgBot  || '#93d0ef');
+  r.setProperty('--card-bg',   skin.card   || 'rgba(255,255,255,.85)');
+  r.setProperty('--card-border',skin.border|| 'rgba(75,163,199,.2)');
+  r.setProperty('--card-shadow',skin.shadow|| 'rgba(75,163,199,.1)');
+  r.setProperty('--accent',    skin.accent || '#4ba3c7');
+  r.setProperty('--accent2',   skin.accent2|| '#e8735a');
+  r.setProperty('--text',      skin.text   || '#1a3a4a');
+  r.setProperty('--muted',     skin.muted  || '#6a9ab0');
+  r.setProperty('--stamp-col', skin.stamp  || '#4ba3c7');
+  r.setProperty('--num-col',   skin.num    || '#4ba3c7');
+  r.setProperty('--wave1',     skin.w1     || 'rgba(75,163,199,.22)');
+  r.setProperty('--wave2',     skin.w2     || 'rgba(75,163,199,.32)');
+  r.setProperty('--wave3',     skin.w3     || 'rgba(41,128,185,.28)');
+  r.setProperty('--progress-bg',skin.progBg|| 'rgba(188,227,245,.5)');
+  document.getElementById('bgMain').style.background =
+    `linear-gradient(180deg,${skin.bgTop} 0%,${skin.bgMid} 50%,${skin.bgBot} 100%)`;
+}
+
+function applyAtmosphere(skin) {
+  document.getElementById('sunEl').style.opacity   = skin.sun      ? '1' : '0';
+  document.getElementById('moonEl').style.opacity  = skin.moon     ? '1' : '0';
+  document.getElementById('cloudSun').style.opacity= skin.cloudSun ? '1' : '0';
+  document.getElementById('clouds').style.opacity  = skin.clouds;
+  document.getElementById('seagulls').style.opacity= skin.gulls;
+  document.getElementById('palms').style.opacity   = skin.palms;
+  if(skin.stars){ buildStars(); document.getElementById('starsLayer').style.opacity='1'; }
+  else document.getElementById('starsLayer').style.opacity='0';
+  // grain for crisis
+  document.getElementById('bgGrain').style.opacity = curPhase===3 ? '1' : '0';
+}
+
+function applyPhaseVisibility(phase) {
+  document.getElementById('p1').classList.toggle('hidden', phase!==1);
+  document.getElementById('p2').classList.toggle('hidden', phase!==2);
+  document.getElementById('p3').classList.toggle('hidden', phase!==3);
+  ['tf1','tf2','tf3'].forEach(id=>{ const el=document.getElementById(id); el.style.opacity=phase===2?'1':'0'; el.style.pointerEvents=phase===2?'auto':'none'; });
+  ['bf1','bf2','bf3'].forEach(id=>{ const el=document.getElementById(id); el.style.opacity=phase===3?'0.7':'0'; el.style.pointerEvents='none'; });
+}
+
+function applyTexts(skin, phase, degLevel) {
+  const now = new Date();
+  const todNow = tod(now.getHours());
+
+  if(phase===1) {
+    if(skin.stampTxt) document.getElementById('p1Stamp').textContent = skin.stampTxt;
+    document.getElementById('p1TitleTop').textContent = skin.titleTop || 'Izunia,';
+    const bot = skin.titleBotFn
+      ? skin.titleBotFn(calDays(now, VAC_START))
+      : (skin.titleBot || 'na urlop!');
+    document.getElementById('p1TitleBot').textContent = bot;
+    if(skin.sub)  document.getElementById('p1Sub').textContent = skin.sub;
+    if(skin.msg)  document.getElementById('p1msg').textContent = skin.msg;
+    if(skin.mi)   document.getElementById('p1mi').textContent  = skin.mi;
   }
-
-  // ═══════════════════════════════════════════════════════
-  //  APPLY SKIN
-  // ═══════════════════════════════════════════════════════
-  let currentPhase=-1, currentTOD=-1;
-  let phase2Entered=false, phase3Entered=false;
-  let lastSec1=-1,lastMin1=-1,lastSec2=-1,lastMin2=-1;
-
-  function applySkin(phase, tod, animate=false) {
-    const key = `${phase}-${tod}`;
-    const skin = SKINS[key] || SKINS[`${phase}-2`];
-
-    // CSS vars
-    const r = document.documentElement.style;
-    r.setProperty('--bg-top', skin.bgTop);
-    r.setProperty('--bg-mid', skin.bgMid);
-    r.setProperty('--bg-bot', skin.bgBot);
-    r.setProperty('--card-bg', skin.cardBg);
-    r.setProperty('--card-border', skin.cardBorder);
-    r.setProperty('--card-shadow', skin.cardShadow);
-    r.setProperty('--accent', skin.accent);
-    r.setProperty('--accent2', skin.accent2);
-    r.setProperty('--text', skin.text);
-    r.setProperty('--muted', skin.muted);
-    r.setProperty('--stamp-col', skin.stampCol);
-    r.setProperty('--num-col', skin.numCol);
-    r.setProperty('--wave1', skin.wave1);
-    r.setProperty('--wave2', skin.wave2);
-    r.setProperty('--wave3', skin.wave3);
-    r.setProperty('--progress-fill', skin.progressFill);
-
-    // bgMain gradient
-    document.getElementById('bgMain').style.background =
-      `linear-gradient(180deg,${skin.bgTop} 0%,${skin.bgMid} 50%,${skin.bgBot} 100%)`;
-
-    // celestials
-    document.getElementById('sunEl').style.opacity  = skin.showSun  ? '1' : '0';
-    document.getElementById('moonEl').style.opacity = skin.showMoon ? '1' : '0';
-
-    // stars
-    if(skin.showStars){ buildStars(); document.getElementById('starsLayer').style.opacity='1'; }
-    else document.getElementById('starsLayer').style.opacity='0';
-
-    // atmosphere
-    document.getElementById('clouds').style.opacity   = skin.cloudsOpacity;
-    document.getElementById('seagulls').style.opacity = skin.seagullsOpacity;
-    document.getElementById('palms').style.opacity    = skin.palmsOpacity;
-
-    // phase sections
-    document.getElementById('mainContent').style.display   = phase===1?'':'none';
-    document.getElementById('vacationMode').classList.toggle('active', phase===2);
-    document.getElementById('returnMode').classList.toggle('active', phase===3);
-
-    // tropical / butterfly decorations
-    ['tf1','tf2','tf3'].forEach(id=>document.getElementById(id).style.display=phase===2?'':'none');
-    ['bf1','bf2','bf3'].forEach(id=>document.getElementById(id).style.display=phase===3?'':'none');
-
-    // phase pill
-    const pills=['','🌴 Faza 1 · Odliczanie','🌺 Faza 2 · Urlop!','🚨 Faza 3 · Powrót'];
-    const todNames=['noc','ranek','południe','wieczór'];
-    document.getElementById('phasePill').textContent=`${pills[phase]} · ${todNames[tod]}`;
-
-    // texts
-    if(phase===1) {
-      if(skin.p1Stamp) document.getElementById('p1Stamp').textContent=skin.p1Stamp;
-      // calendar days: how many midnights until VAC_START
-      const _now = new Date(), _vac = new Date(VAC_START);
-      const _nowMid = new Date(_now.getFullYear(),_now.getMonth(),_now.getDate());
-      const _vacMid = new Date(_vac.getFullYear(),_vac.getMonth(),_vac.getDate());
-      const daysLeft = Math.round((_vacMid - _nowMid) / 86400000);
-      if(skin.p1TitleFn) document.getElementById('p1Title').innerHTML=skin.p1TitleFn(daysLeft); else if(skin.p1Title) document.getElementById('p1Title').innerHTML=skin.p1Title;
-      if(skin.p1Sub)   document.getElementById('p1Sub').textContent=skin.p1Sub;
-    }
-    if(phase===2) {
-      if(skin.p2Stamp) document.getElementById('p2Stamp').textContent=skin.p2Stamp;
-      if(skin.p2Title) document.getElementById('p2Title').innerHTML=skin.p2Title;
-      if(skin.p2Sub)   document.getElementById('p2Sub').textContent=skin.p2Sub;
-    }
-
-    // daily message (rotate by day of month)
-    const dayIdx = new Date().getDate() % 3;
-    const msgArr = EXTRA_MSGS[key] || [skin.msg];
-    const msg    = msgArr[dayIdx % msgArr.length] || skin.msg;
-
-    if(phase===1){ document.getElementById('dailyMsgIcon').textContent=skin.msgIcon||'💬'; document.getElementById('dailyMsg').textContent=msg; }
-    if(phase===2){ document.getElementById('vacMsgIcon').textContent=skin.msgIcon||'🌴'; document.getElementById('vacMsg').textContent=msg; }
-    if(phase===3){ document.getElementById('retMsgIcon').textContent=skin.msgIcon||'📢'; document.getElementById('retMsg').textContent=msg; }
-
-    // flash on TOD change
-    if(animate) {
-      const fl = document.getElementById('dayFlash');
-      fl.classList.remove('flash');
-      void fl.offsetWidth;
-      fl.classList.add('flash');
-    }
-
-    // entries
-    if(phase===2 && !phase2Entered){ phase2Entered=true; spawnConfetti(['#ffb347','#ff8c42','#f5c200','#e8735a','#ffffff']); }
-    if(phase===3 && !phase3Entered){ phase3Entered=true; spawnConfetti(['#cc0000','#ff4444','#ffffff','#ff8800','#ffcccc']); }
-
-    // sounds
-    if(phase!==currentPhase || tod!==currentTOD) startSounds(phase,tod);
-
-    currentPhase=phase; currentTOD=tod;
+  if(phase===2) {
+    if(skin.stampTxt) document.getElementById('p2Stamp').textContent = skin.stampTxt;
+    document.getElementById('p2TitleTop').textContent = skin.titleTop || 'Raj';
+    document.getElementById('p2TitleBot').textContent = skin.titleBot || 'odnaleziony!';
+    if(skin.sub)       document.getElementById('p2Sub').textContent       = skin.sub;
+    if(skin.msg)       document.getElementById('p2msg').textContent       = skin.msg;
+    if(skin.mi)        document.getElementById('p2mi').textContent        = skin.mi;
+    if(skin.p2endLabel) document.getElementById('p2endLabel').textContent = skin.p2endLabel;
+    if(skin.mailEmoji) document.getElementById('mailEmoji').textContent   = skin.mailEmoji;
+    if(skin.mailDesc)  document.getElementById('mailDesc').textContent    = skin.mailDesc;
+    if(skin.p2statsLabel) document.getElementById('p2statsLabel').textContent = skin.p2statsLabel;
+    if(skin.p2divIcon) document.getElementById('p2divIcon').textContent   = skin.p2divIcon;
+    // progress color hdr
+    const hdrColor = degLevel > 0 ? '#7a5040' : skin.muted;
   }
 
-  // ═══════════════════════════════════════════════════════
-  //  EASTER EGG
-  // ═══════════════════════════════════════════════════════
-  const eggTriggers = ['p1Stamp','p2Stamp','crisis-stamp'];
-  const eggs = [
-    {emoji:'🥚',title:'Znalazłeś jajko!',text:'Gratulacje! Kliknąłeś w znaczek. To wymagało odwagi. Lub nudy. Prawdopodobnie nudy.'},
-    {emoji:'🌴',title:'Tajny rozkaz!',text:'Operacja "Podbij Morale" aktywna. Misja: przeżyć do następnego urlopu Izy. Powodzenia.'},
-    {emoji:'☕',title:'Kawowy sekret!',text:'Prawda jest taka: ta strona istnieje tylko po to, żeby móc klikać w nią zamiast pracować. I nie ma w tym nic złego.'},
-    {emoji:'🚨',title:'Alarm!',text:'Uwaga: właśnie zmarnowałeś 3 sekundy życia klikając tutaj. Z drugiej strony — co lepszego miałeś do roboty?'},
-    {emoji:'🦜',title:'Psst!',text:'Izunia nigdy nie dowie się, że tęsknisz za jej urlopem bardziej niż za nią. To tajemnica.'},
-  ];
-  let eggIdx = 0;
+  // pill
+  const phase_labels = ['','🌴 Faza 1 · Odliczanie','🌺 Faza 2 · Urlop!','🚨 Faza 3 · Powrót'];
+  const tod_labels   = ['noc','ranek','południe','wieczór'];
+  const deg_labels   = ['','· ⛅ +3dni','· 🌧️ +2dni','· ⛈️ ostatni dzień'];
+  document.getElementById('phasePill').textContent =
+    `${phase_labels[phase]} · ${tod_labels[todNow]}${degLevel>0?deg_labels[degLevel]:''}`;
+}
 
-  function showEgg() {
-    const egg = eggs[eggIdx++ % eggs.length];
-    document.getElementById('eggEmoji').textContent = egg.emoji;
-    document.getElementById('eggTitle').textContent = egg.title;
-    document.getElementById('eggText').textContent  = egg.text;
-    document.getElementById('eggOverlay').classList.add('visible');
-    spawnConfetti();
+function render(phase, todVal, degLevel, animateFlash) {
+  if(phase===curPhase && todVal===curTod && degLevel===curDeg) return;
+
+  const changed = phase!==curPhase || todVal!==curTod || degLevel!==curDeg;
+  if(!changed) return;
+
+  const baseSkin = (SKINS[phase]||SKINS[1])[todVal] || SKINS[phase][2];
+  const skin = phase===2 ? getDegSkin(baseSkin, degLevel, todVal) : baseSkin;
+
+  applyVariables(skin);
+  applyAtmosphere(skin);
+  applyPhaseVisibility(phase);
+  applyTexts(skin, phase, degLevel);
+
+  // rain
+  if(phase===3) setRain(0.55 + todVal*0.1);
+  else if(phase===2 && degLevel===3) setRain(0.35);
+  else if(phase===2 && degLevel===2) setRain(0.15);
+  else setRain(0);
+
+  // clouds color for crisis/degrade
+  const cloudColor = (phase===3||degLevel>=2) ? '#9a9aaa' : 'white';
+  document.querySelectorAll('.cloud,.cloud::before,.cloud::after').forEach(el=>el.style.background=cloudColor);
+  // easier via class on body
+  document.body.dataset.phase = phase;
+  document.body.dataset.deg   = degLevel;
+
+  // entries
+  if(phase===2&&!phase2Entered){ phase2Entered=true; spawnConfetti(['#ffb347','#ff8c42','#f5c200','#e8735a','#ffffff']); }
+  if(phase===3&&!phase3Entered){ phase3Entered=true; spawnConfetti(['#cc0000','#ff4444','#ffffff','#ff8800']); }
+
+  if(animateFlash && curPhase>=0) {
+    const fl=document.getElementById('dayFlash');
+    fl.classList.remove('flash'); void fl.offsetWidth; fl.classList.add('flash');
   }
 
-  document.getElementById('p1Stamp').addEventListener('click', showEgg);
-  document.getElementById('p2Stamp').addEventListener('click', showEgg);
-  document.querySelectorAll('.crisis-stamp').forEach(el=>el.addEventListener('click',showEgg));
-  document.getElementById('eggClose').addEventListener('click', ()=>document.getElementById('eggOverlay').classList.remove('visible'));
-  document.getElementById('eggOverlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) e.currentTarget.classList.remove('visible'); });
+  startSounds(phase, todVal, degLevel);
+  curPhase=phase; curTod=todVal; curDeg=degLevel;
+}
 
-  // ═══════════════════════════════════════════════════════
-  //  STATIC LABELS
-  // ═══════════════════════════════════════════════════════
-  document.getElementById('targetDateDisplay').textContent =
-    'Cel: ' + VAC_START.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}) + ' ✈';
-  document.getElementById('returnDateDisplay').textContent =
-    'Powrót: ' + VAC_END.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}) + ' ✈';
-  document.getElementById('retDate').textContent =
-    VAC_END.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
+// ══════════════════════════════════════════════════════════
+//  AUDIO
+// ══════════════════════════════════════════════════════════
+let audioCtx=null, soundOn=false, soundIntervals=[];
+let noiseNode=null, oceanBed=null, windNode=null, cicadaBed=null;
 
-  // ═══════════════════════════════════════════════════════
-  //  MAIN TICK
-  // ═══════════════════════════════════════════════════════
-  let prevTOD = -1;
+function getCtx(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
 
-  function update() {
-    const now = new Date();
-    const h   = now.getHours();
-    const tod = getTimeOfDay(h);
-    const phase = now < VAC_START ? 1 : now < VAC_END ? 2 : 3;
+function tone(freq,type,t,dur,vol,fadeIn=0.02,freqEnd=null){
+  const ctx=getCtx();
+  const osc=ctx.createOscillator(), g=ctx.createGain();
+  osc.connect(g); g.connect(ctx.destination);
+  osc.type=type; osc.frequency.setValueAtTime(freq,t);
+  if(freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd,t+dur);
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.linearRampToValueAtTime(vol,t+fadeIn);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  osc.start(t); osc.stop(t+dur+.05);
+}
 
-    const todChanged = tod !== prevTOD;
-    if(phase !== currentPhase || todChanged) {
-      applySkin(phase, tod, todChanged && prevTOD !== -1);
-    }
-    prevTOD = tod;
+// ══ HELPERS ══════════════════════════════════════════════
+// Looped noise buffer through filters → returns {src, gainNode}
+function makeNoiseLoop(filters, vol) {
+  const ctx = getCtx();
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 5, ctx.sampleRate);
+  const d   = buf.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  const src = ctx.createBufferSource(); src.buffer=buf; src.loop=true;
+  const g   = ctx.createGain(); g.gain.value=vol;
+  let node  = src;
+  filters.forEach(f=>{ node.connect(f); node=f; });
+  node.connect(g); g.connect(ctx.destination);
+  src.start();
+  return {src, gainNode:g};
+}
+function stopNode(n){ if(n){ try{n.src.stop();}catch(e){} } }
 
-    // ── PHASE 1 ──
-    if(phase===1) {
-      const diff=VAC_START-now, total=Math.floor(diff/1000);
-      const secs=total%60, mins=Math.floor(total/60)%60, hrs=Math.floor(total/3600)%24, days=Math.floor(total/86400);
-      document.getElementById('days').textContent  = days;
-      document.getElementById('hours').textContent = pad(hrs);
-      const sEl=document.getElementById('seconds'), mEl=document.getElementById('minutes');
-      if(secs!==lastSec1){sEl.textContent=pad(secs);sEl.classList.remove('tick');void sEl.offsetWidth;sEl.classList.add('tick');lastSec1=secs;}
-      if(mins!==lastMin1){mEl.textContent=pad(mins);mEl.classList.remove('tick');void mEl.offsetWidth;mEl.classList.add('tick');lastMin1=mins;}
-      document.getElementById('coffees').textContent  = Math.ceil(days*2.5).toLocaleString('pl-PL');
-      document.getElementById('sleeps').textContent   = (days+(hrs>0?1:0)).toLocaleString('pl-PL');
-      document.getElementById('workdays').textContent = countWorkdays(now,VAC_START).toLocaleString('pl-PL');
-      const pct=Math.min(100,Math.max(0,(now-CNT_START)/(VAC_START-CNT_START)*100));
-      document.getElementById('progressFill').style.width=pct.toFixed(2)+'%';
-      document.getElementById('progressPct').textContent=pct.toFixed(1)+'% drogi za nami';
-    }
+// ══ OCEAN WAVE — single crash ═════════════════════════════
+// vol: 1=normal, slower=true → lazy evening wave
+function playWave(vol=1, slower=false){
+  const ctx=getCtx(), t=ctx.currentTime;
+  const dur = slower ? 5.5 : 3.5;
+  const buf=ctx.createBuffer(1, ctx.sampleRate*dur, ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  const src=ctx.createBufferSource(); src.buffer=buf;
+  const bp=ctx.createBiquadFilter(); bp.type='bandpass';
+  bp.frequency.setValueAtTime(slower?500:700, t);
+  bp.frequency.exponentialRampToValueAtTime(slower?100:180, t+dur*.6);
+  bp.Q.value = slower ? 0.5 : 0.7;
+  const ls=ctx.createBiquadFilter(); ls.type='lowshelf'; ls.frequency.value=220; ls.gain.value=16;
+  const g=ctx.createGain();
+  const peak = slower ? 0.35*vol : 0.44*vol;
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.linearRampToValueAtTime(peak, t+(slower?.6:.25));
+  g.gain.exponentialRampToValueAtTime(peak*.35, t+dur*.45);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur*.9);
+  src.connect(bp); bp.connect(ls); ls.connect(g); g.connect(ctx.destination);
+  src.start(t); src.stop(t+dur);
+}
 
-    // ── PHASE 2 ──
-    else if(phase===2) {
-      const diff=VAC_END-now, total=Math.floor(diff/1000);
-      const secs=total%60, mins=Math.floor(total/60)%60, hrs=Math.floor(total/3600)%24, days=Math.floor(total/86400);
-      document.getElementById('rDays').textContent  = days;
-      document.getElementById('rHours').textContent = pad(hrs);
-      const sEl=document.getElementById('rSeconds'), mEl=document.getElementById('rMinutes');
-      if(secs!==lastSec2){sEl.textContent=pad(secs);sEl.classList.remove('tick');void sEl.offsetWidth;sEl.classList.add('tick');lastSec2=secs;}
-      if(mins!==lastMin2){mEl.textContent=pad(mins);mEl.classList.remove('tick');void mEl.offsetWidth;mEl.classList.add('tick');lastMin2=mins;}
-      const daysOnVac=Math.floor((now-VAC_START)/86400000);
-      document.getElementById('drinksOnBeach').textContent = Math.floor(daysOnVac*3.5+2).toLocaleString('pl-PL');
-      document.getElementById('sunrises').textContent      = Math.max(0,daysOnVac).toLocaleString('pl-PL');
-      document.getElementById('emailsWaiting').textContent = Math.floor(daysOnVac*18+12).toLocaleString('pl-PL');
-      const vacPct=Math.min(100,Math.max(0,(now-VAC_START)/(VAC_END-VAC_START)*100));
-      document.getElementById('vacProgressFill').style.width=vacPct.toFixed(2)+'%';
-      document.getElementById('vacProgressPct').textContent=vacPct.toFixed(1)+'% urlopu za nami';
-    }
+// ══ OCEAN BED — continuous deep rumble ═══════════════════
+function startOceanBed(vol=0.07){
+  if(oceanBed) return;
+  const ctx=getCtx();
+  const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=280;
+  const ls=ctx.createBiquadFilter(); ls.type='lowshelf'; ls.frequency.value=150; ls.gain.value=12;
+  oceanBed = makeNoiseLoop([lp,ls], vol);
+}
+function stopOceanBed(){ stopNode(oceanBed); oceanBed=null; }
 
-    // ── PHASE 3 ──
-    else {
-      const daysBack=Math.floor((now-VAC_END)/86400000);
-      const hoursBack=Math.floor((now-VAC_END)/3600000);
-      document.getElementById('retDaysBack').textContent = Math.max(0,daysBack).toLocaleString('pl-PL');
-      document.getElementById('retCoffees').textContent  = Math.floor(hoursBack*0.4+1).toLocaleString('pl-PL');
-      document.getElementById('retEmails').textContent   = Math.floor(daysBack*22+87).toLocaleString('pl-PL');
-    }
+// ══ WIND — mid-freq swishing ══════════════════════════════
+function startWind(vol=0.09){
+  if(windNode) return;
+  const ctx=getCtx();
+  const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=600; bp.Q.value=0.4;
+  const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=200;
+  // LFO on gain for gusts
+  const lfo=ctx.createOscillator(); const lfoG=ctx.createGain();
+  lfo.frequency.value=0.18; lfoG.gain.value=0.035;
+  const mainG=ctx.createGain(); mainG.gain.value=vol;
+  windNode = makeNoiseLoop([bp,hp], vol);
+  lfo.connect(lfoG); lfoG.connect(windNode.gainNode.gain);
+  lfo.start();
+  windNode._lfo=lfo;
+}
+function stopWind(){
+  if(windNode){ if(windNode._lfo){ try{windNode._lfo.stop();}catch(e){} } stopNode(windNode); windNode=null; }
+}
+
+// ══ BIRD CHIRP ════════════════════════════════════════════
+// regular — phase 1 (temperate, familiar)
+function playBird(){
+  const ctx=getCtx(), t=ctx.currentTime;
+  const base=1800+Math.random()*700;
+  tone(base,'sine',t,.09,.28,.01,base*1.18);
+  tone(base*1.12,'sine',t+.13,.08,.22,.01,base*1.28);
+  if(Math.random()>.42) tone(base*.88,'sine',t+.28,.07,.18,.01,base*1.06);
+}
+// tropical — phase 2 (higher, more elaborate)
+function playTropicalBird(){
+  const ctx=getCtx(), t=ctx.currentTime;
+  const base=2400+Math.random()*900;
+  // ascending trill
+  for(let i=0;i<3+Math.floor(Math.random()*3);i++){
+    tone(base*(1+i*.12),'sine',t+i*.055,.07,.22,.008,base*(1.1+i*.1));
+  }
+  // answering call from different pitch
+  if(Math.random()>.5){
+    const b2=1600+Math.random()*500;
+    setTimeout(()=>{
+      tone(b2,'sine',ctx.currentTime,.12,.26,.01,b2*1.22);
+      if(Math.random()>.5) tone(b2*.8,'sine',ctx.currentTime+.15,.08,.18,.01,b2*.9);
+    }, 300+Math.random()*400);
+  }
+}
+
+// ══ TROPICAL NIGHT CICADAS ════════════════════════════════
+// Deep, warm, pulsing — nothing like those old awful crickets
+function startCicadaBed(){
+  if(cicadaBed) return;
+  const ctx=getCtx();
+  // three resonant bandpass filters simulating cicada frequency bands
+  const bp1=ctx.createBiquadFilter(); bp1.type='bandpass'; bp1.frequency.value=2800; bp1.Q.value=18;
+  const bp2=ctx.createBiquadFilter(); bp2.type='bandpass'; bp2.frequency.value=3200; bp2.Q.value=14;
+  const bp3=ctx.createBiquadFilter(); bp3.type='bandpass'; bp3.frequency.value=1900; bp3.Q.value=12;
+
+  // noise source
+  const buf=ctx.createBuffer(1,ctx.sampleRate*4,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  const src=ctx.createBufferSource(); src.buffer=buf; src.loop=true;
+
+  // LFO oscillator for pulsing (16Hz cicada rhythm) — modulate via gain
+  const lfo=ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=16;
+  const lfoGain=ctx.createGain(); lfoGain.gain.value=0.08; // depth of pulse
+
+  const g1=ctx.createGain(); g1.gain.value=0.13;
+  const g2=ctx.createGain(); g2.gain.value=0.09;
+  const g3=ctx.createGain(); g3.gain.value=0.06;
+  const masterG=ctx.createGain(); masterG.gain.value=1;
+
+  src.connect(bp1); bp1.connect(g1); g1.connect(masterG);
+  src.connect(bp2); bp2.connect(g2); g2.connect(masterG);
+  src.connect(bp3); bp3.connect(g3); g3.connect(masterG);
+  masterG.connect(ctx.destination);
+
+  // LFO adds to master gain — creates pulsing without WaveShaper
+  lfo.connect(lfoGain); lfoGain.connect(masterG.gain);
+
+  src.start(); lfo.start();
+  cicadaBed={src,_lfo:lfo};
+}
+function stopCicadaBed(){
+  if(cicadaBed){ if(cicadaBed._lfo){try{cicadaBed._lfo.stop();}catch(e){}} stopNode(cicadaBed); cicadaBed=null; }
+}
+
+// ══ RAIN ═════════════════════════════════════════════════
+function startRainSound(vol=0.22){
+  if(noiseNode) return;
+  const ctx=getCtx();
+  const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=1000;
+  const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=4000; bp.Q.value=0.4;
+  noiseNode = makeNoiseLoop([hp,bp], vol);
+}
+function stopRainSound(){ stopNode(noiseNode); noiseNode=null; }
+
+// ══ CRISIS ALARM ═════════════════════════════════════════
+function playCrisis(){
+  const ctx=getCtx(), t=ctx.currentTime;
+  tone(880,'square',t,.18,.16,.01);
+  tone(660,'square',t+.2,.18,.16,.01);
+  tone(880,'square',t+.42,.18,.14,.01);
+}
+
+// ══ STOP ALL ═════════════════════════════════════════════
+function stopAll(){
+  soundIntervals.forEach(clearInterval); soundIntervals=[];
+  stopRainSound(); stopOceanBed(); stopWind(); stopCicadaBed();
+}
+
+// ══ START SOUNDS — per phase/tod/degLevel ════════════════
+//
+//  PHASE 1 (odliczanie w biurze / tęsknota):
+//    noc      → ocean (cichy, odległy — tęsknota)
+//    ranek    → ptaki
+//    południe → ptaki + wiatr
+//    wieczór  → ocean (wyobraźnia)
+//
+//  PHASE 2 (urlop):
+//    degLevel 0–1: pełna tropikalna paleta
+//      noc      → ocean + cykady tropikalne
+//      ranek    → ocean + tropikalne ptaki
+//      południe → ocean + wiatr (gorący bryz)
+//      wieczór  → ocean głęboki/wolny
+//    degLevel 2–3: deszcz zaczyna padać
+//
+//  PHASE 3 (powrót — kryzys):
+//    wszystkie → deszcz + alarm
+
+function startSounds(phase, todVal, degLevel){
+  stopAll();
+  if(!soundOn) return;
+
+  // ── PHASE 3: CRISIS ──────────────────────────────────
+  if(phase===3){
+    startRainSound(0.28);
+    setTimeout(playCrisis,500);
+    soundIntervals.push(setInterval(()=>{ if(Math.random()>.48) playCrisis(); },5000));
+    return;
   }
 
-  update();
-  setInterval(update, 1000);
-  </script>
+  // ── PHASE 2 degraded (ostatnie 2 dni) ────────────────
+  if(phase===2 && degLevel>=2){
+    startRainSound(degLevel===3 ? 0.32 : 0.18);
+    startOceanBed(0.05);
+    playWave(0.5, true);
+    soundIntervals.push(setInterval(()=>playWave(0.4, true), 9000));
+    return;
+  }
+
+  // ── PHASE 1 ──────────────────────────────────────────
+  if(phase===1){
+    if(todVal===0){
+      // noc — odległy ocean, cichy
+      startOceanBed(0.04);
+      playWave(0.3, true);
+      soundIntervals.push(setInterval(()=>playWave(0.28, true), 8000));
+    } else if(todVal===1){
+      // ranek — ptaki
+      setTimeout(playBird, 300);
+      soundIntervals.push(setInterval(()=>{ if(Math.random()>.35) playBird(); }, 3000));
+    } else if(todVal===2){
+      // południe — ptaki + wiatr
+      setTimeout(playBird, 200);
+      soundIntervals.push(setInterval(()=>{ if(Math.random()>.4) playBird(); }, 3800));
+      startWind(0.07);
+    } else {
+      // wieczór — ocean (wyobraźnia plaży)
+      startOceanBed(0.055);
+      playWave(0.38);
+      soundIntervals.push(setInterval(()=>playWave(0.35), 6500));
+    }
+    return;
+  }
+
+  // ── PHASE 2 (urlop, degLevel 0–1) ────────────────────
+  if(todVal===0){
+    // noc tropikalna — ocean + cykady
+    startOceanBed(0.08);
+    playWave(0.5, true);
+    soundIntervals.push(setInterval(()=>playWave(0.45, true), 7000));
+    startCicadaBed();
+  } else if(todVal===1){
+    // ranek — ocean + tropikalne ptaki
+    startOceanBed(0.07);
+    playWave(0.48);
+    soundIntervals.push(setInterval(playWave, 5000));
+    setTimeout(playTropicalBird, 400);
+    soundIntervals.push(setInterval(()=>{ if(Math.random()>.3) playTropicalBird(); }, 2500));
+  } else if(todVal===2){
+    // południe — ocean + gorący wiatr
+    startOceanBed(0.06);
+    playWave(0.52);
+    soundIntervals.push(setInterval(playWave, 4500));
+    startWind(0.08);
+  } else {
+    // wieczór — ocean głęboki, powolny
+    startOceanBed(0.09);
+    playWave(0.55, true);
+    soundIntervals.push(setInterval(()=>playWave(0.5, true), 8500));
+  }
+}
+
+// Sound button
+document.getElementById('soundBtn').addEventListener('click', async()=>{
+  soundOn=!soundOn;
+  document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇';
+  if(soundOn){ await getCtx().resume(); startSounds(curPhase,curTod,curDeg); }
+  else stopAll();
+});
+// Auto on first interaction
+async function autoSound(){
+  if(soundOn) return;
+  soundOn=true;
+  document.getElementById('soundBtn').textContent='🔊';
+  await getCtx().resume();
+  startSounds(curPhase,curTod,curDeg);
+  document.removeEventListener('click',autoSound);
+  document.removeEventListener('touchstart',autoSound);
+}
+document.addEventListener('click',autoSound);
+document.addEventListener('touchstart',autoSound);
+
+// ══════════════════════════════════════════════════════════
+//  CONFETTI
+// ══════════════════════════════════════════════════════════
+function spawnConfetti(colors){
+  const c=colors||['#e8735a','#4ba3c7','#f5c200'];
+  for(let i=0;i<90;i++) setTimeout(()=>{
+    const el=document.createElement('div'); el.className='confetti-piece';
+    const sz=6+Math.random()*9;
+    el.style.cssText=`left:${Math.random()*100}vw;top:0;background:${c[~~(Math.random()*c.length)]};animation-duration:${2.5+Math.random()*3}s;animation-delay:${Math.random()*2}s;width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'3px'};`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),7000);
+  },i*38);
+}
+
+// ══════════════════════════════════════════════════════════
+//  EASTER EGG
+// ══════════════════════════════════════════════════════════
+const EGGS=[
+  {e:'🥚',t:'Znalazłeś jajko!',p:'Kliknąłeś w znaczek. Odwaga. Lub nuda. Prawdopodobnie nuda.'},
+  {e:'🌴',t:'Tajny rozkaz!',p:'Operacja "Podbij Morale" aktywna. Misja: przeżyć do następnego urlopu Izy.'},
+  {e:'☕',t:'Kawowy sekret!',p:'Ta strona istnieje tylko po to, żeby klikać w nią zamiast pracować. Bez wyrzutów sumienia.'},
+  {e:'🚨',t:'ALARM!',p:'Właśnie zmarnowałeś 3 sekundy życia. Z drugiej strony — co lepszego miałeś do roboty?'},
+  {e:'🦜',t:'Psst!',p:'Izunia nigdy nie dowie się że tęsknisz za jej urlopem bardziej niż za nią. To tajemnica.'},
+  {e:'📋',t:'Dokument odtajniony',p:'Ujawniamy: biuro bez Izy działa spokojniej. Ale smutniej. To złożona sytuacja.'},
+];
+let eggIdx=0;
+function showEgg(){
+  const egg=EGGS[eggIdx++%EGGS.length];
+  document.getElementById('eggEmoji').textContent=egg.e;
+  document.getElementById('eggTitle').textContent=egg.t;
+  document.getElementById('eggText').textContent=egg.p;
+  document.getElementById('eggOverlay').classList.add('visible');
+  spawnConfetti();
+}
+document.getElementById('p1Stamp').addEventListener('click',showEgg);
+document.getElementById('p2Stamp').addEventListener('click',showEgg);
+document.getElementById('p3Stamp').addEventListener('click',showEgg);
+document.getElementById('eggClose').addEventListener('click',()=>document.getElementById('eggOverlay').classList.remove('visible'));
+document.getElementById('eggOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('visible');});
+
+// ══════════════════════════════════════════════════════════
+//  STATIC LABELS
+// ══════════════════════════════════════════════════════════
+document.getElementById('p1footer').textContent =
+  'Cel: '+VAC_START.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'})+' ✈';
+document.getElementById('p2footer').textContent =
+  'Powrót: '+VAC_END.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'})+' ✈';
+
+// ══════════════════════════════════════════════════════════
+//  MAIN TICK
+// ══════════════════════════════════════════════════════════
+let prevTod=-1;
+
+function tick(){
+  const now    = new Date();
+  const h      = now.getHours();
+  const todNow = tod(h);
+  const phase  = now<VAC_START?1:now<VAC_END?2:3;
+  const deg    = getDegLevel(now,phase);
+
+  const todChanged = todNow!==prevTod;
+  render(phase, todNow, deg, todChanged && prevTod!==-1);
+  prevTod=todNow;
+
+  // ── PHASE 1 ──
+  if(phase===1){
+    const diff=VAC_START-now, tot=Math.floor(diff/1000);
+    const sc=tot%60, mn=Math.floor(tot/60)%60, hr=Math.floor(tot/3600)%24, dy=Math.floor(tot/86400);
+    document.getElementById('d1').textContent=dy;
+    document.getElementById('h1').textContent=pad(hr);
+    const sEl=document.getElementById('s1'),mEl=document.getElementById('m1');
+    if(sc!==ls1){sEl.textContent=pad(sc);sEl.classList.remove('tick');void sEl.offsetWidth;sEl.classList.add('tick');ls1=sc;}
+    if(mn!==lm1){mEl.textContent=pad(mn);mEl.classList.remove('tick');void mEl.offsetWidth;mEl.classList.add('tick');lm1=mn;}
+    document.getElementById('coffees').textContent  = Math.ceil(dy*2.5).toLocaleString('pl-PL');
+    document.getElementById('sleeps').textContent   = (dy+(hr>0?1:0)).toLocaleString('pl-PL');
+    document.getElementById('workdays').textContent = workdays(now,VAC_START).toLocaleString('pl-PL');
+    const pct=Math.min(100,Math.max(0,(now-CNT_START)/(VAC_START-CNT_START)*100));
+    document.getElementById('p1fill').style.width=pct.toFixed(2)+'%';
+    document.getElementById('p1pct').textContent=pct.toFixed(1)+'% drogi za nami';
+  }
+
+  // ── PHASE 2 ──
+  else if(phase===2){
+    const diff=VAC_END-now, tot=Math.floor(diff/1000);
+    const sc=tot%60, mn=Math.floor(tot/60)%60, hr=Math.floor(tot/3600)%24, dy=Math.floor(tot/86400);
+    document.getElementById('d2').textContent=dy;
+    document.getElementById('h2').textContent=pad(hr);
+    const sEl=document.getElementById('s2'),mEl=document.getElementById('m2');
+    if(sc!==ls2){sEl.textContent=pad(sc);sEl.classList.remove('tick');void sEl.offsetWidth;sEl.classList.add('tick');ls2=sc;}
+    if(mn!==lm2){mEl.textContent=pad(mn);mEl.classList.remove('tick');void mEl.offsetWidth;mEl.classList.add('tick');lm2=mn;}
+    const daysOn=Math.floor((now-VAC_START)/86400000);
+    document.getElementById('drinks').textContent   = Math.floor(daysOn*3.5+2).toLocaleString('pl-PL');
+    document.getElementById('sunrises').textContent = Math.max(0,daysOn).toLocaleString('pl-PL');
+    document.getElementById('emails').textContent   = Math.floor(daysOn*18+12).toLocaleString('pl-PL');
+    const vacPct=Math.min(100,Math.max(0,(now-VAC_START)/(VAC_END-VAC_START)*100));
+    document.getElementById('p2fill').style.width=vacPct.toFixed(2)+'%';
+    document.getElementById('p2pct').textContent=vacPct.toFixed(1)+'% urlopu za nami';
+  }
+
+  // ── PHASE 3 ──
+  else{
+    const dBack=Math.floor((now-VAC_END)/86400000);
+    const hBack=Math.floor((now-VAC_END)/3600000);
+    document.getElementById('retDays').textContent    = Math.max(0,dBack).toLocaleString('pl-PL');
+    document.getElementById('retCoffees').textContent = Math.floor(hBack*.4+1).toLocaleString('pl-PL');
+    document.getElementById('retEmails').textContent  = Math.floor(dBack*22+87).toLocaleString('pl-PL');
+  }
+}
+
+tick();
+setInterval(tick,1000);
+</script>
 </body>
 </html>
