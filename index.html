@@ -5,562 +5,744 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="theme-color" content="#dff0fa" />
   <title>Urlop Izy 🌴</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Cormorant+Garamond:ital,wght@0,400;1,300;1,400;1,600&family=Josefin+Sans:wght@300;400;600&family=Special+Elite&display=swap" rel="stylesheet" />
   <style>
+    /* ══════════════════════════════════════════════════
+       CSS VARIABLES — updated by JS per skin
+    ══════════════════════════════════════════════════ */
     :root {
-      --ocean:  #4ba3c7;
-      --deep:   #2980b9;
-      --coral:  #e8735a;
-      --peach:  #f5a68d;
-      --sky2:   #cde8f7;
-      --text:   #1a3a4a;
-      --muted:  #6a9ab0;
-      --white:  #ffffff;
-      --safe-top:    env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --safe-left:   env(safe-area-inset-left, 0px);
-      --safe-right:  env(safe-area-inset-right, 0px);
+      --bg-top:    #ffffff;
+      --bg-mid:    #dff0fa;
+      --bg-bot:    #93d0ef;
+      --card-bg:   rgba(255,255,255,0.85);
+      --card-border: rgba(75,163,199,0.2);
+      --card-shadow: rgba(75,163,199,0.1);
+      --accent:    #4ba3c7;
+      --accent2:   #e8735a;
+      --text:      #1a3a4a;
+      --muted:     #6a9ab0;
+      --stamp-col: #4ba3c7;
+      --num-col:   #4ba3c7;
+      --wave1:     rgba(75,163,199,0.22);
+      --wave2:     rgba(75,163,199,0.32);
+      --wave3:     rgba(41,128,185,0.28);
+      --progress-fill: linear-gradient(90deg,#4ba3c7,#e8735a);
+      --safe-top:    env(safe-area-inset-top,0px);
+      --safe-bottom: env(safe-area-inset-bottom,0px);
+      --safe-left:   env(safe-area-inset-left,0px);
+      --safe-right:  env(safe-area-inset-right,0px);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-      text-size-adjust: 100%;
-    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{-webkit-text-size-adjust:100%;}
 
     body {
-      font-family: 'Josefin Sans', sans-serif;
-      min-height: 100svh;
-      min-height: -webkit-fill-available;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--text);
-      position: relative;
-      overflow-x: hidden;
-      /* Safe area aware padding */
-      padding-top: max(2rem, calc(1rem + var(--safe-top)));
-      padding-left:  max(1.25rem, calc(.75rem + var(--safe-left)));
-      padding-right: max(1.25rem, calc(.75rem + var(--safe-right)));
-      padding-bottom: max(180px, calc(150px + var(--safe-bottom)));
+      font-family:'Josefin Sans',sans-serif;
+      min-height:100svh;
+      display:flex; flex-direction:column; align-items:center;
+      color:var(--text);
+      position:relative; overflow-x:hidden;
+      padding-top:max(2rem,calc(1rem + var(--safe-top)));
+      padding-left:max(1.25rem,calc(.75rem + var(--safe-left)));
+      padding-right:max(1.25rem,calc(.75rem + var(--safe-right)));
+      padding-bottom:max(180px,calc(150px + var(--safe-bottom)));
+      transition:color .8s;
     }
 
-    /* ── BG ── */
-    .bg-sky {
-      position: fixed; inset: 0; z-index: 0;
-      background: linear-gradient(180deg, #ffffff 0%, #dff0fa 35%, #bce3f5 70%, #93d0ef 100%);
+    /* ── BACKGROUND LAYERS ── */
+    .bg-layer {
+      position:fixed; inset:0; z-index:0;
+      transition:opacity 2s ease;
+    }
+    #bgMain  { background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-mid) 50%,var(--bg-bot) 100%); }
+    #bgOverlay { opacity:0; background:transparent; }
+
+    /* stars overlay for night */
+    .stars-layer {
+      position:fixed; inset:0; z-index:1; pointer-events:none;
+      opacity:0; transition:opacity 2s;
     }
 
-    /* ── SUN ── */
-    .sun {
-      position: fixed;
-      top: max(-55px, calc(-55px + var(--safe-top)));
-      right: 6%;
-      width: clamp(140px, 38vw, 200px);
-      height: clamp(140px, 38vw, 200px);
-      z-index: 1;
-      pointer-events: none;
+    /* ── SUN / MOON ── */
+    .celestial {
+      position:fixed; z-index:2; pointer-events:none;
+      transition:opacity 1.5s, top 2s, right 2s, left 2s;
+    }
+    #sunEl {
+      top:max(-55px,calc(-55px + var(--safe-top))); right:6%;
+      width:clamp(140px,38vw,200px); height:clamp(140px,38vw,200px);
     }
     .sun-core {
-      position: absolute; inset: 20%;
-      background: radial-gradient(circle at 38% 38%, #fff0a0, #f5c200);
-      border-radius: 50%;
-      box-shadow: 0 0 40px 15px rgba(245,194,0,.22), 0 0 90px 40px rgba(245,194,0,.09);
-      animation: sun-pulse 6s ease-in-out infinite;
+      position:absolute; inset:20%;
+      background:radial-gradient(circle at 38% 38%,#fff0a0,#f5c200);
+      border-radius:50%;
+      animation:sun-pulse 6s ease-in-out infinite;
     }
     @keyframes sun-pulse {
-      0%,100% { box-shadow: 0 0 40px 15px rgba(245,194,0,.22), 0 0 90px 40px rgba(245,194,0,.09); }
-      50%      { box-shadow: 0 0 60px 25px rgba(245,194,0,.3),  0 0 120px 55px rgba(245,194,0,.13); }
+      0%,100%{box-shadow:0 0 40px 15px rgba(245,194,0,.22),0 0 90px 40px rgba(245,194,0,.09);}
+      50%    {box-shadow:0 0 80px 35px rgba(245,170,0,.4), 0 0 140px 70px rgba(245,194,0,.18);}
+    }
+
+    #moonEl {
+      top:max(20px,calc(20px + var(--safe-top))); right:6%;
+      width:clamp(80px,20vw,120px); height:clamp(80px,20vw,120px);
+      opacity:0;
+    }
+    .moon-core {
+      position:absolute; inset:0;
+      background:radial-gradient(circle at 35% 35%,#fffde0,#e8d57a);
+      border-radius:50%;
+      box-shadow:0 0 30px 10px rgba(232,213,122,.3),0 0 70px 30px rgba(232,213,122,.1);
+      animation:moon-glow 4s ease-in-out infinite;
+    }
+    /* crescent mask */
+    .moon-core::after {
+      content:''; position:absolute;
+      width:70%; height:70%; top:5%; right:-10%;
+      background:inherit; border-radius:50%;
+      filter:brightness(0) opacity(0); /* masked away via parent clip */
+    }
+    @keyframes moon-glow {
+      0%,100%{box-shadow:0 0 30px 10px rgba(232,213,122,.3),0 0 70px 30px rgba(232,213,122,.1);}
+      50%    {box-shadow:0 0 50px 20px rgba(232,213,122,.5),0 0 100px 50px rgba(232,213,122,.18);}
     }
 
     /* ── CLOUDS ── */
-    .clouds { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-    .cloud { position: absolute; background: white; border-radius: 50px; }
-    .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
-
-    .c1 { width:100px; height:30px; top:14%; left:-120px; opacity:.85; animation: cloud-move 34s linear infinite; }
-    .c1::before { width:46px; height:46px; top:-23px; left:12px; }
-    .c1::after  { width:32px; height:32px; top:-16px; left:46px; }
-
-    .c2 { width:70px; height:22px; top:26%; left:-90px; opacity:.5; animation: cloud-move 50s linear 9s infinite; }
-    .c2::before { width:32px; height:32px; top:-16px; left:9px; }
-    .c2::after  { width:22px; height:22px; top:-11px; left:35px; }
-
-    .c3 { width:130px; height:36px; top:8%;  left:-150px; opacity:.6; animation: cloud-move 43s linear 20s infinite; }
-    .c3::before { width:58px; height:58px; top:-29px; left:15px; }
-    .c3::after  { width:42px; height:42px; top:-20px; left:62px; }
-
-    @keyframes cloud-move {
-      from { transform: translateX(0); }
-      to   { transform: translateX(calc(100vw + 180px)); }
-    }
+    .clouds{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;transition:opacity 1.5s;}
+    .cloud{position:absolute;background:white;border-radius:50px;}
+    .cloud::before,.cloud::after{content:'';position:absolute;background:white;border-radius:50%;}
+    .c1{width:100px;height:30px;top:14%;left:-120px;opacity:.85;animation:cloud-move 34s linear infinite;}
+    .c1::before{width:46px;height:46px;top:-23px;left:12px;}
+    .c1::after {width:32px;height:32px;top:-16px;left:46px;}
+    .c2{width:70px;height:22px;top:26%;left:-90px;opacity:.5;animation:cloud-move 50s linear 9s infinite;}
+    .c2::before{width:32px;height:32px;top:-16px;left:9px;}
+    .c2::after {width:22px;height:22px;top:-11px;left:35px;}
+    .c3{width:130px;height:36px;top:8%;left:-150px;opacity:.6;animation:cloud-move 43s linear 20s infinite;}
+    .c3::before{width:58px;height:58px;top:-29px;left:15px;}
+    .c3::after {width:42px;height:42px;top:-20px;left:62px;}
+    @keyframes cloud-move{from{transform:translateX(0);}to{transform:translateX(calc(100vw + 180px));}}
 
     /* ── WAVES ── */
-    .ocean-wrap {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      height: clamp(120px, 22vw, 180px);
-      z-index: 2; overflow: hidden;
+    .ocean-wrap{
+      position:fixed;bottom:0;left:0;right:0;
+      height:clamp(120px,22vw,180px);
+      z-index:3;overflow:hidden;
+      transition:opacity 1.5s;
     }
-    .wave { position: absolute; bottom: 0; left: -100%; width: 300%; height: 100%; }
-    .wave svg { width: 100%; height: 100%; }
-    .wave-1 { animation: wave-move 9s linear infinite; }
-    .wave-2 { animation: wave-move 14s linear infinite reverse; }
-    .wave-3 { animation: wave-move 7s linear infinite; }
-    @keyframes wave-move {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(33.33%); }
+    .wave{position:absolute;bottom:0;left:-100%;width:300%;height:100%;}
+    .wave svg{width:100%;height:100%;}
+    .wave-1{animation:wave-move 9s linear infinite;}
+    .wave-2{animation:wave-move 14s linear infinite reverse;}
+    .wave-3{animation:wave-move 7s linear infinite;}
+    @keyframes wave-move{0%{transform:translateX(0);}100%{transform:translateX(33.33%);}}
+
+    /* ── PALMS ── */
+    .palms{
+      position:fixed;bottom:0;left:0;right:0;
+      height:clamp(160px,35vw,280px);
+      z-index:4;pointer-events:none;transition:opacity 1.5s;
+    }
+    .palm-left {position:absolute;bottom:clamp(50px,10vw,90px);left:clamp(-10px,0vw,10px);width:clamp(100px,22vw,180px);}
+    .palm-right{position:absolute;bottom:clamp(50px,10vw,90px);right:clamp(-10px,0vw,10px);width:clamp(90px,20vw,160px);transform:scaleX(-1);}
+
+    /* ── SEAGULLS ── */
+    .seagulls{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;transition:opacity 1.5s;}
+    .gull{position:absolute;animation:gull-fly linear infinite;opacity:.7;}
+    .g1{top:18%;left:-60px;animation-duration:18s;animation-delay:2s; width:36px;}
+    .g2{top:28%;left:-40px;animation-duration:24s;animation-delay:7s; width:24px;opacity:.5;}
+    .g3{top:13%;left:-50px;animation-duration:20s;animation-delay:14s;width:30px;opacity:.6;}
+    .g4{top:35%;left:-40px;animation-duration:22s;animation-delay:0s; width:20px;opacity:.4;}
+    @keyframes gull-fly{
+      0%  {transform:translateX(0) translateY(0);}
+      25% {transform:translateX(25vw) translateY(-10px);}
+      50% {transform:translateX(50vw) translateY(4px);}
+      75% {transform:translateX(75vw) translateY(-8px);}
+      100%{transform:translateX(calc(100vw + 80px)) translateY(0);}
     }
 
-    /* ── LAYOUT ── */
-    .container {
-      position: relative; z-index: 3;
-      width: 100%; max-width: 860px;
-      text-align: center;
+    /* ── PLANE ── */
+    .plane-wrap{
+      position:fixed;z-index:5;pointer-events:none;
+      top:42%;left:-120px;
+      animation:plane-cross 28s linear 5s infinite;
+      transition:opacity 1.5s;
+    }
+    .plane-svg{width:clamp(40px,8vw,60px);filter:drop-shadow(2px 2px 4px rgba(0,0,0,.1));}
+    @keyframes plane-cross{0%{left:-120px;top:42%;}100%{left:calc(100vw + 120px);top:36%;}}
+
+    /* ── CONTAINER ── */
+    .container{
+      position:relative;z-index:6;
+      width:100%;max-width:860px;
+      text-align:center;
     }
 
     /* ── STAMP ── */
-    .stamp {
-      display: inline-block;
-      border: 1.5px solid var(--ocean);
-      padding: .28rem 1rem;
-      font-size: clamp(.5rem, 2.2vw, .62rem);
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--ocean);
-      margin-bottom: 1.4rem;
-      background: rgba(255,255,255,.75);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      opacity: 0;
-      animation: fade-in .6s .2s forwards;
+    .stamp{
+      display:inline-block;
+      border:1.5px solid var(--stamp-col);
+      padding:.28rem 1rem;
+      font-size:clamp(.5rem,2.2vw,.62rem);
+      letter-spacing:.2em;text-transform:uppercase;
+      color:var(--stamp-col);
+      margin-bottom:1.4rem;
+      background:rgba(255,255,255,.75);
+      backdrop-filter:blur(6px);
+      opacity:0;animation:fade-in .6s .2s forwards;
     }
 
-    /* ── TITLE ── */
-    .main-title {
-      font-family: 'Playfair Display', serif;
-      font-weight: 900;
-      font-style: italic;
-      font-size: clamp(2.6rem, 12vw, 6.5rem);
-      line-height: .92;
-      color: var(--text);
-      opacity: 0;
-      animation: slide-up .8s .4s cubic-bezier(.16,1,.3,1) forwards;
-      margin-bottom: .4rem;
+    /* ── TITLES ── */
+    .main-title{
+      font-family:'Playfair Display',serif;
+      font-weight:900;font-style:italic;
+      font-size:clamp(2.6rem,12vw,6.5rem);
+      line-height:.92;color:var(--text);
+      opacity:0;animation:slide-up .8s .4s cubic-bezier(.16,1,.3,1) forwards;
+      margin-bottom:.4rem;transition:color .8s;
     }
-    .main-title span { color: var(--coral); display: block; }
+    .main-title .accent{color:var(--accent2);display:block;}
 
-    .subtitle {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: clamp(1rem, 4vw, 1.35rem);
-      color: var(--muted);
-      opacity: 0;
-      animation: fade-in .6s .8s forwards;
-      margin-bottom: clamp(1.5rem, 5vw, 3rem);
+    .subtitle{
+      font-family:'Cormorant Garamond',serif;font-style:italic;
+      font-size:clamp(1rem,4vw,1.35rem);
+      color:var(--muted);
+      opacity:0;animation:fade-in .6s .8s forwards;
+      margin-bottom:clamp(1.5rem,5vw,3rem);
+      transition:color .8s;
     }
 
-    /* ── COUNTDOWN ── */
-    .countdown-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: clamp(.4rem, 2vw, 1rem);
-      margin-bottom: clamp(1.2rem, 4vw, 2.5rem);
-      opacity: 0;
-      animation: slide-up .8s 1s cubic-bezier(.16,1,.3,1) forwards;
+    /* ── COUNTDOWN GRID ── */
+    .countdown-grid{
+      display:grid;grid-template-columns:repeat(4,1fr);
+      gap:clamp(.4rem,2vw,1rem);
+      margin-bottom:clamp(1.2rem,4vw,2.5rem);
+      opacity:0;animation:slide-up .8s 1s cubic-bezier(.16,1,.3,1) forwards;
     }
-
-    .count-block {
-      background: var(--white);
-      border: 1.5px solid rgba(75,163,199,.2);
-      padding: clamp(.9rem, 3vw, 1.6rem) clamp(.5rem, 2vw, 1rem);
-      box-shadow: 0 3px 20px rgba(75,163,199,.1), 0 1px 4px rgba(0,0,0,.04);
-      transition: box-shadow .3s, transform .2s;
-      /* iOS tap highlight off */
-      -webkit-tap-highlight-color: transparent;
+    .count-block{
+      background:var(--card-bg);
+      border:1.5px solid var(--card-border);
+      padding:clamp(.9rem,3vw,1.6rem) clamp(.5rem,2vw,1rem);
+      box-shadow:0 3px 20px var(--card-shadow),0 1px 4px rgba(0,0,0,.04);
+      transition:box-shadow .3s,transform .2s,background .8s,border-color .8s;
+      -webkit-tap-highlight-color:transparent;
     }
-
-    .count-number {
-      font-family: 'Playfair Display', serif;
-      font-weight: 700;
-      font-size: clamp(2rem, 9vw, 4.5rem);
-      color: var(--ocean);
-      line-height: 1;
-      display: block;
+    .count-number{
+      font-family:'Playfair Display',serif;font-weight:700;
+      font-size:clamp(2rem,9vw,4.5rem);
+      color:var(--num-col);line-height:1;display:block;
+      transition:color .8s;
     }
-    .count-number.tick { animation: tick-pulse .22s ease; }
-    @keyframes tick-pulse {
-      0%   { transform: scale(1); }
-      50%  { transform: scale(1.12); color: var(--coral); }
-      100% { transform: scale(1); }
-    }
-
-    .count-label {
-      font-size: clamp(.48rem, 2vw, .58rem);
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: .35rem;
-      display: block;
+    .count-number.tick{animation:tick-pulse .22s ease;}
+    @keyframes tick-pulse{0%{transform:scale(1);}50%{transform:scale(1.12);color:var(--accent2);}100%{transform:scale(1);}}
+    .count-label{
+      font-size:clamp(.48rem,2vw,.58rem);
+      letter-spacing:.18em;text-transform:uppercase;
+      color:var(--muted);margin-top:.35rem;display:block;
+      transition:color .8s;
     }
 
     /* ── DIVIDER ── */
-    .divider {
-      display: flex; align-items: center; gap: .8rem;
-      margin: clamp(1rem, 3vw, 2rem) 0;
-      opacity: 0; animation: fade-in .6s 1.4s forwards;
+    .divider{
+      display:flex;align-items:center;gap:.8rem;
+      margin:clamp(1rem,3vw,2rem) 0;
+      opacity:0;animation:fade-in .6s 1.4s forwards;
     }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(to right, transparent, rgba(75,163,199,.35), transparent);
+    .divider::before,.divider::after{
+      content:'';flex:1;height:1px;
+      background:linear-gradient(to right,transparent,rgba(75,163,199,.35),transparent);
     }
-    .divider-icon { font-size: 1.1rem; }
+    .divider-icon{font-size:1.1rem;}
 
     /* ── STATS ── */
-    .stats-title {
-      font-size: clamp(.5rem, 2vw, .58rem);
-      letter-spacing: .2em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: .9rem;
-      opacity: 0; animation: fade-in .6s 1.5s forwards;
+    .stats-title{
+      font-size:clamp(.5rem,2vw,.58rem);
+      letter-spacing:.2em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:.9rem;
+      opacity:0;animation:fade-in .6s 1.5s forwards;
     }
-
-    /* Desktop: 3 cols / Mobile: stacked horizontal cards */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: clamp(.4rem, 2vw, 1rem);
-      opacity: 0;
-      animation: slide-up .8s 1.6s cubic-bezier(.16,1,.3,1) forwards;
+    .stats-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);
+      gap:clamp(.4rem,2vw,1rem);
+      opacity:0;animation:slide-up .8s 1.6s cubic-bezier(.16,1,.3,1) forwards;
     }
-
-    .stat-card {
-      background: var(--white);
-      border: 1.5px solid rgba(75,163,199,.15);
-      padding: clamp(.9rem, 3vw, 1.4rem) clamp(.6rem, 2vw, 1rem);
-      box-shadow: 0 2px 14px rgba(75,163,199,.08);
-      position: relative; overflow: hidden;
-      -webkit-tap-highlight-color: transparent;
+    .stat-card{
+      background:var(--card-bg);
+      border:1.5px solid var(--card-border);
+      padding:clamp(.9rem,3vw,1.4rem) clamp(.6rem,2vw,1rem);
+      box-shadow:0 2px 14px var(--card-shadow);
+      position:relative;overflow:hidden;
+      -webkit-tap-highlight-color:transparent;
+      transition:background .8s,border-color .8s,transform .2s;
     }
-    .stat-card::after {
-      content: ''; position: absolute;
-      bottom: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--peach), var(--coral));
+    .stat-card::after{
+      content:'';position:absolute;
+      bottom:0;left:0;right:0;height:3px;
+      background:var(--progress-fill);
     }
-
-    .stat-emoji { font-size: clamp(1.1rem, 4vw, 1.4rem); display: block; margin-bottom: .3rem; }
-    .stat-value {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.2rem, 5.5vw, 2rem);
-      font-weight: 700; color: var(--coral);
-      display: block; line-height: 1.1;
+    .stat-emoji{font-size:clamp(1.1rem,4vw,1.4rem);display:block;margin-bottom:.3rem;}
+    .stat-value{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.2rem,5.5vw,2rem);font-weight:700;
+      color:var(--accent2);display:block;line-height:1.1;
     }
-    .stat-desc {
-      font-size: clamp(.48rem, 1.8vw, .58rem);
-      letter-spacing: .08em; text-transform: uppercase;
-      color: var(--muted); margin-top: .35rem;
-      display: block; line-height: 1.5;
+    .stat-desc{
+      font-size:clamp(.48rem,1.8vw,.58rem);
+      letter-spacing:.08em;text-transform:uppercase;
+      color:var(--muted);margin-top:.35rem;display:block;line-height:1.5;
     }
 
     /* ── PROGRESS ── */
-    .progress-wrap {
-      margin-top: clamp(1.2rem, 4vw, 2.5rem);
-      background: var(--white);
-      border: 1.5px solid rgba(75,163,199,.15);
-      padding: clamp(1rem, 3.5vw, 1.4rem) clamp(1rem, 4vw, 1.8rem);
-      box-shadow: 0 2px 14px rgba(75,163,199,.08);
-      opacity: 0; animation: fade-in .6s 2s forwards;
+    .progress-wrap{
+      margin-top:clamp(1.2rem,4vw,2.5rem);
+      background:var(--card-bg);
+      border:1.5px solid var(--card-border);
+      padding:clamp(1rem,3.5vw,1.4rem) clamp(1rem,4vw,1.8rem);
+      box-shadow:0 2px 14px var(--card-shadow);
+      opacity:0;animation:fade-in .6s 2s forwards;
+      transition:background .8s,border-color .8s;
     }
-    .progress-header {
-      display: flex; justify-content: space-between;
-      font-size: clamp(.48rem, 1.8vw, .58rem);
-      letter-spacing: .12em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: .65rem;
+    .progress-header{
+      display:flex;justify-content:space-between;
+      font-size:clamp(.48rem,1.8vw,.58rem);
+      letter-spacing:.12em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:.65rem;
     }
-    .progress-track {
-      height: 6px; background: var(--sky2);
-      border-radius: 10px; position: relative; overflow: visible;
+    .progress-track{
+      height:6px;background:rgba(255,255,255,.3);
+      border-radius:10px;position:relative;overflow:visible;
     }
-    .progress-fill {
-      height: 100%; border-radius: 10px;
-      background: linear-gradient(90deg, var(--ocean), var(--coral));
-      transition: width 1.2s cubic-bezier(.16,1,.3,1);
-      position: relative;
+    .progress-fill{
+      height:100%;border-radius:10px;
+      background:var(--progress-fill);
+      transition:width 1.2s cubic-bezier(.16,1,.3,1);
+      position:relative;
     }
-    .progress-fill::after {
-      content: '✈'; position: absolute;
-      right: -10px; top: 50%;
-      transform: translateY(-50%);
-      font-size: .85rem;
-    }
-
-    .footer-text {
-      margin-top: 1.4rem;
-      font-family: 'Cormorant Garamond', serif; font-style: italic;
-      font-size: clamp(.85rem, 3vw, .95rem);
-      color: var(--muted);
-      opacity: 0; animation: fade-in .6s 2.2s forwards;
+    .progress-fill::after{
+      content:'✈';position:absolute;
+      right:-10px;top:50%;transform:translateY(-50%);
+      font-size:.85rem;
     }
 
-    /* ── VACATION MODE ── */
-    .vacation-mode {
-      display: none; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: clamp(1rem, 3vw, 1.5rem);
-      min-height: 100svh;
-      padding: 2rem;
-      text-align: center;
+    /* ── DAILY MESSAGE CARD ── */
+    .message-card{
+      margin-top:clamp(.8rem,3vw,1.5rem);
+      background:var(--card-bg);
+      border:1.5px solid var(--card-border);
+      padding:clamp(.8rem,3vw,1.2rem) clamp(1rem,4vw,1.5rem);
+      box-shadow:0 2px 14px var(--card-shadow);
+      opacity:0;animation:fade-in .6s 2.1s forwards;
+      transition:background .8s,border-color .8s;
     }
-    .vacation-mode.active { display: flex; }
+    .message-text{
+      font-family:'Cormorant Garamond',serif;font-style:italic;
+      font-size:clamp(.9rem,3.5vw,1.1rem);
+      color:var(--muted);line-height:1.6;
+    }
+    .message-icon{font-size:1.2rem;margin-bottom:.3rem;display:block;}
 
-    .vac-bg {
-      position: fixed; inset: 0; z-index: 0;
-      background: linear-gradient(180deg, #fff9e6 0%, #ffeab5 55%, #ffd98a 100%);
+    /* ── FOOTER / BMC BUTTON ── */
+    .footer-row{
+      margin-top:1.4rem;
+      display:flex;align-items:center;justify-content:center;
+      gap:1rem;flex-wrap:wrap;
+      opacity:0;animation:fade-in .6s 2.3s forwards;
+    }
+    .footer-text{
+      font-family:'Cormorant Garamond',serif;font-style:italic;
+      font-size:clamp(.85rem,3vw,.95rem);
+      color:var(--muted);
+    }
+    .bmc-btn{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.4rem 1rem;
+      background:var(--card-bg);
+      border:1.5px solid var(--stamp-col);
+      color:var(--stamp-col);
+      font-family:'Josefin Sans',sans-serif;
+      font-size:clamp(.5rem,2vw,.6rem);
+      letter-spacing:.15em;text-transform:uppercase;
+      text-decoration:none;
+      cursor:pointer;
+      transition:background .2s,transform .15s,border-color .8s,color .8s;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .bmc-btn:hover{background:var(--accent);color:white;transform:translateY(-2px);}
+    .bmc-btn .bmc-icon{font-size:1rem;}
+
+    /* ══════════════════════════════════════════
+       PHASE 2 — VACATION ON HOLIDAY
+    ══════════════════════════════════════════ */
+    .vacation-mode{
+      display:none;flex-direction:column;align-items:center;
+      padding-top:max(2rem,calc(1rem + var(--safe-top)));
+      padding-bottom:max(180px,calc(150px + var(--safe-bottom)));
+      width:100%;max-width:860px;text-align:center;
+      position:relative;z-index:6;gap:0;
+    }
+    .vacation-mode.active{display:flex;}
+
+    .vac-greeting{
+      font-size:clamp(.5rem,2.2vw,.62rem);
+      letter-spacing:.22em;text-transform:uppercase;
+      color:var(--stamp-col);
+      background:var(--card-bg);
+      border:1.5px solid var(--card-border);
+      padding:.28rem 1.1rem;
+      backdrop-filter:blur(6px);
+      margin-bottom:1.2rem;
+      opacity:0;animation:fade-in .6s .2s forwards;
+    }
+    .vac-title{
+      font-family:'Playfair Display',serif;font-weight:900;font-style:italic;
+      font-size:clamp(2.4rem,11vw,5.5rem);
+      color:var(--text);line-height:.9;
+      margin-bottom:.5rem;
+      opacity:0;animation:slide-up .8s .4s cubic-bezier(.16,1,.3,1) forwards;
+      transition:color .8s;
+    }
+    .vac-title .accent{color:var(--accent2);display:block;}
+    .vac-subtitle{
+      font-family:'Cormorant Garamond',serif;font-style:italic;
+      font-size:clamp(1rem,4vw,1.3rem);color:var(--muted);
+      margin-bottom:clamp(1.5rem,5vw,2.5rem);
+      opacity:0;animation:fade-in .6s .8s forwards;transition:color .8s;
     }
 
-    .vac-emoji {
-      font-size: clamp(4rem, 18vw, 6rem);
-      animation: float 3s ease-in-out infinite;
-      position: relative; z-index: 3;
+    .return-grid{
+      display:grid;grid-template-columns:repeat(4,1fr);
+      gap:clamp(.4rem,2vw,1rem);
+      margin-bottom:clamp(1rem,3vw,2rem);width:100%;
+      opacity:0;animation:slide-up .8s 1s cubic-bezier(.16,1,.3,1) forwards;
     }
-    @keyframes float {
-      0%,100% { transform: translateY(0) rotate(-3deg); }
-      50%      { transform: translateY(-14px) rotate(3deg); }
+    .return-block{
+      background:var(--card-bg);
+      border:1.5px solid var(--card-border);
+      padding:clamp(.9rem,3vw,1.6rem) clamp(.5rem,2vw,1rem);
+      box-shadow:0 3px 20px var(--card-shadow);
+      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      transition:background .8s,border-color .8s;
+    }
+    .return-number{
+      font-family:'Playfair Display',serif;font-weight:700;
+      font-size:clamp(2rem,9vw,4.5rem);
+      color:var(--num-col);line-height:1;display:block;
+      transition:color .8s;
+    }
+    .return-number.tick{animation:tick-pulse .22s ease;}
+    .return-label{font-size:clamp(.48rem,2vw,.58rem);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.35rem;display:block;transition:color .8s;}
+
+    .vac-divider{display:flex;align-items:center;gap:.8rem;margin:clamp(.8rem,2.5vw,1.5rem) 0;width:100%;opacity:0;animation:fade-in .6s 1.3s forwards;}
+    .vac-divider::before,.vac-divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(200,120,0,.35),transparent);}
+
+    .vac-stats-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);
+      gap:clamp(.4rem,2vw,1rem);width:100%;
+      opacity:0;animation:slide-up .8s 1.5s cubic-bezier(.16,1,.3,1) forwards;
     }
 
-    .vac-title {
-      font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic;
-      font-size: clamp(2.2rem, 10vw, 5rem);
-      color: var(--coral);
-      position: relative; z-index: 3;
+    .vac-progress-wrap{
+      margin-top:clamp(1rem,3.5vw,2rem);width:100%;
+      background:var(--card-bg);border:1.5px solid var(--card-border);
+      padding:clamp(1rem,3.5vw,1.4rem) clamp(1rem,4vw,1.8rem);
+      box-shadow:0 2px 14px var(--card-shadow);
+      backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      opacity:0;animation:fade-in .6s 2s forwards;transition:background .8s;
     }
-    .vac-subtitle {
-      font-family: 'Cormorant Garamond', serif; font-style: italic;
-      font-size: clamp(1.1rem, 4.5vw, 1.4rem);
-      color: var(--text);
-      position: relative; z-index: 3;
+    .vac-progress-fill{
+      height:100%;border-radius:10px;
+      background:var(--progress-fill);
+      transition:width 1.2s cubic-bezier(.16,1,.3,1);position:relative;
     }
-    .vac-small {
-      font-size: clamp(.85rem, 3.5vw, 1rem);
-      color: var(--muted);
-      font-family: 'Cormorant Garamond', serif; font-style: italic;
-      position: relative; z-index: 3;
+    .vac-progress-fill::after{content:'🌴';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:.9rem;}
+
+    /* ══════════════════════════════════════════
+       PHASE 3 — CRISIS / RETURN MODE
+    ══════════════════════════════════════════ */
+    .return-mode{
+      display:none;flex-direction:column;align-items:center;
+      padding-top:max(2rem,calc(1rem + var(--safe-top)));
+      padding-bottom:max(180px,calc(150px + var(--safe-bottom)));
+      width:100%;max-width:860px;text-align:center;
+      position:relative;z-index:6;gap:0;
+    }
+    .return-mode.active{display:flex;}
+
+    /* red alert stripe at top */
+    .alert-stripe{
+      width:100%;padding:.35rem 1rem;
+      background:repeating-linear-gradient(
+        -45deg,
+        #cc0000 0px, #cc0000 10px,
+        #ff0000 10px, #ff0000 20px
+      );
+      font-family:'Special Elite',monospace;
+      font-size:clamp(.5rem,2vw,.65rem);
+      letter-spacing:.18em;color:white;
+      text-shadow:0 1px 2px rgba(0,0,0,.5);
+      margin-bottom:1.2rem;
+      opacity:0;animation:fade-in .3s .1s forwards;
+      animation-name:stripe-blink;
+      animation-duration:1s;
+      animation-iteration-count:infinite;
+    }
+    @keyframes stripe-blink{0%,100%{opacity:1;}50%{opacity:.7;}}
+
+    .crisis-stamp{
+      display:inline-block;
+      border:2px solid #cc0000;
+      padding:.3rem 1.2rem;
+      font-family:'Special Elite',monospace;
+      font-size:clamp(.5rem,2.2vw,.65rem);
+      letter-spacing:.2em;text-transform:uppercase;
+      color:#cc0000;background:rgba(255,255,255,.9);
+      margin-bottom:1rem;
+      opacity:0;animation:fade-in .4s .3s forwards;
+      transform:rotate(-1.5deg);display:inline-block;
     }
 
-    .confetti-piece {
-      position: fixed;
-      animation: confetti-fall linear forwards;
-      z-index: 10;
+    .crisis-title{
+      font-family:'Special Elite',monospace;
+      font-size:clamp(1.8rem,9vw,4.5rem);
+      color:#cc0000;line-height:1;
+      margin-bottom:.5rem;
+      opacity:0;animation:slide-up .6s .5s cubic-bezier(.16,1,.3,1) forwards;
+      text-shadow:2px 2px 0 rgba(0,0,0,.1);
     }
-    @keyframes confetti-fall {
-      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    .crisis-subtitle{
+      font-family:'Cormorant Garamond',serif;font-style:italic;
+      font-size:clamp(1rem,4vw,1.3rem);color:#7a1a1a;
+      margin-bottom:clamp(1.2rem,4vw,2rem);
+      opacity:0;animation:fade-in .5s .8s forwards;
     }
+
+    .crisis-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);
+      gap:clamp(.4rem,2vw,1rem);width:100%;
+      opacity:0;animation:slide-up .7s 1s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    .crisis-card{
+      background:rgba(255,255,255,.9);
+      border:2px solid rgba(204,0,0,.3);
+      padding:clamp(.9rem,3vw,1.4rem) clamp(.6rem,2vw,1rem);
+      box-shadow:0 2px 14px rgba(204,0,0,.1);
+      position:relative;overflow:hidden;
+    }
+    .crisis-card::after{
+      content:'';position:absolute;
+      bottom:0;left:0;right:0;height:3px;
+      background:linear-gradient(90deg,#cc0000,#ff4444);
+    }
+    .crisis-card .stat-value{color:#cc0000;}
+
+    /* classified document */
+    .classified-doc{
+      margin-top:clamp(1rem,3.5vw,2rem);width:100%;
+      background:#fffef0;
+      border:2px solid #c8b060;
+      padding:clamp(1rem,3.5vw,1.6rem) clamp(1rem,4vw,1.8rem);
+      box-shadow:0 4px 20px rgba(0,0,0,.15),inset 0 0 40px rgba(200,176,96,.08);
+      opacity:0;animation:fade-in .6s 1.5s forwards;
+      position:relative;
+    }
+    .classified-doc::before{
+      content:'ŚCIŚLE TAJNE';
+      position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+      font-family:'Special Elite',monospace;
+      font-size:.55rem;letter-spacing:.25em;
+      color:#cc0000;background:#fffef0;
+      border:1px solid #cc0000;
+      padding:.1rem .6rem;
+    }
+    .classified-doc::after{
+      content:'';position:absolute;inset:8px;
+      border:1px solid rgba(200,176,96,.3);pointer-events:none;
+    }
+    .classified-text{
+      font-family:'Special Elite',monospace;
+      font-size:clamp(.75rem,2.8vw,.9rem);
+      color:#3a2a00;line-height:1.8;
+      text-align:left;
+    }
+    .classified-text p+p{margin-top:.6rem;}
+    .redacted{
+      background:#1a1a1a;color:transparent;
+      border-radius:2px;padding:0 .15rem;
+      user-select:none;cursor:default;
+      display:inline-block;
+    }
+    .redacted:hover{background:#cc0000;}
+
+    .crisis-footer{
+      margin-top:1.2rem;
+      font-family:'Special Elite',monospace;
+      font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;
+      color:#7a1a1a;
+      opacity:0;animation:fade-in .5s 2.2s forwards;
+    }
+
+    /* ══════════════════════════════════════════
+       NIGHT — STARS
+    ══════════════════════════════════════════ */
+    .star{position:absolute;border-radius:50%;background:white;animation:twinkle linear infinite;}
+    @keyframes twinkle{0%,100%{opacity:.9;transform:scale(1);}50%{opacity:.2;transform:scale(.6);}}
+
+    /* ── TROPICAL FLOATERS ── */
+    .tropical-float{position:fixed;z-index:3;pointer-events:none;font-size:clamp(2rem,7vw,3.5rem);}
+    .tf-1{bottom:clamp(90px,18vw,160px);left:clamp(4px,2vw,24px);animation:sway 4s ease-in-out infinite;}
+    .tf-2{bottom:clamp(90px,18vw,160px);right:clamp(4px,2vw,24px);animation:sway 5s ease-in-out 1s infinite;}
+    .tf-3{bottom:clamp(160px,30vw,240px);left:clamp(24px,6vw,70px);animation:sway 3.5s ease-in-out 2s infinite;opacity:.6;font-size:clamp(1.2rem,4vw,2rem);}
+    @keyframes sway{0%,100%{transform:rotate(-6deg) translateY(0);}50%{transform:rotate(6deg) translateY(-10px);}}
+
+    /* butterflies */
+    .butterfly{position:fixed;z-index:3;pointer-events:none;font-size:clamp(1.2rem,4vw,2rem);animation:butterfly-float linear infinite;opacity:.7;}
+    .bf1{top:20%;left:-60px;animation-duration:22s;}
+    .bf2{top:35%;left:-40px;animation-duration:30s;animation-delay:8s;opacity:.5;}
+    .bf3{top:15%;left:-50px;animation-duration:18s;animation-delay:15s;opacity:.6;}
+    @keyframes butterfly-float{
+      0%  {transform:translateX(0) translateY(0);}
+      20% {transform:translateX(20vw) translateY(-15px);}
+      45% {transform:translateX(45vw) translateY(8px);}
+      70% {transform:translateX(70vw) translateY(-12px);}
+      100%{transform:translateX(calc(100vw + 80px)) translateY(0);}
+    }
+
+    /* ── PHASE PILL ── */
+    .phase-pill{
+      position:fixed;top:max(1rem,calc(.6rem + var(--safe-top)));left:50%;transform:translateX(-50%);
+      z-index:10;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;
+      padding:.22rem .8rem;border-radius:20px;
+      border:1px solid rgba(255,255,255,.5);
+      background:rgba(255,255,255,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      color:var(--text);white-space:nowrap;pointer-events:none;transition:color .8s;
+    }
+
+    /* ── SOUND TOGGLE ── */
+    .sound-btn{
+      position:fixed;bottom:max(1.5rem,calc(1rem + var(--safe-bottom)));right:max(1rem,calc(.7rem + var(--safe-right)));
+      z-index:10;
+      width:2.4rem;height:2.4rem;
+      background:var(--card-bg);backdrop-filter:blur(8px);
+      border:1.5px solid var(--card-border);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1rem;cursor:pointer;
+      transition:transform .2s,background .8s;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .sound-btn:hover{transform:scale(1.1);}
+
+    /* ── EASTER EGG OVERLAY ── */
+    .egg-overlay{
+      position:fixed;inset:0;z-index:20;
+      background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+      display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity .4s;
+    }
+    .egg-overlay.visible{opacity:1;pointer-events:all;}
+    .egg-box{
+      background:var(--card-bg);
+      border:2px solid var(--accent);
+      padding:2rem 2.5rem;max-width:400px;width:90%;
+      text-align:center;position:relative;
+    }
+    .egg-box h2{
+      font-family:'Playfair Display',serif;font-weight:900;font-style:italic;
+      font-size:clamp(1.4rem,6vw,2.2rem);color:var(--accent2);margin-bottom:.6rem;
+    }
+    .egg-box p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--muted);line-height:1.6;}
+    .egg-close{
+      position:absolute;top:.5rem;right:.8rem;
+      background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);
+    }
+    .egg-emoji{font-size:2.5rem;display:block;margin-bottom:.5rem;animation:float-egg 2s ease-in-out infinite;}
+    @keyframes float-egg{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+    /* ── DAY TRANSITION FLASH ── */
+    .day-flash{
+      position:fixed;inset:0;z-index:15;
+      background:white;opacity:0;pointer-events:none;
+      transition:opacity .5s;
+    }
+    .day-flash.flash{animation:flash-anim .8s ease forwards;}
+    @keyframes flash-anim{0%{opacity:.8;}100%{opacity:0;}}
 
     /* ── ANIMS ── */
-    @keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slide-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fade-in {from{opacity:0;}to{opacity:1;}}
+    @keyframes slide-up{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 
     /* ── MOBILE ── */
-    @media (max-width: 480px) {
-      /* Stats: horizontal pill cards on small screens */
-      .stats-grid {
-        grid-template-columns: 1fr;
-        gap: .6rem;
+    @media(max-width:480px){
+      .stats-grid,.vac-stats-grid,.crisis-grid{grid-template-columns:1fr;gap:.6rem;}
+      .stat-card,.crisis-card{
+        display:grid;grid-template-columns:2.5rem 1fr;align-items:center;
+        padding:.9rem 1rem;text-align:left;gap:.1rem .8rem;
       }
-      .stat-card {
-        display: grid;
-        grid-template-columns: 2.5rem 1fr auto;
-        align-items: center;
-        padding: .9rem 1rem;
-        text-align: left;
-        gap: .1rem .8rem;
-      }
-      .stat-emoji {
-        font-size: 1.5rem;
-        margin-bottom: 0;
-        grid-row: 1 / 3;
-      }
-      .stat-value {
-        font-size: clamp(1.4rem, 7vw, 1.8rem);
-        grid-column: 2;
-      }
-      .stat-desc {
-        grid-column: 2;
-        font-size: .52rem;
-        margin-top: 0;
-      }
+      .stat-emoji,.crisis-card .stat-emoji{font-size:1.5rem;margin-bottom:0;grid-row:1/3;}
+      .stat-value,.crisis-card .stat-value{font-size:clamp(1.4rem,7vw,1.8rem);grid-column:2;}
+      .stat-desc,.crisis-card .stat-desc{grid-column:2;font-size:.52rem;margin-top:0;}
     }
 
-    /* ── PALMY ── */
-    .palms {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      height: clamp(160px, 35vw, 280px);
-      z-index: 3; pointer-events: none;
-    }
-    .palm-left  { position: absolute; bottom: clamp(50px,10vw,90px); left: clamp(-10px,0vw,10px); width: clamp(100px,22vw,180px); }
-    .palm-right { position: absolute; bottom: clamp(50px,10vw,90px); right: clamp(-10px,0vw,10px); width: clamp(90px,20vw,160px); transform: scaleX(-1); }
-
-    /* ── MEWY ── */
-    .seagulls { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
-    .gull { position: absolute; animation: gull-fly linear infinite; opacity: .7; }
-    .g1 { top: 18%; left: -60px; animation-duration: 18s; animation-delay: 2s;  width: 36px; }
-    .g2 { top: 28%; left: -40px; animation-duration: 24s; animation-delay: 7s;  width: 24px; opacity:.5; }
-    .g3 { top: 13%; left: -50px; animation-duration: 20s; animation-delay: 14s; width: 30px; opacity:.6; }
-    .g4 { top: 35%; left: -40px; animation-duration: 22s; animation-delay: 0s;  width: 20px; opacity:.4; }
-    @keyframes gull-fly {
-      0%   { transform: translateX(0) translateY(0); }
-      25%  { transform: translateX(25vw) translateY(-10px); }
-      50%  { transform: translateX(50vw) translateY(4px); }
-      75%  { transform: translateX(75vw) translateY(-8px); }
-      100% { transform: translateX(calc(100vw + 80px)) translateY(0); }
-    }
-
-    /* ── SAMOLOT ── */
-    .plane-wrap {
-      position: fixed; z-index: 4; pointer-events: none;
-      top: 42%; left: -120px;
-      animation: plane-cross 28s linear 5s infinite;
-    }
-    .plane-svg { width: clamp(40px, 8vw, 60px); filter: drop-shadow(2px 2px 4px rgba(0,0,0,.1)); }
-    .plane-trail {
-      position: absolute; right: 100%; top: 50%;
-      transform: translateY(-50%);
-      height: 2px; width: 0;
-      background: linear-gradient(to left, rgba(255,255,255,.9), transparent);
-      border-radius: 2px;
-    }
-    @keyframes plane-cross {
-      0%   { left: -120px; top: 42%; }
-      100% { left: calc(100vw + 120px); top: 36%; }
-    }
-
-    /* ── FLAMINGI (vacation mode) ── */
-    .vac-flamingo {
-      position: fixed; bottom: clamp(60px,14vw,120px);
-      font-size: clamp(3rem, 10vw, 5rem);
-      z-index: 3; pointer-events: none;
-    }
-    .vac-flamingo.left  { left: clamp(0rem, 2vw, 2rem); animation: flamingo-l 4s ease-in-out infinite; }
-    .vac-flamingo.right { right: clamp(0rem, 2vw, 2rem); animation: flamingo-r 4s ease-in-out 1.5s infinite; }
-    @keyframes flamingo-l { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
-    @keyframes flamingo-r { 0%,100% { transform: scaleX(-1) rotate(-5deg); } 50% { transform: scaleX(-1) rotate(5deg); } }
-
-    /* Hover only on non-touch */
-    @media (hover: hover) {
-      .count-block:hover {
-        box-shadow: 0 8px 32px rgba(75,163,199,.18);
-        transform: translateY(-3px);
-        border-color: rgba(75,163,199,.45);
-      }
-      .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 24px rgba(75,163,199,.14);
-      }
+    @media(hover:hover){
+      .count-block:hover{box-shadow:0 8px 32px var(--card-shadow);transform:translateY(-3px);}
+      .stat-card:hover{transform:translateY(-2px);}
     }
   </style>
 </head>
 <body>
 
-  <div class="bg-sky"></div>
+  <!-- BG layers -->
+  <div class="bg-layer" id="bgMain"></div>
+  <div class="bg-layer" id="bgOverlay"></div>
+  <div class="stars-layer" id="starsLayer"></div>
 
-  <div class="sun" aria-hidden="true">
-    <div class="sun-core"></div>
+  <!-- Celestial -->
+  <div class="celestial" id="sunEl" aria-hidden="true"><div class="sun-core"></div></div>
+  <div class="celestial" id="moonEl" aria-hidden="true"><div class="moon-core"></div></div>
+
+  <!-- Clouds -->
+  <div class="clouds" id="clouds" aria-hidden="true">
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
   </div>
 
-  <div class="clouds" aria-hidden="true">
-    <div class="cloud c1"></div>
-    <div class="cloud c2"></div>
-    <div class="cloud c3"></div>
+  <!-- Seagulls -->
+  <div class="seagulls" id="seagulls" aria-hidden="true">
+    <div class="gull g1"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+    <div class="gull g2"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+    <div class="gull g3"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div class="gull g4"><svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/><path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/></svg></div>
   </div>
 
-
-  <!-- Mewy -->
-  <div class="seagulls" aria-hidden="true">
-    <div class="gull g1">
-      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" fill="none">
-        <path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="gull g2">
-      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" fill="none">
-        <path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="gull g3">
-      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" fill="none">
-        <path d="M30 15 Q18 4 0 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/>
-        <path d="M30 15 Q42 4 60 8" stroke="#4ba3c7" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="gull g4">
-      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" fill="none">
-        <path d="M30 15 Q18 4 0 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/>
-        <path d="M30 15 Q42 4 60 8" stroke="#6a9ab0" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
-
-  <!-- Samolot -->
-  <div class="plane-wrap" aria-hidden="true">
-    <div class="plane-trail"></div>
+  <!-- Plane -->
+  <div class="plane-wrap" id="planeWrap" aria-hidden="true">
     <svg class="plane-svg" viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
-      <!-- fuselage -->
       <ellipse cx="42" cy="20" rx="28" ry="6" fill="white" stroke="#cde8f7" stroke-width="1"/>
-      <!-- nose -->
       <path d="M70 20 Q80 20 76 17 Q73 15 70 20Z" fill="white"/>
-      <!-- tail fin -->
       <path d="M14 20 Q10 10 18 14 L22 20Z" fill="#bce3f5"/>
-      <!-- wings -->
       <path d="M38 20 Q50 8 62 10 L60 18 Q50 16 38 20Z" fill="white" stroke="#cde8f7" stroke-width=".8"/>
       <path d="M38 20 Q50 32 62 30 L60 22 Q50 24 38 20Z" fill="white" stroke="#cde8f7" stroke-width=".8"/>
-      <!-- window row -->
-      <circle cx="52" cy="18" r="2" fill="#dff0fa"/>
-      <circle cx="46" cy="17" r="2" fill="#dff0fa"/>
-      <circle cx="58" cy="18.5" r="1.5" fill="#dff0fa"/>
+      <circle cx="52" cy="18" r="2" fill="#dff0fa"/><circle cx="46" cy="17" r="2" fill="#dff0fa"/><circle cx="58" cy="18.5" r="1.5" fill="#dff0fa"/>
     </svg>
   </div>
 
-  <div class="ocean-wrap" aria-hidden="true">
-    <div class="wave wave-1">
-      <svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z" fill="rgba(75,163,199,0.22)"/>
-      </svg>
-    </div>
-    <div class="wave wave-2">
-      <svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,80 C200,20 400,100 600,70 C800,40 1000,90 1200,70 L1200,120 L0,120 Z" fill="rgba(75,163,199,0.32)"/>
-      </svg>
-    </div>
-    <div class="wave wave-3">
-      <svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,90 C300,50 600,110 900,80 C1050,65 1150,95 1200,90 L1200,120 L0,120 Z" fill="rgba(41,128,185,0.28)"/>
-      </svg>
-    </div>
+  <!-- Waves -->
+  <div class="ocean-wrap" id="oceanWrap" aria-hidden="true">
+    <div class="wave wave-1"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z" fill="var(--wave1)"/></svg></div>
+    <div class="wave wave-2"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,80 C200,20 400,100 600,70 C800,40 1000,90 1200,70 L1200,120 L0,120 Z" fill="var(--wave2)"/></svg></div>
+    <div class="wave wave-3"><svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,90 C300,50 600,110 900,80 C1050,65 1150,95 1200,90 L1200,120 L0,120 Z" fill="var(--wave3)"/></svg></div>
   </div>
 
-  <!-- Palmy -->
-  <div class="palms" aria-hidden="true">
-    <!-- lewa palma -->
+  <!-- Palms -->
+  <div class="palms" id="palms" aria-hidden="true">
     <svg class="palm-left" viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
-      <!-- pień -->
       <path d="M55 220 Q52 180 58 140 Q54 100 60 60" stroke="#8B6914" stroke-width="10" fill="none" stroke-linecap="round"/>
-      <!-- liście -->
       <path d="M60 65 Q20 30 -10 45" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
       <path d="M60 65 Q30 15 50 -5" stroke="#34a85a" stroke-width="5" fill="none" stroke-linecap="round"/>
       <path d="M60 65 Q80 20 110 25" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
       <path d="M60 65 Q100 40 115 60" stroke="#34a85a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
       <path d="M60 65 Q45 50 15 65" stroke="#3db865" stroke-width="4" fill="none" stroke-linecap="round"/>
       <path d="M60 65 Q85 55 105 75" stroke="#2d8a4e" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <!-- kokos -->
-      <circle cx="60" cy="70" r="6" fill="#c8843a"/>
-      <circle cx="52" cy="74" r="5" fill="#b8732a"/>
+      <circle cx="60" cy="70" r="6" fill="#c8843a"/><circle cx="52" cy="74" r="5" fill="#b8732a"/>
     </svg>
-    <!-- prawa palma -->
     <svg class="palm-right" viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
       <path d="M55 220 Q52 180 58 140 Q54 100 60 60" stroke="#8B6914" stroke-width="10" fill="none" stroke-linecap="round"/>
       <path d="M60 65 Q20 30 -10 45" stroke="#2d8a4e" stroke-width="5" fill="none" stroke-linecap="round"/>
@@ -569,164 +751,688 @@
       <path d="M60 65 Q100 40 115 60" stroke="#34a85a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
       <path d="M60 65 Q45 50 15 65" stroke="#3db865" stroke-width="4" fill="none" stroke-linecap="round"/>
       <path d="M60 65 Q85 55 105 75" stroke="#2d8a4e" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <circle cx="60" cy="70" r="6" fill="#c8843a"/>
-      <circle cx="68" cy="74" r="5" fill="#b8732a"/>
+      <circle cx="60" cy="70" r="6" fill="#c8843a"/><circle cx="68" cy="74" r="5" fill="#b8732a"/>
     </svg>
   </div>
 
+  <!-- Tropical floaters (p2) -->
+  <div class="tropical-float tf-1" id="tf1" style="display:none">🌺</div>
+  <div class="tropical-float tf-2" id="tf2" style="display:none">🍹</div>
+  <div class="tropical-float tf-3" id="tf3" style="display:none">🐚</div>
 
-  <!-- MAIN -->
+  <!-- Butterflies (p3) -->
+  <div class="butterfly bf1" id="bf1" style="display:none">🦋</div>
+  <div class="butterfly bf2" id="bf2" style="display:none">🦋</div>
+  <div class="butterfly bf3" id="bf3" style="display:none">🌸</div>
+
+  <!-- Phase pill -->
+  <div class="phase-pill" id="phasePill"></div>
+
+  <!-- Sound btn -->
+  <button class="sound-btn" id="soundBtn" title="Dźwięki">🔇</button>
+
+  <!-- Day-change flash -->
+  <div class="day-flash" id="dayFlash"></div>
+
+  <!-- Easter egg -->
+  <div class="egg-overlay" id="eggOverlay">
+    <div class="egg-box">
+      <button class="egg-close" id="eggClose">✕</button>
+      <span class="egg-emoji" id="eggEmoji">🌴</span>
+      <h2 id="eggTitle">Sekret odkryty!</h2>
+      <p id="eggText">Kliknąłeś gdzie nie trzeba. Gratuluję ciekawości.</p>
+    </div>
+  </div>
+
+  <!-- ═══ PHASE 1: COUNTDOWN ═══ -->
   <div class="container" id="mainContent">
-
-    <p class="stamp">🌴 Urlop · od 16.03.2026 · Nareszcie 🌴</p>
-
-    <h1 class="main-title">Izunia,<br/><span>na urlop!</span></h1>
-    <p class="subtitle">…bo my już nie możemy 🙏😅</p>
+    <p class="stamp" id="p1Stamp">🌴 Urlop · od 16.03.2026 · Nareszcie 🌴</p>
+    <h1 class="main-title" id="p1Title">Izunia,<br/><span class="accent">na urlop!</span></h1>
+    <p class="subtitle" id="p1Sub">…bo my już nie możemy 🙏😅</p>
 
     <div class="countdown-grid">
-      <div class="count-block">
-        <span class="count-number" id="days">--</span>
-        <span class="count-label">dni</span>
-      </div>
-      <div class="count-block">
-        <span class="count-number" id="hours">--</span>
-        <span class="count-label">godzin</span>
-      </div>
-      <div class="count-block">
-        <span class="count-number" id="minutes">--</span>
-        <span class="count-label">minut</span>
-      </div>
-      <div class="count-block">
-        <span class="count-number" id="seconds">--</span>
-        <span class="count-label">sekund</span>
-      </div>
+      <div class="count-block"><span class="count-number" id="days">--</span><span class="count-label">dni</span></div>
+      <div class="count-block"><span class="count-number" id="hours">--</span><span class="count-label">godzin</span></div>
+      <div class="count-block"><span class="count-number" id="minutes">--</span><span class="count-label">minut</span></div>
+      <div class="count-block"><span class="count-number" id="seconds">--</span><span class="count-label">sekund</span></div>
     </div>
 
     <div class="divider"><span class="divider-icon">🌊</span></div>
-
     <p class="stats-title">a to oznacza, że…</p>
     <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-emoji">☕</span>
-        <span class="stat-value" id="coffees">--</span>
-        <span class="stat-desc">filiżanek kawy<br/>do wypicia w pracy</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-emoji">😴</span>
-        <span class="stat-value" id="sleeps">--</span>
-        <span class="stat-desc">nocy do przespania<br/>zanim wolność!</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-emoji">📅</span>
-        <span class="stat-value" id="workdays">--</span>
-        <span class="stat-desc">dni roboczych<br/>do urlopu</span>
-      </div>
+      <div class="stat-card"><span class="stat-emoji">☕</span><span class="stat-value" id="coffees">--</span><span class="stat-desc">filiżanek kawy<br/>do wypicia w pracy</span></div>
+      <div class="stat-card"><span class="stat-emoji">😴</span><span class="stat-value" id="sleeps">--</span><span class="stat-desc">nocy do przespania<br/>zanim wolność!</span></div>
+      <div class="stat-card"><span class="stat-emoji">📅</span><span class="stat-value" id="workdays">--</span><span class="stat-desc">dni roboczych<br/>do urlopu</span></div>
     </div>
 
     <div class="progress-wrap">
-      <div class="progress-header">
-        <span>Dzień dzisiejszy</span>
-        <span id="progressPct">--% drogi za nami</span>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="progressFill" style="width:0%"></div>
-      </div>
-      <div class="progress-header" style="justify-content:flex-end; margin-top:.5rem; margin-bottom:0;">
-        <span>URLOP! 🏖️</span>
-      </div>
+      <div class="progress-header"><span>Dzień dzisiejszy</span><span id="progressPct">--% drogi za nami</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-header" style="justify-content:flex-end;margin-top:.5rem;margin-bottom:0;"><span>URLOP! 🏖️</span></div>
     </div>
 
-    <p class="footer-text" id="targetDateDisplay">Cel: ładowanie…</p>
+    <div class="message-card" id="dailyMsgCard">
+      <span class="message-icon" id="dailyMsgIcon">💬</span>
+      <p class="message-text" id="dailyMsg">ładowanie…</p>
+    </div>
 
+    <div class="footer-row">
+      <p class="footer-text" id="targetDateDisplay">Cel: ładowanie…</p>
+      <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn">
+        <span class="bmc-icon">☕</span> postaw kawę Izie
+      </a>
+    </div>
   </div>
 
-  <!-- VACATION MODE -->
-  <span class="vac-flamingo left" aria-hidden="true">🦩</span>
-  <span class="vac-flamingo right" aria-hidden="true">🦩</span>
+  <!-- ═══ PHASE 2: ON HOLIDAY ═══ -->
   <div class="container vacation-mode" id="vacationMode">
-    <div class="vac-bg"></div>
-    <div class="vac-emoji">🌴</div>
-    <h1 class="vac-title">Iza jest na urlopie!</h1>
-    <p class="vac-subtitle">Nareszcie! Biuro odetchnęło 🎉🥂</p>
-    <p class="vac-small">…i to jest oficjalne oświadczenie zespołu. Yhym.</p>
+    <p class="vac-greeting" id="p2Stamp">🌴 Iza jest oficjalnie na urlopie · 16–30.03.2026 🌴</p>
+    <h1 class="vac-title" id="p2Title">Raj<br/><span class="accent">odnaleziony!</span></h1>
+    <p class="vac-subtitle" id="p2Sub">Biuro tęskni… ale nie za bardzo 😎🍹</p>
+
+    <div class="return-grid">
+      <div class="return-block"><span class="return-number" id="rDays">--</span><span class="return-label">dni</span></div>
+      <div class="return-block"><span class="return-number" id="rHours">--</span><span class="return-label">godzin</span></div>
+      <div class="return-block"><span class="return-number" id="rMinutes">--</span><span class="return-label">minut</span></div>
+      <div class="return-block"><span class="return-number" id="rSeconds">--</span><span class="return-label">sekund</span></div>
+    </div>
+
+    <div class="vac-divider"><span style="font-size:1.1rem">🌺</span></div>
+    <p class="stats-title" id="p2StatsTitle">tymczasem na plaży…</p>
+    <div class="vac-stats-grid">
+      <div class="stat-card"><span class="stat-emoji">🍹</span><span class="stat-value" id="drinksOnBeach">--</span><span class="stat-desc">drinki wypite<br/>na plaży (szacunkowo)</span></div>
+      <div class="stat-card"><span class="stat-emoji">☀️</span><span class="stat-value" id="sunrises">--</span><span class="stat-desc">wschody słońca<br/>bez alarmu</span></div>
+      <div class="stat-card"><span class="stat-emoji">📧</span><span class="stat-value" id="emailsWaiting">--</span><span class="stat-desc">maile czekają<br/>w skrzynce (ostrożnie!)</span></div>
+    </div>
+
+    <div class="vac-progress-wrap">
+      <div class="progress-header" id="vacPH"><span>Start urlopu</span><span id="vacProgressPct">--% urlopu za nami</span></div>
+      <div class="progress-track" style="background:rgba(255,255,255,.25)"><div class="vac-progress-fill" id="vacProgressFill" style="width:0%"></div></div>
+      <div class="progress-header" style="justify-content:flex-end;margin-top:.5rem;margin-bottom:0;" id="vacPH2"><span>Powrót 😢</span></div>
+    </div>
+
+    <div class="message-card" id="vacMsgCard">
+      <span class="message-icon" id="vacMsgIcon">🌴</span>
+      <p class="message-text" id="vacMsg">ładowanie…</p>
+    </div>
+
+    <div class="footer-row">
+      <p class="footer-text" id="returnDateDisplay">Powrót: ładowanie…</p>
+      <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn">
+        <span class="bmc-icon">☕</span> postaw kawę Izie
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══ PHASE 3: CRISIS ═══ -->
+  <div class="container return-mode" id="returnMode">
+    <div class="alert-stripe">⚠ ALERT KRYZYSOWY — URLOP ZAKOŃCZONY — IZABELA WRÓCIŁA DO BIURA — ⚠ ALERT KRYZYSOWY — URLOP ZAKOŃCZONY</div>
+    <p class="crisis-stamp">📋 RAPORT KRYZYSOWY NR 001/2026</p>
+    <h1 class="crisis-title">URLOP<br/>SKOŃCZONY</h1>
+    <p class="crisis-subtitle">Powtarzam: <em>urlop skończony.</em> Wszystkie jednostki — powrót do stanowisk.</p>
+
+    <div class="crisis-grid">
+      <div class="crisis-card"><span class="stat-emoji">😭</span><span class="stat-value" id="retDaysBack">--</span><span class="stat-desc">dni od zakończenia<br/>operacji "Raj"</span></div>
+      <div class="crisis-card"><span class="stat-emoji">☕</span><span class="stat-value" id="retCoffees">--</span><span class="stat-desc">kawy wypite<br/>od powrotu (przeżycie)</span></div>
+      <div class="crisis-card"><span class="stat-emoji">📧</span><span class="stat-value" id="retEmails">--</span><span class="stat-desc">maile przetrawione<br/>w ramach obowiązku</span></div>
+    </div>
+
+    <div class="classified-doc" id="classifiedDoc">
+      <p class="classified-text">
+        <p>DO: Wszyscy pracownicy Działu <span class="redacted">█████████████</span></p>
+        <p>OD: Komitet Kryzysowy ds. Urlopów</p>
+        <p>DATA: <span id="retDate">--</span> | STATUS: <span style="color:#cc0000;font-weight:bold">PILNE</span></p>
+        <p>─────────────────────────────────</p>
+        <p>Niniejszym informujemy, że operacja „<span class="redacted">████</span> na Urlopie" została oficjalnie zakończona. Izabela powróciła na swoje stanowisko.</p>
+        <p>Okres wytchnienia trwał <strong>14 dni</strong>. Był to czas <span class="redacted">██████████</span> i <span class="redacted">███████</span>. Biuro <span class="redacted">██████████████████████</span> Izy bardzo.</p>
+        <p>Zalecamy wszystkim pracownikom niezwłocznie udać się do Izabeli z kawą i pytaniem „jak było?", a następnie słuchać przez <span class="redacted">██</span> godzin.</p>
+        <p>─────────────────────────────────</p>
+        <p>Następny urlop: <span class="redacted">███████████████████</span></p>
+        <p><em>Dokument niejawny. Zniszcz po przeczytaniu.</em></p>
+      </p>
+    </div>
+
+    <div class="message-card" id="retMsgCard" style="margin-top:1rem;">
+      <span class="message-icon" id="retMsgIcon">📢</span>
+      <p class="message-text" id="retMsg">ładowanie…</p>
+    </div>
+
+    <div class="footer-row">
+      <p class="footer-text crisis-footer">Komisja ds. Odliczania Urlopów © 2026</p>
+      <a href="https://www.youtube.com/watch?v=DLzxrzFCyOs" target="_blank" rel="noopener" class="bmc-btn" style="border-color:#cc0000;color:#cc0000;">
+        <span class="bmc-icon">☕</span> postaw kawę Izie (zasługuje)
+      </a>
+    </div>
   </div>
 
   <script>
-    const VACATION_DATE = new Date("2026-03-16T00:00:00");
-    const START_DATE    = new Date("2026-03-12T00:00:00");
+  // ═══════════════════════════════════════════════════════
+  //  DATES
+  // ═══════════════════════════════════════════════════════
+  const VAC_START  = new Date("2026-03-16T00:00:00");
+  const VAC_END    = new Date("2026-03-30T00:00:00");
+  const CNT_START  = new Date("2026-03-12T00:00:00");
 
-    function pad(n) { return String(n).padStart(2, "0"); }
+  // ── helpers ──
+  const pad = n => String(n).padStart(2,"0");
+  function countWorkdays(from, to) {
+    let n=0; const d=new Date(from); d.setHours(0,0,0,0);
+    const e=new Date(to); e.setHours(0,0,0,0);
+    while(d<e){const w=d.getDay();if(w&&w<6)n++;d.setDate(d.getDate()+1);}
+    return n;
+  }
 
-    function countWorkdays(from, to) {
-      let n = 0;
-      const d = new Date(from); d.setHours(0,0,0,0);
-      const e = new Date(to);   e.setHours(0,0,0,0);
-      while (d < e) { const w = d.getDay(); if (w && w < 6) n++; d.setDate(d.getDate()+1); }
-      return n;
+  // ═══════════════════════════════════════════════════════
+  //  SKINS — 3 phases × 4 times of day
+  //  timeOfDay: 0=night(0-5), 1=morning(6-11), 2=afternoon(12-17), 3=evening(18-23)
+  // ═══════════════════════════════════════════════════════
+  function getTimeOfDay(h) {
+    if(h>=6  && h<12) return 1; // morning
+    if(h>=12 && h<18) return 2; // afternoon
+    if(h>=18 && h<24) return 3; // evening
+    return 0;                   // night
+  }
+
+  const SKINS = {
+    // Phase 1 — Countdown to vacation
+    "1-0": { // night
+      bgTop:"#0a0e1a", bgMid:"#0d1530", bgBot:"#0a1228",
+      cardBg:"rgba(10,20,50,0.7)", cardBorder:"rgba(100,140,200,0.2)", cardShadow:"rgba(0,0,80,0.3)",
+      accent:"#5b8cff", accent2:"#ff8c5b", text:"#c8d8ff", muted:"#6a80b0",
+      stampCol:"#5b8cff", numCol:"#7aadff",
+      wave1:"rgba(20,60,120,0.4)", wave2:"rgba(20,60,120,0.55)", wave3:"rgba(10,40,90,0.45)",
+      progressFill:"linear-gradient(90deg,#5b8cff,#ff8c5b)",
+      showStars:true, showMoon:true, showSun:false,
+      cloudsOpacity:.15, seagullsOpacity:.1, palmsOpacity:.6,
+      p1Stamp:"🌙 Urlop · od 16.03.2026 · Śpij spokojnie 🌙",
+      p1Title:"Izunia,<br/><span class='accent'>śnij o urlopie!</span>",
+      p1Sub:"…bo rano znowu praca. Niestety. 😴",
+      msgIcon:"🌙", msg:"W nocy cisza w biurze. Ale myśl o urlopie świeci jak gwiazdy. Śpij spokojnie, Izunia — zbliżasz się do wolności o kolejną noc.",
+    },
+    "1-1": { // morning
+      bgTop:"#fff8e8", bgMid:"#ffe8b0", bgBot:"#ffcc70",
+      cardBg:"rgba(255,255,240,0.88)", cardBorder:"rgba(200,150,50,0.2)", cardShadow:"rgba(200,150,50,0.1)",
+      accent:"#d4870a", accent2:"#e8735a", text:"#3a2a00", muted:"#8a6a30",
+      stampCol:"#d4870a", numCol:"#d4870a",
+      wave1:"rgba(200,150,50,0.2)", wave2:"rgba(180,120,30,0.3)", wave3:"rgba(160,100,20,0.25)",
+      progressFill:"linear-gradient(90deg,#d4870a,#e8735a)",
+      showStars:false, showMoon:false, showSun:true,
+      cloudsOpacity:.9, seagullsOpacity:.7, palmsOpacity:1,
+      p1Stamp:"🌅 Urlop · od 16.03.2026 · Dzień dobry! 🌅",
+      p1Title:"Izunia,<br/><span class='accent'>rano bliżej!</span>",
+      p1Sub:"…poranek to znak, że urlop jeszcze bliżej ☀️",
+      msgIcon:"🌅", msg:"Dzień dobry! Kolejny poranek, kolejny dzień mniej do urlopu. Kawa w dłoń i do dzieła — meta coraz bliżej!",
+    },
+    "1-2": { // afternoon — original theme
+      bgTop:"#ffffff", bgMid:"#dff0fa", bgBot:"#93d0ef",
+      cardBg:"rgba(255,255,255,0.85)", cardBorder:"rgba(75,163,199,0.2)", cardShadow:"rgba(75,163,199,0.1)",
+      accent:"#4ba3c7", accent2:"#e8735a", text:"#1a3a4a", muted:"#6a9ab0",
+      stampCol:"#4ba3c7", numCol:"#4ba3c7",
+      wave1:"rgba(75,163,199,0.22)", wave2:"rgba(75,163,199,0.32)", wave3:"rgba(41,128,185,0.28)",
+      progressFill:"linear-gradient(90deg,#4ba3c7,#e8735a)",
+      showStars:false, showMoon:false, showSun:true,
+      cloudsOpacity:.85, seagullsOpacity:.7, palmsOpacity:1,
+      p1Stamp:"🌴 Urlop · od 16.03.2026 · Nareszcie 🌴",
+      p1Title:"Izunia,<br/><span class='accent'>na urlop!</span>",
+      p1Sub:"…bo my już nie możemy 🙏😅",
+      msgIcon:"☀️", msg:"Południe w biurze. Słońce świeci na zewnątrz i kusi. Jeszcze chwila, Izunia — urlop tuż za rogiem!",
+    },
+    "1-3": { // evening
+      bgTop:"#1a0a2e", bgMid:"#3d1a6e", bgBot:"#7a3a9a",
+      cardBg:"rgba(40,15,70,0.7)", cardBorder:"rgba(180,120,220,0.2)", cardShadow:"rgba(100,0,150,0.2)",
+      accent:"#c084e8", accent2:"#ff7060", text:"#e8d8ff", muted:"#9a78b8",
+      stampCol:"#c084e8", numCol:"#c084e8",
+      wave1:"rgba(120,60,160,0.35)", wave2:"rgba(100,40,140,0.45)", wave3:"rgba(80,20,120,0.4)",
+      progressFill:"linear-gradient(90deg,#c084e8,#ff7060)",
+      showStars:true, showMoon:false, showSun:false,
+      cloudsOpacity:.2, seagullsOpacity:.15, palmsOpacity:.7,
+      p1Stamp:"🌆 Urlop · od 16.03.2026 · Wieczór zbliża się 🌆",
+      p1Title:"Izunia,<br/><span class='accent'>już jutro!</span>",
+      p1Sub:"…zachód słońca to znak: urlop coraz bliżej 🌇",
+      msgIcon:"🌆", msg:"Wieczór zapada nad biurem. Kolejny dzień pracy za Tobą, Izunia. Urlop czeka jak gwiazda na niebie — coraz jaśniej widoczny.",
+    },
+
+    // Phase 2 — On vacation
+    "2-0": { // tropical night — moon over ocean
+      bgTop:"#020d18", bgMid:"#041e35", bgBot:"#062840",
+      cardBg:"rgba(5,20,40,0.75)", cardBorder:"rgba(80,160,200,0.2)", cardShadow:"rgba(0,50,100,0.3)",
+      accent:"#4abcdf", accent2:"#ffc864", text:"#b8e0f0", muted:"#4a8aaa",
+      stampCol:"#4abcdf", numCol:"#ffc864",
+      wave1:"rgba(20,80,120,0.5)", wave2:"rgba(15,60,100,0.65)", wave3:"rgba(10,50,90,0.55)",
+      progressFill:"linear-gradient(90deg,#4abcdf,#ffc864)",
+      showStars:true, showMoon:true, showSun:false,
+      cloudsOpacity:.08, seagullsOpacity:.05, palmsOpacity:.5,
+      p2Stamp:"🌊 Iza jest na urlopie · noc na tropikach 🌊",
+      p2Title:"Cisza<br/><span class='accent'>oceanu</span>",
+      p2Sub:"Księżyc nad wodą, koktajl w dłoni… 🌙🍹",
+      msgIcon:"🌙", msg:"Gdzieś nad oceanem księżyc oświetla Izuniną plażę. Fale szumią. Cykady grają. A my tu liczymy godziny do jej powrotu. Tragedia.",
+    },
+    "2-1": { // tropical morning
+      bgTop:"#fff3c4", bgMid:"#ffe08a", bgBot:"#ffb347",
+      cardBg:"rgba(255,255,230,0.8)", cardBorder:"rgba(255,180,80,0.3)", cardShadow:"rgba(200,120,0,0.12)",
+      accent:"#d47a00", accent2:"#e8735a", text:"#3a2000", muted:"#9a6020",
+      stampCol:"#d47a00", numCol:"#d47a00",
+      wave1:"rgba(255,160,40,0.25)", wave2:"rgba(230,140,20,0.35)", wave3:"rgba(200,120,0,0.3)",
+      progressFill:"linear-gradient(90deg,#ffb347,#e8735a)",
+      showStars:false, showMoon:false, showSun:true,
+      cloudsOpacity:.6, seagullsOpacity:.5, palmsOpacity:1,
+      p2Stamp:"🌅 Iza jest na urlopie · tropikalny świt 🌅",
+      p2Title:"Świt<br/><span class='accent'>na plaży!</span>",
+      p2Sub:"Iza wstaje kiedy chce. My nie. 😭",
+      msgIcon:"🌅", msg:"Tropikalny świt. Iza budzi się bez alarmu, patrzy na ocean i zamawia śniadanie do łóżka. Tymczasem w biurze… coffee machine się właśnie zacięła.",
+    },
+    "2-2": { // tropical afternoon — peak heat
+      bgTop:"#fff0a0", bgMid:"#ffcc44", bgBot:"#ff9922",
+      cardBg:"rgba(255,250,220,0.8)", cardBorder:"rgba(255,180,40,0.3)", cardShadow:"rgba(220,140,0,0.15)",
+      accent:"#cc7700", accent2:"#e84a2a", text:"#3a1a00", muted:"#aa6610",
+      stampCol:"#cc7700", numCol:"#cc7700",
+      wave1:"rgba(255,140,20,0.3)", wave2:"rgba(230,110,10,0.4)", wave3:"rgba(200,80,0,0.35)",
+      progressFill:"linear-gradient(90deg,#ffcc44,#e84a2a)",
+      showStars:false, showMoon:false, showSun:true,
+      cloudsOpacity:.3, seagullsOpacity:.4, palmsOpacity:1,
+      p2Stamp:"☀️ Iza jest na urlopie · godzina szczytu 🏖️",
+      p2Title:"Słońce<br/><span class='accent'>w zenicie!</span>",
+      p2Sub:"Temp. na plaży: gorąco. W biurze: jeszcze goręcej 🥵",
+      msgIcon:"☀️", msg:"Południe na tropikach. 35 stopni, palma, hamak i prawdopodobnie kolejny drink z palemką. Izunia, myślimy o Tobie. Głównie z zazdrości.",
+    },
+    "2-3": { // tropical sunset
+      bgTop:"#1a0a30", bgMid:"#8b2252", bgBot:"#e85c28",
+      cardBg:"rgba(40,10,30,0.75)", cardBorder:"rgba(200,100,60,0.25)", cardShadow:"rgba(150,50,20,0.2)",
+      accent:"#ff8c5b", accent2:"#ffc864", text:"#f0d0c0", muted:"#c08070",
+      stampCol:"#ff8c5b", numCol:"#ffc864",
+      wave1:"rgba(200,80,40,0.4)", wave2:"rgba(180,60,30,0.5)", wave3:"rgba(150,40,20,0.45)",
+      progressFill:"linear-gradient(90deg,#ff8c5b,#ffc864)",
+      showStars:true, showMoon:false, showSun:true,
+      cloudsOpacity:.5, seagullsOpacity:.3, palmsOpacity:.8,
+      p2Stamp:"🌅 Iza jest na urlopie · złoty zachód 🌅",
+      p2Title:"Złoty<br/><span class='accent'>wieczór</span>",
+      p2Sub:"Zachód słońca nad oceanem. Bezpłatny dla urlopowiczów. 🍊",
+      msgIcon:"🌅", msg:"Zachód słońca barwi ocean na złoto i czerwień. Izunia prawdopodobnie robi zdjęcia i wysyła stories. My patrzymy przez okno biura na parking.",
+    },
+
+    // Phase 3 — Return / Crisis
+    "3-0": { // crisis night
+      bgTop:"#0d0000", bgMid:"#1a0505", bgBot:"#250808",
+      cardBg:"rgba(30,5,5,0.85)", cardBorder:"rgba(200,0,0,0.2)", cardShadow:"rgba(150,0,0,0.2)",
+      accent:"#ff3333", accent2:"#ff8800", text:"#f0c0c0", muted:"#a06060",
+      stampCol:"#ff3333", numCol:"#ff3333",
+      wave1:"rgba(150,0,0,0.35)", wave2:"rgba(120,0,0,0.45)", wave3:"rgba(90,0,0,0.4)",
+      progressFill:"linear-gradient(90deg,#cc0000,#ff4400)",
+      showStars:false, showMoon:false, showSun:false,
+      cloudsOpacity:.05, seagullsOpacity:.0, palmsOpacity:.2,
+      msgIcon:"🚨", msg:"Noc kryzysowa. Gdzie indziej ludzie śpią. W dziale trwają narady. Izabela wróciła. Protokół awaryjny wciąż aktywny.",
+    },
+    "3-1": { // crisis morning
+      bgTop:"#e8e0d0", bgMid:"#c8b890", bgBot:"#a89060",
+      cardBg:"rgba(255,252,240,0.9)", cardBorder:"rgba(180,140,80,0.25)", cardShadow:"rgba(100,80,0,0.1)",
+      accent:"#7a5a20", accent2:"#cc0000", text:"#2a1a00", muted:"#7a6040",
+      stampCol:"#cc0000", numCol:"#cc0000",
+      wave1:"rgba(180,140,80,0.25)", wave2:"rgba(160,120,60,0.35)", wave3:"rgba(140,100,40,0.3)",
+      progressFill:"linear-gradient(90deg,#cc0000,#ff4400)",
+      showStars:false, showMoon:false, showSun:true,
+      cloudsOpacity:.7, seagullsOpacity:.0, palmsOpacity:.3,
+      msgIcon:"📋", msg:"Poranek. Izabela wróciła. Ekspres do kawy pracuje na pełnych obrotach. Wszyscy udają, że nie czytali maili podczas jej nieobecności.",
+    },
+    "3-2": { // crisis afternoon
+      bgTop:"#d0c8b8", bgMid:"#b0a888", bgBot:"#908060",
+      cardBg:"rgba(255,252,235,0.9)", cardBorder:"rgba(160,0,0,0.2)", cardShadow:"rgba(100,0,0,0.08)",
+      accent:"#880000", accent2:"#cc4400", text:"#1a0800", muted:"#6a4030",
+      stampCol:"#880000", numCol:"#880000",
+      wave1:"rgba(160,120,60,0.25)", wave2:"rgba(140,100,40,0.35)", wave3:"rgba(120,80,20,0.3)",
+      progressFill:"linear-gradient(90deg,#880000,#cc4400)",
+      showStars:false, showMoon:false, showSun:true,
+      cloudsOpacity:.5, seagullsOpacity:.0, palmsOpacity:.25,
+      msgIcon:"😤", msg:"Godzina pracy. Izabela pyta: 'Co się działo pod moją nieobecność?' Odpowiedź: 'Spokój i harmonia.' Ale tego głośno nie mówimy.",
+    },
+    "3-3": { // crisis evening
+      bgTop:"#150010", bgMid:"#350020", bgBot:"#550030",
+      cardBg:"rgba(30,0,15,0.8)", cardBorder:"rgba(180,0,60,0.2)", cardShadow:"rgba(120,0,40,0.2)",
+      accent:"#e8305a", accent2:"#ff8800", text:"#f0b0c0", muted:"#a06070",
+      stampCol:"#e8305a", numCol:"#e8305a",
+      wave1:"rgba(150,0,50,0.4)", wave2:"rgba(120,0,40,0.5)", wave3:"rgba(90,0,30,0.45)",
+      progressFill:"linear-gradient(90deg,#e8305a,#ff8800)",
+      showStars:true, showMoon:false, showSun:false,
+      cloudsOpacity:.1, seagullsOpacity:.0, palmsOpacity:.15,
+      msgIcon:"🌃", msg:"Wieczór. Izabela prawdopodobnie już wyszła. Biuro odetchnęło. Ale jutro znowu wróci. I to jest tragedia z gatunku tych trwałych.",
+    },
+  };
+
+  // ═══════════════════════════════════════════════════════
+  //  MESSAGES — per phase+timeOfDay, rotated daily
+  // ═══════════════════════════════════════════════════════
+  const EXTRA_MSGS = {
+    "1-0":["Cisza nocna w biurze. Komputery śpią. Kawa stygnie. Tylko licznik tyka nieubłaganie ku wolności Izuni.","Noc. W biurze ciemno. Izunia śni pewnie o palmach i drinkach. My życzymy jej lekkich snów i rychłego urlopu.","Północ na zegarze, urlop coraz bliżej. Matematyka jest nieubłagana — każda sekunda to krok ku plaży."],
+    "1-1":["Ranek pachnie kawą i nadzieją. Im więcej poranków, tym bliżej urlopu. Izunia, liczymy razem!","Świt wstaje, a wraz z nim nowe godziny do urlopu. Postęp jest. Mały, ale jest.","Poranne słońce obiecuje: urlop się zbliża. Dziś kolejny dzień skreślony z kalendarza. Poczuj tę ulgę."],
+    "1-2":["Południe. Słońce w zenicie, urlop w perspektywie. Izunia, kawka i patrzymy razem na licznik!","Środek dnia roboczego, a myśli już na urlopie. To zupełnie normalne. Medycznie uzasadnione.","Godzina lunchowa. Zamiast kanapki — rzut okiem na licznik. Apetyt na urlop rośnie z każdą minutą."],
+    "1-3":["Wieczór w biurze. Za oknami świat żyje, a my planujemy kolejny dzień odliczania. Prawie tam jesteśmy.","Zachód słońca to codzienny reminder: jeszcze jeden dzień mniej. Izunia, jutro bliżej niż dziś!","Wieczorna zmiana — licznik nie śpi. Ani my. Urlop zbliża się nieubłaganie i to jest piękne."],
+    "2-0":["Letnia noc na tropikach. Gwiazdy, szmer oceanu, brak alarmu na jutro. Biuro istnieje tylko jako odległe wspomnienie.","O tej porze Izunia pewnie leży w hamaku i słucha oceanu. My słyszymy klimatyzację. Różnica jest.","Księżyc nad tropikalnym oceanem. Gdzie jest Izunia? Dokładnie tam gdzie powinna być. Nie w biurze."],
+    "2-1":["Tropikalny świt! Iza budzi się kiedy chce, śniadanie przynoszą, widok jest bezcenny. My mamy widok na parking.","Poranek na plaży. Herbata z miętą, szum fal i absolutna cisza od służbowych maili. Brzmi znajomo? Nie? No właśnie.","Wschód słońca nad oceanem. Iza pewnie go ogląda. My oglądamy ekran laptopa. Jeden z nas wybrał lepiej."],
+    "2-2":["Gorące południe na tropikach. SPF 50, kapelusz na głowie, koktajl w dłoni. Żadnych prezentacji PowerPoint.","Sjesta. Czy w biurze jest sjesta? Nie ma. A na tropikach? Oczywiście. Wnioski wyciągamy sami.","Upał w tropikach oznacza: basen, leniuchowanie, kolejna lektura. W biurze upał oznacza: zepsuta klimatyzacja."],
+    "2-3":["Zachód słońca na Instagramie. Ten z widokiem na ocean to Iza. Ten z widokiem na monitor — nie.","Wieczór urlopowy. Kolacja przy świecach, szum morza, brak jutrzejszego standup meeting. Brzmi jak marzenie.","Złoty wieczór na tropikach. Iza zamawia kolejny drink. My zamykamy kolejnego ticketa. Ktoś tu wygrał."],
+    "3-0":["Noc po powrocie. Izabela odpoczywa. Biuro czeka. Jutro znowu zacznie się normalność. Horror.","Noc kryzysowa, dzień drugi. Wszyscy powoli akceptują nową rzeczywistość. Urlop to tylko wspomnienie.","Ciemność sprzyja refleksji. Nad czym refleksja? Nad tym, kiedy następny urlop. Oczywiście."],
+    "3-1":["Poranek po powrocie. Izabela dostała 87 maili powitalnych. Większość to 'witamy z powrotem!' Z serdecznością.","Pierwszy poranek po urlopie to szczególne doświadczenie. Jak zderzenie z rzeczywistością, ale z kawą w dłoni.","Rano po powrocie. Kawa, maile, spotkanie o 9. Normalność uderzyła z pełną siłą."],
+    "3-2":["Robocze południe. Izabela znowu w rytmie. My też. Choć tęsknimy za tamtymi 14 dniami spokoju.","Godzina pracy. Iza wróciła do formy błyskawicznie. Trochę za błyskawicznie, szczerze mówiąc.","Środek dnia. Urlop już tylko we wspomnieniach i zdjęciach na telefonie. I na tym ekranie."],
+    "3-3":["Wieczór po pracy. Urlop skończony, ale zdjęcia zostały. I opalenizna. I te wspomnienia.","Koniec dnia roboczego. Izabela przeżyła powrót. My też przeżyliśmy jej powrót. Wszyscy jesteśmy bohaterami.","Wieczór. Dzień bez urlopu dobiegł końca. Jutro nowy dzień. Ale bez plaży. Normalność jest okrutna."],
+  };
+
+  // ═══════════════════════════════════════════════════════
+  //  AUDIO (Web Audio API — generated tones)
+  // ═══════════════════════════════════════════════════════
+  let audioCtx = null;
+  let soundOn  = false;
+  let soundIntervals = [];
+
+  function getAudioCtx() {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+
+  function playTone(freq, type, duration, vol, delay=0) {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    const t = ctx.currentTime + delay;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + .02);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+    osc.start(t); osc.stop(t + duration + .05);
+  }
+
+  function playWaveSound() {
+    // gentle wave: low rumble + occasional higher wash
+    playTone(60, 'sine', 2.5, .04);
+    playTone(80, 'sine', 2.0, .03, .5);
+    playTone(120, 'sine', 1.5, .015, 1.2);
+    playTone(180, 'sine', 1.0, .008, 1.8);
+  }
+
+  function playBirdSound() {
+    // simple chirp: two tones
+    playTone(800,  'sine', .12, .06);
+    playTone(1000, 'sine', .1,  .05, .15);
+    playTone(750,  'sine', .1,  .04, .3);
+  }
+
+  function playCrisisSound() {
+    // alarm-like
+    playTone(440, 'square', .15, .04);
+    playTone(550, 'square', .15, .04, .2);
+    playTone(440, 'square', .15, .04, .4);
+  }
+
+  function playNightSound() {
+    // cricket-like high freq
+    for(let i=0;i<3;i++) playTone(3200+Math.random()*400,'sine',.05,.015,i*.12);
+  }
+
+  function startSounds(phase, tod) {
+    stopSounds();
+    if(!soundOn) return;
+
+    if(phase===2 && tod!==0) {
+      // waves every 4s + birds occasionally
+      soundIntervals.push(setInterval(playWaveSound, 4000));
+      soundIntervals.push(setInterval(()=>{if(Math.random()>.6)playBirdSound();}, 6000));
+      playWaveSound();
+    } else if(phase===2 && tod===0) {
+      // night tropical: waves + crickets
+      soundIntervals.push(setInterval(playWaveSound, 5000));
+      soundIntervals.push(setInterval(playNightSound, 2500));
+      playWaveSound();
+    } else if(phase===3) {
+      // crisis: occasional alert
+      soundIntervals.push(setInterval(()=>{if(Math.random()>.75)playCrisisSound();}, 8000));
+    } else if(tod===0) {
+      // night: quiet crickets
+      soundIntervals.push(setInterval(()=>{if(Math.random()>.5)playNightSound();}, 3000));
+    } else if(tod===1 || tod===2) {
+      // day: birds
+      soundIntervals.push(setInterval(()=>{if(Math.random()>.55)playBirdSound();}, 7000));
+    }
+  }
+  function stopSounds() { soundIntervals.forEach(clearInterval); soundIntervals=[]; }
+
+  document.getElementById('soundBtn').addEventListener('click', () => {
+    soundOn = !soundOn;
+    document.getElementById('soundBtn').textContent = soundOn ? '🔊' : '🔇';
+    if(soundOn) { getAudioCtx().resume(); startSounds(currentPhase, currentTOD); }
+    else stopSounds();
+  });
+
+  // ═══════════════════════════════════════════════════════
+  //  STARS
+  // ═══════════════════════════════════════════════════════
+  function buildStars() {
+    const layer = document.getElementById('starsLayer');
+    if(layer.children.length > 0) return;
+    for(let i=0;i<140;i++){
+      const s = document.createElement('div');
+      s.className='star';
+      const sz = .5 + Math.random()*2;
+      s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*70}%;left:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s;`;
+      layer.appendChild(s);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  CONFETTI
+  // ═══════════════════════════════════════════════════════
+  function spawnConfetti(colors) {
+    const c=colors||['#e8735a','#4ba3c7','#f5c200','#a8d8ea','#f5a68d'];
+    for(let i=0;i<90;i++) setTimeout(()=>{
+      const el=document.createElement('div'); el.className='confetti-piece';
+      const sz=6+Math.random()*9;
+      el.style.cssText=`position:fixed;left:${Math.random()*100}vw;top:0;background:${c[Math.floor(Math.random()*c.length)]};animation:confetti-fall ${2.5+Math.random()*3}s linear ${Math.random()*2}s forwards;width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'3px'};z-index:20;`;
+      document.head.insertAdjacentHTML('beforeend',`<style>@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}</style>`);
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),7000);
+    },i*38);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  //  APPLY SKIN
+  // ═══════════════════════════════════════════════════════
+  let currentPhase=-1, currentTOD=-1;
+  let phase2Entered=false, phase3Entered=false;
+  let lastSec1=-1,lastMin1=-1,lastSec2=-1,lastMin2=-1;
+
+  function applySkin(phase, tod, animate=false) {
+    const key = `${phase}-${tod}`;
+    const skin = SKINS[key] || SKINS[`${phase}-2`];
+
+    // CSS vars
+    const r = document.documentElement.style;
+    r.setProperty('--bg-top', skin.bgTop);
+    r.setProperty('--bg-mid', skin.bgMid);
+    r.setProperty('--bg-bot', skin.bgBot);
+    r.setProperty('--card-bg', skin.cardBg);
+    r.setProperty('--card-border', skin.cardBorder);
+    r.setProperty('--card-shadow', skin.cardShadow);
+    r.setProperty('--accent', skin.accent);
+    r.setProperty('--accent2', skin.accent2);
+    r.setProperty('--text', skin.text);
+    r.setProperty('--muted', skin.muted);
+    r.setProperty('--stamp-col', skin.stampCol);
+    r.setProperty('--num-col', skin.numCol);
+    r.setProperty('--wave1', skin.wave1);
+    r.setProperty('--wave2', skin.wave2);
+    r.setProperty('--wave3', skin.wave3);
+    r.setProperty('--progress-fill', skin.progressFill);
+
+    // bgMain gradient
+    document.getElementById('bgMain').style.background =
+      `linear-gradient(180deg,${skin.bgTop} 0%,${skin.bgMid} 50%,${skin.bgBot} 100%)`;
+
+    // celestials
+    document.getElementById('sunEl').style.opacity  = skin.showSun  ? '1' : '0';
+    document.getElementById('moonEl').style.opacity = skin.showMoon ? '1' : '0';
+
+    // stars
+    if(skin.showStars){ buildStars(); document.getElementById('starsLayer').style.opacity='1'; }
+    else document.getElementById('starsLayer').style.opacity='0';
+
+    // atmosphere
+    document.getElementById('clouds').style.opacity   = skin.cloudsOpacity;
+    document.getElementById('seagulls').style.opacity = skin.seagullsOpacity;
+    document.getElementById('palms').style.opacity    = skin.palmsOpacity;
+
+    // phase sections
+    document.getElementById('mainContent').style.display   = phase===1?'':'none';
+    document.getElementById('vacationMode').classList.toggle('active', phase===2);
+    document.getElementById('returnMode').classList.toggle('active', phase===3);
+
+    // tropical / butterfly decorations
+    ['tf1','tf2','tf3'].forEach(id=>document.getElementById(id).style.display=phase===2?'':'none');
+    ['bf1','bf2','bf3'].forEach(id=>document.getElementById(id).style.display=phase===3?'':'none');
+
+    // phase pill
+    const pills=['','🌴 Faza 1 · Odliczanie','🌺 Faza 2 · Urlop!','🚨 Faza 3 · Powrót'];
+    const todNames=['noc','ranek','południe','wieczór'];
+    document.getElementById('phasePill').textContent=`${pills[phase]} · ${todNames[tod]}`;
+
+    // texts
+    if(phase===1) {
+      if(skin.p1Stamp) document.getElementById('p1Stamp').textContent=skin.p1Stamp;
+      if(skin.p1Title) document.getElementById('p1Title').innerHTML=skin.p1Title;
+      if(skin.p1Sub)   document.getElementById('p1Sub').textContent=skin.p1Sub;
+    }
+    if(phase===2) {
+      if(skin.p2Stamp) document.getElementById('p2Stamp').textContent=skin.p2Stamp;
+      if(skin.p2Title) document.getElementById('p2Title').innerHTML=skin.p2Title;
+      if(skin.p2Sub)   document.getElementById('p2Sub').textContent=skin.p2Sub;
     }
 
-    function spawnConfetti() {
-      const colors = ['#e8735a','#4ba3c7','#f5c200','#a8d8ea','#f5a68d','#2980b9','#ffffff'];
-      for (let i = 0; i < 90; i++) {
-        setTimeout(() => {
-          const el = document.createElement('div');
-          el.className = 'confetti-piece';
-          const s = 6 + Math.random() * 9;
-          el.style.cssText = `left:${Math.random()*100}vw;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${2.5+Math.random()*3}s;animation-delay:${Math.random()*2}s;width:${s}px;height:${s}px;border-radius:${Math.random()>.5?'50%':'3px'};`;
-          document.body.appendChild(el);
-          setTimeout(() => el.remove(), 7000);
-        }, i * 38);
-      }
+    // daily message (rotate by day of month)
+    const dayIdx = new Date().getDate() % 3;
+    const msgArr = EXTRA_MSGS[key] || [skin.msg];
+    const msg    = msgArr[dayIdx % msgArr.length] || skin.msg;
+
+    if(phase===1){ document.getElementById('dailyMsgIcon').textContent=skin.msgIcon||'💬'; document.getElementById('dailyMsg').textContent=msg; }
+    if(phase===2){ document.getElementById('vacMsgIcon').textContent=skin.msgIcon||'🌴'; document.getElementById('vacMsg').textContent=msg; }
+    if(phase===3){ document.getElementById('retMsgIcon').textContent=skin.msgIcon||'📢'; document.getElementById('retMsg').textContent=msg; }
+
+    // flash on TOD change
+    if(animate) {
+      const fl = document.getElementById('dayFlash');
+      fl.classList.remove('flash');
+      void fl.offsetWidth;
+      fl.classList.add('flash');
     }
 
-    document.getElementById("targetDateDisplay").textContent =
-      "Cel: " + VACATION_DATE.toLocaleDateString("pl-PL", { day:"numeric", month:"long", year:"numeric" }) + " ✈";
+    // entries
+    if(phase===2 && !phase2Entered){ phase2Entered=true; spawnConfetti(['#ffb347','#ff8c42','#f5c200','#e8735a','#ffffff']); }
+    if(phase===3 && !phase3Entered){ phase3Entered=true; spawnConfetti(['#cc0000','#ff4444','#ffffff','#ff8800','#ffcccc']); }
 
-    let lastSec = -1, lastMin = -1, vacShown = false;
+    // sounds
+    if(phase!==currentPhase || tod!==currentTOD) startSounds(phase,tod);
 
-    function tickEl(el) { el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); }
+    currentPhase=phase; currentTOD=tod;
+  }
 
-    function update() {
-      const now  = new Date();
-      const diff = VACATION_DATE - now;
+  // ═══════════════════════════════════════════════════════
+  //  EASTER EGG
+  // ═══════════════════════════════════════════════════════
+  const eggTriggers = ['p1Stamp','p2Stamp','crisis-stamp'];
+  const eggs = [
+    {emoji:'🥚',title:'Znalazłeś jajko!',text:'Gratulacje! Kliknąłeś w znaczek. To wymagało odwagi. Lub nudy. Prawdopodobnie nudy.'},
+    {emoji:'🌴',title:'Tajny rozkaz!',text:'Operacja "Podbij Morale" aktywna. Misja: przeżyć do następnego urlopu Izy. Powodzenia.'},
+    {emoji:'☕',title:'Kawowy sekret!',text:'Prawda jest taka: ta strona istnieje tylko po to, żeby móc klikać w nią zamiast pracować. I nie ma w tym nic złego.'},
+    {emoji:'🚨',title:'Alarm!',text:'Uwaga: właśnie zmarnowałeś 3 sekundy życia klikając tutaj. Z drugiej strony — co lepszego miałeś do roboty?'},
+    {emoji:'🦜',title:'Psst!',text:'Izunia nigdy nie dowie się, że tęsknisz za jej urlopem bardziej niż za nią. To tajemnica.'},
+  ];
+  let eggIdx = 0;
 
-      if (diff <= 0) {
-        document.getElementById("mainContent").style.display = "none";
-        document.getElementById("vacationMode").classList.add("active");
-        if (!vacShown) { spawnConfetti(); vacShown = true; }
-        return;
-      }
+  function showEgg() {
+    const egg = eggs[eggIdx++ % eggs.length];
+    document.getElementById('eggEmoji').textContent = egg.emoji;
+    document.getElementById('eggTitle').textContent = egg.title;
+    document.getElementById('eggText').textContent  = egg.text;
+    document.getElementById('eggOverlay').classList.add('visible');
+    spawnConfetti();
+  }
 
-      const total = Math.floor(diff / 1000);
-      const secs  = total % 60;
-      const mins  = Math.floor(total / 60) % 60;
-      const hrs   = Math.floor(total / 3600) % 24;
-      const days  = Math.floor(total / 86400);
+  document.getElementById('p1Stamp').addEventListener('click', showEgg);
+  document.getElementById('p2Stamp').addEventListener('click', showEgg);
+  document.querySelectorAll('.crisis-stamp').forEach(el=>el.addEventListener('click',showEgg));
+  document.getElementById('eggClose').addEventListener('click', ()=>document.getElementById('eggOverlay').classList.remove('visible'));
+  document.getElementById('eggOverlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) e.currentTarget.classList.remove('visible'); });
 
-      document.getElementById("days").textContent    = days;
-      document.getElementById("hours").textContent   = pad(hrs);
+  // ═══════════════════════════════════════════════════════
+  //  STATIC LABELS
+  // ═══════════════════════════════════════════════════════
+  document.getElementById('targetDateDisplay').textContent =
+    'Cel: ' + VAC_START.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}) + ' ✈';
+  document.getElementById('returnDateDisplay').textContent =
+    'Powrót: ' + VAC_END.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'}) + ' ✈';
+  document.getElementById('retDate').textContent =
+    VAC_END.toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
 
-      const sEl = document.getElementById("seconds");
-      const mEl = document.getElementById("minutes");
+  // ═══════════════════════════════════════════════════════
+  //  MAIN TICK
+  // ═══════════════════════════════════════════════════════
+  let prevTOD = -1;
 
-      if (secs !== lastSec) {
-        sEl.textContent = pad(secs); tickEl(sEl); lastSec = secs;
-      }
-      if (mins !== lastMin) {
-        mEl.textContent = pad(mins); tickEl(mEl); lastMin = mins;
-      }
+  function update() {
+    const now = new Date();
+    const h   = now.getHours();
+    const tod = getTimeOfDay(h);
+    const phase = now < VAC_START ? 1 : now < VAC_END ? 2 : 3;
 
-      document.getElementById("coffees").textContent  = Math.ceil(days * 2.5).toLocaleString("pl-PL");
-      document.getElementById("sleeps").textContent   = (days + (hrs > 0 ? 1 : 0)).toLocaleString("pl-PL");
-      document.getElementById("workdays").textContent = countWorkdays(now, VACATION_DATE).toLocaleString("pl-PL");
+    const todChanged = tod !== prevTOD;
+    if(phase !== currentPhase || todChanged) {
+      applySkin(phase, tod, todChanged && prevTOD !== -1);
+    }
+    prevTOD = tod;
 
-      const pct = Math.min(100, Math.max(0, (now - START_DATE) / (VACATION_DATE - START_DATE) * 100));
-      document.getElementById("progressFill").style.width = pct.toFixed(2) + "%";
-      document.getElementById("progressPct").textContent  = pct.toFixed(1) + "% drogi za nami";
+    // ── PHASE 1 ──
+    if(phase===1) {
+      const diff=VAC_START-now, total=Math.floor(diff/1000);
+      const secs=total%60, mins=Math.floor(total/60)%60, hrs=Math.floor(total/3600)%24, days=Math.floor(total/86400);
+      document.getElementById('days').textContent  = days;
+      document.getElementById('hours').textContent = pad(hrs);
+      const sEl=document.getElementById('seconds'), mEl=document.getElementById('minutes');
+      if(secs!==lastSec1){sEl.textContent=pad(secs);sEl.classList.remove('tick');void sEl.offsetWidth;sEl.classList.add('tick');lastSec1=secs;}
+      if(mins!==lastMin1){mEl.textContent=pad(mins);mEl.classList.remove('tick');void mEl.offsetWidth;mEl.classList.add('tick');lastMin1=mins;}
+      document.getElementById('coffees').textContent  = Math.ceil(days*2.5).toLocaleString('pl-PL');
+      document.getElementById('sleeps').textContent   = (days+(hrs>0?1:0)).toLocaleString('pl-PL');
+      document.getElementById('workdays').textContent = countWorkdays(now,VAC_START).toLocaleString('pl-PL');
+      const pct=Math.min(100,Math.max(0,(now-CNT_START)/(VAC_START-CNT_START)*100));
+      document.getElementById('progressFill').style.width=pct.toFixed(2)+'%';
+      document.getElementById('progressPct').textContent=pct.toFixed(1)+'% drogi za nami';
     }
 
-    update();
-    setInterval(update, 1000);
+    // ── PHASE 2 ──
+    else if(phase===2) {
+      const diff=VAC_END-now, total=Math.floor(diff/1000);
+      const secs=total%60, mins=Math.floor(total/60)%60, hrs=Math.floor(total/3600)%24, days=Math.floor(total/86400);
+      document.getElementById('rDays').textContent  = days;
+      document.getElementById('rHours').textContent = pad(hrs);
+      const sEl=document.getElementById('rSeconds'), mEl=document.getElementById('rMinutes');
+      if(secs!==lastSec2){sEl.textContent=pad(secs);sEl.classList.remove('tick');void sEl.offsetWidth;sEl.classList.add('tick');lastSec2=secs;}
+      if(mins!==lastMin2){mEl.textContent=pad(mins);mEl.classList.remove('tick');void mEl.offsetWidth;mEl.classList.add('tick');lastMin2=mins;}
+      const daysOnVac=Math.floor((now-VAC_START)/86400000);
+      document.getElementById('drinksOnBeach').textContent = Math.floor(daysOnVac*3.5+2).toLocaleString('pl-PL');
+      document.getElementById('sunrises').textContent      = Math.max(0,daysOnVac).toLocaleString('pl-PL');
+      document.getElementById('emailsWaiting').textContent = Math.floor(daysOnVac*18+12).toLocaleString('pl-PL');
+      const vacPct=Math.min(100,Math.max(0,(now-VAC_START)/(VAC_END-VAC_START)*100));
+      document.getElementById('vacProgressFill').style.width=vacPct.toFixed(2)+'%';
+      document.getElementById('vacProgressPct').textContent=vacPct.toFixed(1)+'% urlopu za nami';
+    }
+
+    // ── PHASE 3 ──
+    else {
+      const daysBack=Math.floor((now-VAC_END)/86400000);
+      const hoursBack=Math.floor((now-VAC_END)/3600000);
+      document.getElementById('retDaysBack').textContent = Math.max(0,daysBack).toLocaleString('pl-PL');
+      document.getElementById('retCoffees').textContent  = Math.floor(hoursBack*0.4+1).toLocaleString('pl-PL');
+      document.getElementById('retEmails').textContent   = Math.floor(daysBack*22+87).toLocaleString('pl-PL');
+    }
+  }
+
+  update();
+  setInterval(update, 1000);
   </script>
 </body>
 </html>
