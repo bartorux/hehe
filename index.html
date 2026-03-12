@@ -2,9 +2,12 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#dff0fa" />
   <title>Urlop Izy 🌴</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@200;300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -13,76 +16,95 @@
       --coral:  #e8735a;
       --peach:  #f5a68d;
       --sky2:   #cde8f7;
-      --gold:   #e6a817;
       --text:   #1a3a4a;
       --muted:  #6a9ab0;
       --white:  #ffffff;
+      --safe-top:    env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left:   env(safe-area-inset-left, 0px);
+      --safe-right:  env(safe-area-inset-right, 0px);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow-x: hidden; }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
 
     body {
       font-family: 'Josefin Sans', sans-serif;
-      min-height: 100vh;
+      min-height: 100svh;
+      min-height: -webkit-fill-available;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       color: var(--text);
       position: relative;
-      padding: 2rem 1rem 160px;
+      overflow-x: hidden;
+      /* Safe area aware padding */
+      padding-top: max(2rem, calc(1rem + var(--safe-top)));
+      padding-left:  max(1.25rem, calc(.75rem + var(--safe-left)));
+      padding-right: max(1.25rem, calc(.75rem + var(--safe-right)));
+      padding-bottom: max(180px, calc(150px + var(--safe-bottom)));
     }
 
+    /* ── BG ── */
     .bg-sky {
       position: fixed; inset: 0; z-index: 0;
       background: linear-gradient(180deg, #ffffff 0%, #dff0fa 35%, #bce3f5 70%, #93d0ef 100%);
     }
 
-    /* SUN */
+    /* ── SUN ── */
     .sun {
       position: fixed;
-      top: -55px; right: 7%;
-      width: 200px; height: 200px;
+      top: max(-55px, calc(-55px + var(--safe-top)));
+      right: 6%;
+      width: clamp(140px, 38vw, 200px);
+      height: clamp(140px, 38vw, 200px);
       z-index: 1;
+      pointer-events: none;
     }
     .sun-core {
-      position: absolute;
-      inset: 28px;
+      position: absolute; inset: 20%;
       background: radial-gradient(circle at 38% 38%, #fff0a0, #f5c200);
       border-radius: 50%;
-      box-shadow: 0 0 50px 18px rgba(245,194,0,.22), 0 0 100px 45px rgba(245,194,0,.09);
+      box-shadow: 0 0 40px 15px rgba(245,194,0,.22), 0 0 90px 40px rgba(245,194,0,.09);
       animation: sun-pulse 6s ease-in-out infinite;
     }
     @keyframes sun-pulse {
-      0%,100% { box-shadow: 0 0 50px 18px rgba(245,194,0,.22), 0 0 100px 45px rgba(245,194,0,.09); }
-      50%      { box-shadow: 0 0 70px 28px rgba(245,194,0,.32), 0 0 130px 60px rgba(245,194,0,.14); }
+      0%,100% { box-shadow: 0 0 40px 15px rgba(245,194,0,.22), 0 0 90px 40px rgba(245,194,0,.09); }
+      50%      { box-shadow: 0 0 60px 25px rgba(245,194,0,.3),  0 0 120px 55px rgba(245,194,0,.13); }
     }
 
-    /* CLOUDS */
-    .clouds { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-    .cloud { position: absolute; background: white; border-radius: 50px; opacity: .8; }
+    /* ── CLOUDS ── */
+    .clouds { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+    .cloud { position: absolute; background: white; border-radius: 50px; }
     .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
 
-    .c1 { width:120px; height:36px; top:11%; left:-140px; animation: cloud-move 36s linear infinite; }
-    .c1::before { width:54px; height:54px; top:-27px; left:14px; }
-    .c1::after  { width:38px; height:38px; top:-18px; left:54px; }
+    .c1 { width:100px; height:30px; top:14%; left:-120px; opacity:.85; animation: cloud-move 34s linear infinite; }
+    .c1::before { width:46px; height:46px; top:-23px; left:12px; }
+    .c1::after  { width:32px; height:32px; top:-16px; left:46px; }
 
-    .c2 { width:88px; height:26px; top:23%; left:-100px; opacity:.55; animation: cloud-move 52s linear 10s infinite; }
-    .c2::before { width:40px; height:40px; top:-20px; left:11px; }
-    .c2::after  { width:28px; height:28px; top:-13px; left:42px; }
+    .c2 { width:70px; height:22px; top:26%; left:-90px; opacity:.5; animation: cloud-move 50s linear 9s infinite; }
+    .c2::before { width:32px; height:32px; top:-16px; left:9px; }
+    .c2::after  { width:22px; height:22px; top:-11px; left:35px; }
 
-    .c3 { width:155px; height:42px; top:7%; left:-170px; opacity:.65; animation: cloud-move 44s linear 22s infinite; }
-    .c3::before { width:68px; height:68px; top:-34px; left:18px; }
-    .c3::after  { width:48px; height:48px; top:-24px; left:72px; }
+    .c3 { width:130px; height:36px; top:8%;  left:-150px; opacity:.6; animation: cloud-move 43s linear 20s infinite; }
+    .c3::before { width:58px; height:58px; top:-29px; left:15px; }
+    .c3::after  { width:42px; height:42px; top:-20px; left:62px; }
 
     @keyframes cloud-move {
       from { transform: translateX(0); }
-      to   { transform: translateX(calc(100vw + 200px)); }
+      to   { transform: translateX(calc(100vw + 180px)); }
     }
 
-    /* WAVES */
-    .ocean { position: fixed; bottom: 0; left: 0; right: 0; height: 180px; z-index: 2; overflow: hidden; }
+    /* ── WAVES ── */
+    .ocean-wrap {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: clamp(120px, 22vw, 180px);
+      z-index: 2; overflow: hidden;
+    }
     .wave { position: absolute; bottom: 0; left: -100%; width: 300%; height: 100%; }
     .wave svg { width: 100%; height: 100%; }
     .wave-1 { animation: wave-move 9s linear infinite; }
@@ -93,156 +115,314 @@
       100% { transform: translateX(33.33%); }
     }
 
-    /* CONTENT */
-    .container { position: relative; z-index: 3; max-width: 860px; width: 100%; text-align: center; }
+    /* ── LAYOUT ── */
+    .container {
+      position: relative; z-index: 3;
+      width: 100%; max-width: 860px;
+      text-align: center;
+    }
 
+    /* ── STAMP ── */
     .stamp {
       display: inline-block;
-      border: 2px solid var(--ocean);
-      padding: .3rem 1.4rem;
-      font-size: .6rem;
-      letter-spacing: .25em;
+      border: 1.5px solid var(--ocean);
+      padding: .28rem 1rem;
+      font-size: clamp(.5rem, 2.2vw, .62rem);
+      letter-spacing: .2em;
       text-transform: uppercase;
       color: var(--ocean);
-      margin-bottom: 1.8rem;
-      background: rgba(255,255,255,.7);
-      backdrop-filter: blur(4px);
+      margin-bottom: 1.4rem;
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       opacity: 0;
       animation: fade-in .6s .2s forwards;
     }
 
+    /* ── TITLE ── */
     .main-title {
       font-family: 'Playfair Display', serif;
       font-weight: 900;
       font-style: italic;
-      font-size: clamp(3rem, 10vw, 6.5rem);
-      line-height: .95;
+      font-size: clamp(2.6rem, 12vw, 6.5rem);
+      line-height: .92;
       color: var(--text);
       opacity: 0;
       animation: slide-up .8s .4s cubic-bezier(.16,1,.3,1) forwards;
-      margin-bottom: .5rem;
+      margin-bottom: .4rem;
     }
     .main-title span { color: var(--coral); display: block; }
 
     .subtitle {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: clamp(1rem, 3vw, 1.35rem);
+      font-size: clamp(1rem, 4vw, 1.35rem);
       color: var(--muted);
-      letter-spacing: .06em;
       opacity: 0;
       animation: fade-in .6s .8s forwards;
-      margin-bottom: 3rem;
+      margin-bottom: clamp(1.5rem, 5vw, 3rem);
     }
 
-    /* COUNTDOWN */
+    /* ── COUNTDOWN ── */
     .countdown-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-      margin-bottom: 2.5rem;
+      gap: clamp(.4rem, 2vw, 1rem);
+      margin-bottom: clamp(1.2rem, 4vw, 2.5rem);
       opacity: 0;
       animation: slide-up .8s 1s cubic-bezier(.16,1,.3,1) forwards;
     }
+
     .count-block {
       background: var(--white);
       border: 1.5px solid rgba(75,163,199,.2);
-      padding: 1.6rem 1rem;
-      box-shadow: 0 4px 24px rgba(75,163,199,.1), 0 1px 4px rgba(0,0,0,.04);
-      transition: box-shadow .3s, transform .3s, border-color .3s;
+      padding: clamp(.9rem, 3vw, 1.6rem) clamp(.5rem, 2vw, 1rem);
+      box-shadow: 0 3px 20px rgba(75,163,199,.1), 0 1px 4px rgba(0,0,0,.04);
+      transition: box-shadow .3s, transform .2s;
+      /* iOS tap highlight off */
+      -webkit-tap-highlight-color: transparent;
     }
-    .count-block:hover {
-      box-shadow: 0 8px 32px rgba(75,163,199,.2);
-      transform: translateY(-3px);
-      border-color: rgba(75,163,199,.45);
-    }
+
     .count-number {
       font-family: 'Playfair Display', serif;
       font-weight: 700;
-      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      font-size: clamp(2rem, 9vw, 4.5rem);
       color: var(--ocean);
       line-height: 1;
       display: block;
     }
-    .count-number.tick { animation: tick-pulse .25s ease; }
+    .count-number.tick { animation: tick-pulse .22s ease; }
     @keyframes tick-pulse {
       0%   { transform: scale(1); }
-      50%  { transform: scale(1.1); color: var(--coral); }
+      50%  { transform: scale(1.12); color: var(--coral); }
       100% { transform: scale(1); }
     }
+
     .count-label {
-      font-size: .58rem;
-      letter-spacing: .2em;
+      font-size: clamp(.48rem, 2vw, .58rem);
+      letter-spacing: .18em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-top: .5rem;
+      margin-top: .35rem;
       display: block;
     }
 
-    /* DIVIDER */
-    .divider { display: flex; align-items: center; gap: 1rem; margin: 2rem 0; opacity: 0; animation: fade-in .6s 1.4s forwards; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(75,163,199,.35), transparent); }
-    .divider-icon { font-size: 1.2rem; }
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex; align-items: center; gap: .8rem;
+      margin: clamp(1rem, 3vw, 2rem) 0;
+      opacity: 0; animation: fade-in .6s 1.4s forwards;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(75,163,199,.35), transparent);
+    }
+    .divider-icon { font-size: 1.1rem; }
 
-    /* STATS */
-    .stats-title { font-size: .58rem; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; opacity: 0; animation: fade-in .6s 1.5s forwards; }
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; opacity: 0; animation: slide-up .8s 1.6s cubic-bezier(.16,1,.3,1) forwards; }
+    /* ── STATS ── */
+    .stats-title {
+      font-size: clamp(.5rem, 2vw, .58rem);
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .9rem;
+      opacity: 0; animation: fade-in .6s 1.5s forwards;
+    }
+
+    /* Desktop: 3 cols / Mobile: stacked horizontal cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(.4rem, 2vw, 1rem);
+      opacity: 0;
+      animation: slide-up .8s 1.6s cubic-bezier(.16,1,.3,1) forwards;
+    }
+
     .stat-card {
       background: var(--white);
       border: 1.5px solid rgba(75,163,199,.15);
-      padding: 1.4rem 1rem;
-      box-shadow: 0 2px 16px rgba(75,163,199,.08);
-      position: relative;
-      overflow: hidden;
-      transition: transform .3s, box-shadow .3s;
+      padding: clamp(.9rem, 3vw, 1.4rem) clamp(.6rem, 2vw, 1rem);
+      box-shadow: 0 2px 14px rgba(75,163,199,.08);
+      position: relative; overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
-    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(75,163,199,.15); }
-    .stat-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--peach), var(--coral)); }
-    .stat-emoji { font-size: 1.4rem; display: block; margin-bottom: .5rem; }
-    .stat-value { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 700; color: var(--coral); display: block; line-height: 1.1; }
-    .stat-desc { font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: .4rem; display: block; line-height: 1.5; }
+    .stat-card::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--peach), var(--coral));
+    }
 
-    /* PROGRESS */
-    .progress-wrap { margin-top: 2.5rem; background: var(--white); border: 1.5px solid rgba(75,163,199,.15); padding: 1.4rem 1.8rem; box-shadow: 0 2px 16px rgba(75,163,199,.08); opacity: 0; animation: fade-in .6s 2s forwards; }
-    .progress-header { display: flex; justify-content: space-between; font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: .7rem; }
-    .progress-track { height: 6px; background: var(--sky2); border-radius: 10px; position: relative; overflow: visible; }
-    .progress-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--ocean), var(--coral)); transition: width 1.2s cubic-bezier(.16,1,.3,1); position: relative; }
-    .progress-fill::after { content: '✈'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: .9rem; }
+    .stat-emoji { font-size: clamp(1.1rem, 4vw, 1.4rem); display: block; margin-bottom: .3rem; }
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.2rem, 5.5vw, 2rem);
+      font-weight: 700; color: var(--coral);
+      display: block; line-height: 1.1;
+    }
+    .stat-desc {
+      font-size: clamp(.48rem, 1.8vw, .58rem);
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--muted); margin-top: .35rem;
+      display: block; line-height: 1.5;
+    }
 
-    .footer-text { margin-top: 1.8rem; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: .95rem; color: var(--muted); opacity: 0; animation: fade-in .6s 2.2s forwards; }
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      margin-top: clamp(1.2rem, 4vw, 2.5rem);
+      background: var(--white);
+      border: 1.5px solid rgba(75,163,199,.15);
+      padding: clamp(1rem, 3.5vw, 1.4rem) clamp(1rem, 4vw, 1.8rem);
+      box-shadow: 0 2px 14px rgba(75,163,199,.08);
+      opacity: 0; animation: fade-in .6s 2s forwards;
+    }
+    .progress-header {
+      display: flex; justify-content: space-between;
+      font-size: clamp(.48rem, 1.8vw, .58rem);
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .65rem;
+    }
+    .progress-track {
+      height: 6px; background: var(--sky2);
+      border-radius: 10px; position: relative; overflow: visible;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 10px;
+      background: linear-gradient(90deg, var(--ocean), var(--coral));
+      transition: width 1.2s cubic-bezier(.16,1,.3,1);
+      position: relative;
+    }
+    .progress-fill::after {
+      content: '✈'; position: absolute;
+      right: -10px; top: 50%;
+      transform: translateY(-50%);
+      font-size: .85rem;
+    }
 
-    /* VACATION MODE */
-    .vacation-mode { display: none; flex-direction: column; align-items: center; gap: 1.5rem; }
+    .footer-text {
+      margin-top: 1.4rem;
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: clamp(.85rem, 3vw, .95rem);
+      color: var(--muted);
+      opacity: 0; animation: fade-in .6s 2.2s forwards;
+    }
+
+    /* ── VACATION MODE ── */
+    .vacation-mode {
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: clamp(1rem, 3vw, 1.5rem);
+      min-height: 100svh;
+      padding: 2rem;
+      text-align: center;
+    }
     .vacation-mode.active { display: flex; }
-    .vac-bg { position: fixed; inset: 0; z-index: 0; background: linear-gradient(180deg, #fff9e6 0%, #ffeab5 50%, #ffd98a 100%); }
-    .vac-emoji { font-size: 5rem; animation: float 3s ease-in-out infinite; }
-    @keyframes float { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-14px) rotate(3deg); } }
-    .vac-title { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; font-size: clamp(2.5rem, 8vw, 5rem); color: var(--coral); }
-    .vac-subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.4rem; color: var(--text); }
-    .vac-small { font-size: .9rem; color: var(--muted); font-family: 'Cormorant Garamond', serif; font-style: italic; }
-    .confetti-piece { position: fixed; animation: confetti-fall linear forwards; z-index: 10; }
-    @keyframes confetti-fall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 
-    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .vac-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: linear-gradient(180deg, #fff9e6 0%, #ffeab5 55%, #ffd98a 100%);
+    }
 
-    @media (max-width: 600px) {
-      .countdown-grid { grid-template-columns: repeat(2, 1fr); }
-      .stats-grid { grid-template-columns: repeat(1, 1fr); }
+    .vac-emoji {
+      font-size: clamp(4rem, 18vw, 6rem);
+      animation: float 3s ease-in-out infinite;
+      position: relative; z-index: 3;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50%      { transform: translateY(-14px) rotate(3deg); }
+    }
+
+    .vac-title {
+      font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic;
+      font-size: clamp(2.2rem, 10vw, 5rem);
+      color: var(--coral);
+      position: relative; z-index: 3;
+    }
+    .vac-subtitle {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+      color: var(--text);
+      position: relative; z-index: 3;
+    }
+    .vac-small {
+      font-size: clamp(.85rem, 3.5vw, 1rem);
+      color: var(--muted);
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      position: relative; z-index: 3;
+    }
+
+    .confetti-piece {
+      position: fixed;
+      animation: confetti-fall linear forwards;
+      z-index: 10;
+    }
+    @keyframes confetti-fall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── ANIMS ── */
+    @keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slide-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      /* Stats: horizontal pill cards on small screens */
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: .6rem;
+      }
+      .stat-card {
+        display: grid;
+        grid-template-columns: 2.5rem 1fr auto;
+        align-items: center;
+        padding: .9rem 1rem;
+        text-align: left;
+        gap: .1rem .8rem;
+      }
+      .stat-emoji {
+        font-size: 1.5rem;
+        margin-bottom: 0;
+        grid-row: 1 / 3;
+      }
+      .stat-value {
+        font-size: clamp(1.4rem, 7vw, 1.8rem);
+        grid-column: 2;
+      }
+      .stat-desc {
+        grid-column: 2;
+        font-size: .52rem;
+        margin-top: 0;
+      }
+    }
+
+    /* Hover only on non-touch */
+    @media (hover: hover) {
+      .count-block:hover {
+        box-shadow: 0 8px 32px rgba(75,163,199,.18);
+        transform: translateY(-3px);
+        border-color: rgba(75,163,199,.45);
+      }
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(75,163,199,.14);
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="bg-sky"></div>
-  <div class="sun"><div class="sun-core"></div></div>
-  <div class="clouds">
+
+  <div class="sun" aria-hidden="true">
+    <div class="sun-core"></div>
+  </div>
+
+  <div class="clouds" aria-hidden="true">
     <div class="cloud c1"></div>
     <div class="cloud c2"></div>
     <div class="cloud c3"></div>
   </div>
 
-  <div class="ocean" aria-hidden="true">
+  <div class="ocean-wrap" aria-hidden="true">
     <div class="wave wave-1">
       <svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0,60 C150,100 350,0 600,60 C850,120 1050,20 1200,60 L1200,120 L0,120 Z" fill="rgba(75,163,199,0.22)"/>
@@ -260,31 +440,58 @@
     </div>
   </div>
 
+  <!-- MAIN -->
   <div class="container" id="mainContent">
-    <p class="stamp">🌴 Urlop · od 16.03.2026 · Zasłużony 🌴</p>
+
+    <p class="stamp">🌴 Urlop · od 16.03.2026 · Nareszcie 🌴</p>
+
     <h1 class="main-title">Izunia,<br/><span>na urlop!</span></h1>
-    <p class="subtitle">jeszcze tylko trochę… naprawdę trochę 🌴</p>
+    <p class="subtitle">…bo my już nie możemy 🙏😅</p>
 
     <div class="countdown-grid">
-      <div class="count-block"><span class="count-number" id="days">--</span><span class="count-label">dni</span></div>
-      <div class="count-block"><span class="count-number" id="hours">--</span><span class="count-label">godzin</span></div>
-      <div class="count-block"><span class="count-number" id="minutes">--</span><span class="count-label">minut</span></div>
-      <div class="count-block"><span class="count-number" id="seconds">--</span><span class="count-label">sekund</span></div>
+      <div class="count-block">
+        <span class="count-number" id="days">--</span>
+        <span class="count-label">dni</span>
+      </div>
+      <div class="count-block">
+        <span class="count-number" id="hours">--</span>
+        <span class="count-label">godzin</span>
+      </div>
+      <div class="count-block">
+        <span class="count-number" id="minutes">--</span>
+        <span class="count-label">minut</span>
+      </div>
+      <div class="count-block">
+        <span class="count-number" id="seconds">--</span>
+        <span class="count-label">sekund</span>
+      </div>
     </div>
 
     <div class="divider"><span class="divider-icon">🌊</span></div>
 
     <p class="stats-title">a to oznacza, że…</p>
     <div class="stats-grid">
-      <div class="stat-card"><span class="stat-emoji">☕</span><span class="stat-value" id="coffees">--</span><span class="stat-desc">filiżanek kawy<br/>do wypicia w pracy</span></div>
-      <div class="stat-card"><span class="stat-emoji">😴</span><span class="stat-value" id="sleeps">--</span><span class="stat-desc">nocy do przespania<br/>zanim wolność!</span></div>
-      <div class="stat-card"><span class="stat-emoji">📅</span><span class="stat-value" id="workdays">--</span><span class="stat-desc">dni roboczych<br/>do urlopu</span></div>
+      <div class="stat-card">
+        <span class="stat-emoji">☕</span>
+        <span class="stat-value" id="coffees">--</span>
+        <span class="stat-desc">filiżanek kawy<br/>do wypicia w pracy</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-emoji">😴</span>
+        <span class="stat-value" id="sleeps">--</span>
+        <span class="stat-desc">nocy do przespania<br/>zanim wolność!</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-emoji">📅</span>
+        <span class="stat-value" id="workdays">--</span>
+        <span class="stat-desc">dni roboczych<br/>do urlopu</span>
+      </div>
     </div>
 
     <div class="progress-wrap">
       <div class="progress-header">
         <span>Dzień dzisiejszy</span>
-        <span id="progressPct">-- % drogi za nami</span>
+        <span id="progressPct">--% drogi za nami</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progressFill" style="width:0%"></div>
@@ -295,14 +502,16 @@
     </div>
 
     <p class="footer-text" id="targetDateDisplay">Cel: ładowanie…</p>
+
   </div>
 
+  <!-- VACATION MODE -->
   <div class="container vacation-mode" id="vacationMode">
     <div class="vac-bg"></div>
-    <div class="vac-emoji" style="position:relative;z-index:3">🌴</div>
-    <h1 class="vac-title" style="position:relative;z-index:3">Iza jest na urlopie!</h1>
-    <p class="vac-subtitle" style="position:relative;z-index:3">Od poniedziałku, 16 marca 2026 🎉🏖️✈️</p>
-    <p class="vac-small" style="position:relative;z-index:3">Nie przeszkadzać. Serio.</p>
+    <div class="vac-emoji">🌴</div>
+    <h1 class="vac-title">Iza jest na urlopie!</h1>
+    <p class="vac-subtitle">Nareszcie! Biuro odetchnęło 🎉🥂</p>
+    <p class="vac-small">…i to jest oficjalne oświadczenie zespołu. Yhym.</p>
   </div>
 
   <script>
@@ -312,33 +521,33 @@
     function pad(n) { return String(n).padStart(2, "0"); }
 
     function countWorkdays(from, to) {
-      let count = 0;
-      const cur = new Date(from); cur.setHours(0,0,0,0);
-      const end = new Date(to);   end.setHours(0,0,0,0);
-      while (cur < end) { if (cur.getDay() !== 0 && cur.getDay() !== 6) count++; cur.setDate(cur.getDate()+1); }
-      return count;
+      let n = 0;
+      const d = new Date(from); d.setHours(0,0,0,0);
+      const e = new Date(to);   e.setHours(0,0,0,0);
+      while (d < e) { const w = d.getDay(); if (w && w < 6) n++; d.setDate(d.getDate()+1); }
+      return n;
     }
 
     function spawnConfetti() {
       const colors = ['#e8735a','#4ba3c7','#f5c200','#a8d8ea','#f5a68d','#2980b9','#ffffff'];
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 90; i++) {
         setTimeout(() => {
           const el = document.createElement('div');
           el.className = 'confetti-piece';
-          const size = 6 + Math.random() * 9;
-          el.style.cssText = `left:${Math.random()*100}vw; top:0; background:${colors[Math.floor(Math.random()*colors.length)]}; animation-duration:${2+Math.random()*3}s; animation-delay:${Math.random()*2}s; width:${size}px; height:${size}px; border-radius:${Math.random()>.5?'50%':'2px'};`;
+          const s = 6 + Math.random() * 9;
+          el.style.cssText = `left:${Math.random()*100}vw;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${2.5+Math.random()*3}s;animation-delay:${Math.random()*2}s;width:${s}px;height:${s}px;border-radius:${Math.random()>.5?'50%':'3px'};`;
           document.body.appendChild(el);
-          setTimeout(() => el.remove(), 6000);
-        }, i * 35);
+          setTimeout(() => el.remove(), 7000);
+        }, i * 38);
       }
     }
 
-    const opts = { day: "numeric", month: "long", year: "numeric" };
-    document.getElementById("targetDateDisplay").textContent = "Cel: " + VACATION_DATE.toLocaleDateString("pl-PL", opts) + " ✈";
+    document.getElementById("targetDateDisplay").textContent =
+      "Cel: " + VACATION_DATE.toLocaleDateString("pl-PL", { day:"numeric", month:"long", year:"numeric" }) + " ✈";
 
     let lastSec = -1, lastMin = -1, vacShown = false;
 
-    function tick(el) { el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); }
+    function tickEl(el) { el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); }
 
     function update() {
       const now  = new Date();
@@ -357,20 +566,24 @@
       const hrs   = Math.floor(total / 3600) % 24;
       const days  = Math.floor(total / 86400);
 
-      document.getElementById("days").textContent  = days;
-      document.getElementById("hours").textContent = pad(hrs);
-      document.getElementById("minutes").textContent = pad(mins);
+      document.getElementById("days").textContent    = days;
+      document.getElementById("hours").textContent   = pad(hrs);
 
       const sEl = document.getElementById("seconds");
       const mEl = document.getElementById("minutes");
-      if (secs !== lastSec) { sEl.textContent = pad(secs); tick(sEl); lastSec = secs; }
-      if (mins !== lastMin) { tick(mEl); lastMin = mins; }
+
+      if (secs !== lastSec) {
+        sEl.textContent = pad(secs); tickEl(sEl); lastSec = secs;
+      }
+      if (mins !== lastMin) {
+        mEl.textContent = pad(mins); tickEl(mEl); lastMin = mins;
+      }
 
       document.getElementById("coffees").textContent  = Math.ceil(days * 2.5).toLocaleString("pl-PL");
       document.getElementById("sleeps").textContent   = (days + (hrs > 0 ? 1 : 0)).toLocaleString("pl-PL");
       document.getElementById("workdays").textContent = countWorkdays(now, VACATION_DATE).toLocaleString("pl-PL");
 
-      const pct = Math.min(100, Math.max(0, ((now - START_DATE) / (VACATION_DATE - START_DATE)) * 100));
+      const pct = Math.min(100, Math.max(0, (now - START_DATE) / (VACATION_DATE - START_DATE) * 100));
       document.getElementById("progressFill").style.width = pct.toFixed(2) + "%";
       document.getElementById("progressPct").textContent  = pct.toFixed(1) + "% drogi za nami";
     }
